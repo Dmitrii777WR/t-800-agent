@@ -1,4 +1,6 @@
 ---
+# CORRECT: description: > fold (Use/Do NOT inside). OR one-line quoted.
+# WRONG: description: "…" then hanging Use/Do NOT → Invalid enum (silent drop).
 name: {{AGENT_NAME}}
 description: >
   {{AGENT_DESCRIPTION}}

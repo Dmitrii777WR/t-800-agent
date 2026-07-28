@@ -77,6 +77,6 @@ discover → python3 scripts/t800_plugin_audit.py → Task(t-800-plugin-auditor)
 
 ## Версия
 
-- Обновлён: 2026-07-09 · T-800 **1.13.0** (fix-packs handoff)
+- Обновлён: 2026-07-24 · T-800 **1.19.1**
 - Введён: 2026-07-09 · T-800 **1.11.0**
 - Связанные: `project-memory-contract.md`, `department-orchestration-contract.md`, `fix-pipeline-contract.md`, `commands/t800-plugin-audit.md`

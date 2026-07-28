@@ -28,10 +28,12 @@ Readonly QA промптов: ловишь Description Trap, vague description, 
 
 1. Список артефактов ∈ {agent, skill, command}. Иначе skip.
 2. Чеклист (critical → blocked):
+   - **Frontmatter YAML parse PASS** — `yaml.safe_load` / `t800_agent_frontmatter_yaml_gate.py`;
+     hybrid `description: "…"↵  Use when` = critical (Cursor silent-drop → Invalid enum; Reload ≠ fix)
    - vague description («helps with tasks», «помогает с задачами»)
    - Description Trap (description = весь промпт)
    - `tools:` в frontmatter агента
-   - нет Use when / Do NOT use when
+   - нет Use when / Do NOT use when **внутри** валидного `description` (`>` fold или one-line)
    - name ≠ filename
    - промпт > 150 строк без причины
 3. Warnings: слабая структура секций, нет Запретов, пересечение ролей.

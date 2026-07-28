@@ -31,6 +31,9 @@ is_background: false
 2b. Если есть `vendor_docs_brief.idea_seeds[]` — возьми 1–3 паттерна (Cookbook/Claude/Gemini/Perplexity) в outline с URL.
 3. Anti **Description Trap**: description = маршрутизация (Use when / Do NOT), не дубль всего промпта.
 4. Cursor frontmatter — **ровно 5 полей**: `name`, `description`, `model`, `readonly`, `is_background`. Запрет `tools:` в frontmatter.
+4b. **Emit description (HARD)** — только `description: >` fold (Use/Do NOT внутри) **или** one-line quoted без продолжений.  
+    **BAN hybrid** `description: "…"↵  Use when` → Cursor silent-drop → Invalid enum; Reload ≠ fix.  
+    См. `shared/prompt-craft-contract.md`, `shared/lessons/frontmatter-yaml-silent-drop.md`.
 5. Собери структуру тела: Роль → Алгоритм → Выход → Связи → Запреты (+ Что читать / KB).
 6. Верни `prompt_spec` для factory / builder:
 
@@ -42,14 +45,16 @@ prompt_spec:
   idea_seeds_used: []
   frontmatter:
     name: ...
-    description: |
+    description: >
+      Short.
       Use when ...
       Do NOT use when ...
     model: inherit
     readonly: true|false
     is_background: false
   body_outline: []
-  anti_patterns_avoided: []
+  anti_patterns_avoided:
+    - hybrid-quoted-hanging-description
 ```
 
 ## Выход
@@ -68,4 +73,5 @@ prompt_spec:
 - Писать production-файлы (readonly)
 - Добавлять `tools:` в frontmatter агента
 - Раздувать description полным промптом (Description Trap)
+- Emit hybrid `description: "…"↵  Use/Do NOT` (битый YAML)
 - Промпт-спека > 80 строк в YAML (детали — outline)

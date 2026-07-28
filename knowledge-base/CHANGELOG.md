@@ -2,6 +2,16 @@
 
 Формат: дата — что изменилось — источник.
 
+## 1.19.1 — 2026-07-24
+
+- **P0 Surface+Sync+Gates:** skills 1→6 (factory-scaffold, fix-pack, plugin-sync slash-only, run-gates, command-chains + KB)
+- `shared/command-chains.json` + `scripts/t800_command_chains_gate.py`
+- `scripts/t800_plugin_sync.py` — CONTENT_DRIFT sha256 `--check` / `--apply` → MIR только `~/.cursor/plugins/local/t-800-agent`
+- `scripts/t800_skill_frontmatter_gate.py` + `scripts/t800_plugin_schema_gate.py` + `registry/plugin.manifest.schema.json`
+- **Wire:** `t800_run_gate.py` flags `--require-skill-frontmatter` / `--require-plugin-json-schema` / `--require-command-chains` (auto-ON при `--strict-create` + `--plugin-root`)
+- `verify-install.sh` / `.ps1`: sync `--check` + новые gates; `install-plugin` — `t800_plugin_sync.py --apply` делегирует сюда
+- `T800-SYSTEM-MAP.md` / plugin-audit-contract footer → **1.19.1**
+
 ## 1.19.0 — 2026-07-18
 
 - **Discovery:** marker + `knowledge_vault_path` не перебивает `profile=teya-plugin-dev` на TeyaPlugin

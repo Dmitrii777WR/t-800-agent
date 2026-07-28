@@ -2,6 +2,7 @@
 # Установка T-800 Agent в Cursor Desktop (macOS / Linux)
 # Канон: только ~/.cursor/plugins/local/t-800-agent (без зеркал в user-home)
 # Запуск: bash scripts/install-plugin.sh
+# NOTE: scripts/t800_plugin_sync.py --apply делегирует сюда (не меняет dest / MIR).
 
 set -euo pipefail
 

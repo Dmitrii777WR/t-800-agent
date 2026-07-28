@@ -1,8 +1,8 @@
 # T800-SYSTEM-MAP.md
 
 Карта системы для внешнего архитектора (проектирование / усиление **loop engineering**).  
-Сгенерировано: 2026-07-17 (обновлено под **1.17.0**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
-Версия плагина на момент карты: **1.17.0**.  
+Сгенерировано: 2026-07-17 (обновлено под **1.19.1**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
+Версия плагина на момент карты: **1.19.1**.  
 Правило документа: факты (файл / кто пишет / кто читает / авто|руками). Без маркетинга.
 
 ---
@@ -11,16 +11,16 @@
 
 | Метрика | Значение | Источник |
 |---------|----------|----------|
-| Версия | `1.17.0` | `.cursor-plugin/plugin.json` |
+| Версия | `1.19.1` | `.cursor-plugin/plugin.json` |
 | Display name | T-800 Agent | там же |
 | GitHub | `https://github.com/Khar-AG/t-800-agent` | `shared/release-channel.json` |
 | Branch релиза | `main` | `shared/release-channel.json` |
 | Agents (Task-субагенты) | **43** файла `agents/t-800-*.md` = **43** в `registry/agents-registry.json` (вкл. `t-800-loop-conductor`) | ls + registry |
 | Commands | **17** (`commands/*.md`, вкл. `/t800-loop`) | ls |
-| Skills | **1** (`skills/t-800-knowledge-base/SKILL.md`) | find |
+| Skills | **6** (`t-800-knowledge-base` + factory-scaffold / fix-pack / plugin-sync / run-gates / command-chains) | find |
 | Rules (plugin) | **5** `rules/*.mdc` | ls |
-| Shared contracts | **30+** (`shared/*.md` + `release-channel.json`; вкл. `lesson-schema-contract`) | ls |
-| Scripts | **40+** (`.py`/`.sh`/`.ps1`; + loop v2: report/lessons/classifier/golden/queue/dispatcher) | ls scripts |
+| Shared contracts | **30+** (`shared/*.md` + `release-channel.json` + `command-chains.json`; вкл. `lesson-schema-contract`) | ls |
+| Scripts | **49+** (`.py`/`.sh`/`.ps1`; + loop v2; + frontmatter yaml; + `t800_plugin_sync` / skill-frontmatter / plugin-schema / command-chains gates) | ls scripts |
 | Templates | **10+** (вкл. `loop-policy.json.template`) | ls templates |
 | Loop v2 artifacts | `runs/<id>/`, `loop-queue.md`, `.loop-paused`, `golden/`, `telemetry/`, `docs/examples/self-golden/` | loop-engineering-contract |
 | KB markdown cards | **~76** (без raw HTML bulk) | find knowledge-base |
@@ -28,7 +28,8 @@
 | Размер checkout | **~21M** (многое — `knowledge-base/raw/` HTML) | du |
 | Agents body size | ~2735+ строк суммарно по `agents/*.md` | wc |
 | Hooks | `sessionStart` (один; dispatcher внутри bootstrap), `beforeFileEdit` | `hooks.json` |
-| Tests | ручные `tests/TEST-SCENARIOS.md` + fixtures `tests/fixtures/loop/` + golden self-check; нет CI unit-suite | файл |
+| Tests | `tests/TEST-SCENARIOS.md` + fixtures loop/ + golden; нет CI unit-suite | файл |
+| Teya integration | discovery profiles `teya-*` + release handoff (adapter package lands in 1.20.0) | shared/target-plugin-profiles.md |
 | Хостинг | локальный Cursor plugin: `~/.cursor/plugins/local/t-800-agent/` | install scripts |
 | Деплой | `bash scripts/install-plugin.sh` → copy в plugins/local; автообновление с GitHub на `sessionStart` | INSTALL + auto-update-contract |
 
@@ -38,7 +39,7 @@
 |------|------------|
 | Артефакты Cursor | Markdown agents/commands/skills, `.mdc` rules, `hooks.json` |
 | Оркестрация | Cursor Agent + `Task(subagent_type=…)` (лиды отделов) |
-| Machine gates | Bash + Python3 (`t800_run_gate.py`, `t800_doctor.py`, `t800_plugin_audit.py`, `t800_factory_bypass_gate.py`) |
+| Machine gates | Bash + Python3 (`t800_run_gate.py`, `t800_doctor.py`, `t800_plugin_audit.py`, `t800_factory_bypass_gate.py`, skill/schema/chains gates, `t800_plugin_sync.py`) |
 | Registry | JSON `registry/agents-registry.json` |
 | KB sync | PowerShell `scripts/sync-docs.ps1` (Windows-канон в контракте; macOS — ручной/частичный) |
 | Память прогона | Markdown + JSON в `{memory_path}/` целевого проекта |
@@ -153,6 +154,11 @@
 | CHANGELOG KB | `knowledge-base/CHANGELOG.md` | история версий плагина + KB |
 | HEALTH-REPORT | `knowledge-base/HEALTH-REPORT.md` | вывод health-check (пути относительные с 1.15.3) |
 | Skill KB | `skills/t-800-knowledge-base/SKILL.md` | как читать KB |
+| Skill factory-scaffold | `skills/t-800-factory-scaffold/SKILL.md` | каркас factory |
+| Skill fix-pack | `skills/t-800-fix-pack/SKILL.md` | fix-pack surface |
+| Skill plugin-sync | `skills/t-800-plugin-sync/SKILL.md` | CONTENT_DRIFT sync |
+| Skill run-gates | `skills/t-800-run-gates/SKILL.md` | run/sibling gates |
+| Skill command-chains | `skills/t-800-command-chains/SKILL.md` | command chains |
 
 **НЕТ** в T-800 отдельного `Brain proposals/` для автопатчей промптов агентов (как у Teya post-run → plugin-engineer). Ближайшее: Lessons в `STATE.md` + fix-pack + `/t800-fix`.
 
@@ -175,7 +181,12 @@
 
 | Gate | Что проверяет | Авто / человек | При провале | Ретраи | Где логика | Машиночитаемый вердикт? |
 |------|---------------|----------------|-------------|--------|------------|-------------------------|
-| `t800_run_gate.py` | наличие `STATE.md`; опц. inventory; опц. validate-agents; опц. `--strict-create` (manifest factory + fragment factory status + brief done) | Авто (exit code) | стоп «готово»; Директор должен чинить | budget 2 на уровне **контракта** (не внутри скрипта) | `scripts/t800_run_gate.py` | **Да:** JSON `{ok, checks, error}` на stdout |
+| `t800_run_gate.py` | наличие `STATE.md`; опц. inventory; опц. validate-agents; опц. `--strict-create` (manifest factory + fragment factory status + brief done); `--require-frontmatter-yaml` / `--require-skill-frontmatter` / `--require-plugin-json-schema` / `--require-command-chains` (все auto под `--strict-create`+`--plugin-root`) | Авто (exit code) | стоп «готово»; Директор должен чинить | budget 2 на уровне **контракта** (не внутри скрипта) | `scripts/t800_run_gate.py` | **Да:** JSON `{ok, checks, error}` на stdout |
+| `t800_agent_frontmatter_yaml_gate.py` | валидный YAML frontmatter agents (PyYAML); `--file` / `--plugin-root`; вызывается из `t800_run_gate.py` через `--require-frontmatter-yaml` или auto под `--strict-create`+`--plugin-root` | Авто (exit code) | FAIL exit ≠0 → repair agent FM | через factory | `scripts/t800_agent_frontmatter_yaml_gate.py` | **Да:** текст OK/FAIL + exit; check `frontmatter_yaml` в JSON run_gate |
+| `t800_skill_frontmatter_gate.py` | frontmatter skills/*/SKILL.md; auto под `--strict-create`+`--plugin-root` | Авто | FAIL → repair skill FM | через factory | `scripts/t800_skill_frontmatter_gate.py` | check `skill_frontmatter` в run_gate |
+| `t800_plugin_schema_gate.py` | `.cursor-plugin/plugin.json` vs `registry/plugin.manifest.schema.json`; auto под strict-create | Авто | FAIL → repair plugin.json/schema | через factory | `scripts/t800_plugin_schema_gate.py` | check `plugin_json_schema` в run_gate |
+| `t800_command_chains_gate.py` | `shared/command-chains.json` deliverable + consistency; auto под strict-create (missing → FAIL) | Авто | FAIL → repair chains | через factory | `scripts/t800_command_chains_gate.py` (+ `.sh`) | check `command_chains` в run_gate |
+| `t800_plugin_sync.py` | CONTENT_DRIFT sha256 workspace ↔ live `plugins/local`; `--check` / `--apply`→install-plugin.sh | Авто | FAIL drift / apply | reinstall / `--apply` | `scripts/t800_plugin_sync.py` | **Да:** JSON `{ok, drift, applied, reload_required}` |
 | `t800_factory_bypass_gate.py` | изменённые agents/skills/commands/rules/hooks без completed factory в manifest | Авто | FAIL exit 1 | нет авто-retry | `scripts/t800_factory_bypass_gate.py` | **Да:** JSON summary |
 | `validate-agents.sh/.ps1` | frontmatter, name=filename, description; WARN если >200 строк | Авто | exit 1 | repair через factory | `scripts/validate-agents.sh` | Частично: текст OK/FAIL + exit; **нет** единого JSON |
 | `audit-agent-graph.sh/.ps1` | симметрия calls/calledBy, registry | Авто | exit ≠0 | repair | `scripts/audit-agent-graph.*` | Текст + exit |
@@ -424,7 +435,7 @@
 
 ### 10.3 Новый skill
 
-`skills/<id>/SKILL.md`; сейчас skill один. Conflict check: не дублировать субагента (кейс operator).
+`skills/<id>/SKILL.md`; сейчас **6** skills (KB + 5 P0 surface). Conflict check: не дублировать субагента (кейс operator).
 
 ### 10.4 Новый hook
 
@@ -733,6 +744,11 @@ Install **не** ставит его молча (Lesson в STATE + CHANGELOG 1.1
 | `t800_loop_state.sh` | STATE init/touch |
 | `t800-state.sh` | legacy/adjacent state helper |
 | `t800_run_gate.py` | канон machine gate |
+| `t800_agent_frontmatter_yaml_gate.py` | YAML frontmatter agents (PyYAML; `--require-frontmatter-yaml` / auto под `--strict-create`) |
+| `t800_skill_frontmatter_gate.py` | frontmatter skills (`--require-skill-frontmatter` / auto) |
+| `t800_plugin_schema_gate.py` | plugin.json schema (`--require-plugin-json-schema` / auto) |
+| `t800_command_chains_gate.py` / `.sh` | command-chains deliverable (`--require-command-chains` / auto) |
+| `t800_plugin_sync.py` | CONTENT_DRIFT check / apply→install-plugin.sh |
 | `t800_factory_bypass_gate.py` | анти-обход factory |
 | `t800_doctor.py` | health JSON |
 | `t800_plugin_audit.py` | inventory/scorecard |

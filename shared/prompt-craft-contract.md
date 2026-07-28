@@ -46,6 +46,37 @@ is_background: false
 
 **Запрещено:** поле `tools:` в frontmatter субагента.
 
+## Emit `description`: CORRECT vs WRONG
+
+Битый YAML → Cursor **молча выкидывает** агента из Task enum → `Invalid enum`.  
+**Reload Window не чинит** файлы на диске. Lesson: `shared/lessons/frontmatter-yaml-silent-drop.md`.  
+Gate: `scripts/t800_agent_frontmatter_yaml_gate.py`.
+
+### CORRECT — fold `>`
+
+```yaml
+description: >
+  Short.
+  Use when …
+  Do NOT use when …
+```
+
+### CORRECT — one-line quoted (без продолжений)
+
+```yaml
+description: "Short. Use when … Do NOT use when …"
+```
+
+### WRONG — hybrid (incident; никогда не emit)
+
+```yaml
+description: "Short."
+  Use when …
+  Do NOT use when …
+```
+
+После закрытых кавычек hanging `Use when` / `Do NOT` — невалидный YAML.
+
 ## Выход: `prompt_spec`
 
 ```yaml
@@ -62,7 +93,7 @@ prompt_spec:
 После builder/integrator:
 
 1. `Task(t-800-prompt-auditor)` → `status: ok | blocked`
-2. Critical: vague description, Description Trap, `tools:` в frontmatter
-3. Только при `ok` → `Task(t-800-factory-auditor)`
+2. Critical: Frontmatter YAML parse FAIL, vague description, Description Trap, `tools:` в frontmatter, hybrid emit
+3. Только при `ok` → `Task(t-800-factory-auditor)` (поле отчёта `frontmatter_yaml: PASS|FAIL`)
 
 Контракт качества: `shared/t-800-agent-quality-contract.md`.

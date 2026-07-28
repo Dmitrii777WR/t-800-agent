@@ -5,3 +5,16 @@ __pycache__/
 t-800-memory/
 node_modules/
 *.zip
+
+# Local secrets / machine-specific (shared team repo — never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# Local path dumps / personal absolute path reports
+**/*-local-paths*
+**/*.personal.*

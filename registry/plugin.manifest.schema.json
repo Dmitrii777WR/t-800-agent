@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$comment": "Vendored subset for .cursor-plugin/plugin.json. Source: https://cursor.com/docs/reference/plugins — last_synced: 2026-07-24. additionalProperties=true keeps Cursor extras (displayName, etc.).",
+  "title": "Cursor Plugin Manifest (.cursor-plugin/plugin.json)",
+  "type": "object",
+  "required": ["name"],
+  "additionalProperties": true,
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Plugin id (required)"
+    },
+    "displayName": {
+      "type": "string",
+      "description": "Human-readable title (Cursor extra; allowed)"
+    },
+    "version": {
+      "type": "string",
+      "description": "Semver or free-form version string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "author": {
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "name": { "type": "string" },
+            "email": { "type": "string" },
+            "url": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "keywords": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "rules": {
+      "type": "string",
+      "description": "Relative path to rules dir or file"
+    },
+    "skills": {
+      "type": "string",
+      "description": "Relative path to skills dir"
+    },
+    "agents": {
+      "type": "string",
+      "description": "Relative path to agents dir"
+    },
+    "commands": {
+      "type": "string",
+      "description": "Relative path to commands dir"
+    },
+    "hooks": {
+      "type": "string",
+      "description": "Relative path to hooks.json (or hooks dir)"
+    },
+    "mcpServers": {
+      "description": "MCP servers map or relative path (Cursor)",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "object", "additionalProperties": true }
+      ]
+    }
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "meta": {
+    "description": "T-800 department command→lead graph",
+    "plugin": "t-800-agent"
+  },
+  "commands": {
+    "t800-start": {
+      "lead": "t-800-scout",
+      "mode": "CREATE",
+      "pipeline": [
+        "discovery",
+        "intake?",
+        "scout",
+        "research-lead",
+        "prompt-craft?",
+        "brain-lead",
+        "factory",
+        "run-gates"
+      ],
+      "agents": [
+        "t-800-intake-clarifier",
+        "t-800-scout",
+        "t-800-research-lead",
+        "t-800-prompt-craft",
+        "t-800-brain-lead",
+        "t-800-factory"
+      ],
+      "notes": "Director orchestrates leads; leaf specialists auto inside leads"
+    },
+    "t-800": {
+      "lead": "t-800-scout",
+      "mode": "CREATE",
+      "pipeline": [
+        "discovery",
+        "intake?",
+        "scout",
+        "research-lead",
+        "prompt-craft?",
+        "brain-lead",
+        "factory",
+        "run-gates"
+      ],
+      "agents": [
+        "t-800-intake-clarifier",
+        "t-800-scout",
+        "t-800-research-lead",
+        "t-800-prompt-craft",
+        "t-800-brain-lead",
+        "t-800-factory"
+      ],
+      "notes": "Alias of /t800-start"
+    },
+    "t800-fix": {
+      "lead": "t-800-brain-lead",
+      "mode": "PATCH",
+      "pipeline": [
+        "discovery",
+        "read-fix-pack",
+        "research-skip|light",
+        "brain-lead",
+        "factory-patch",
+        "run-gates"
+      ],
+      "agents": [
+        "t-800-research-lead",
+        "t-800-brain-lead",
+        "t-800-factory"
+      ],
+      "notes": "Default research SKIP/LIGHT; factory PATCH only files[] from pack"
+    },
+    "t800-loop": {
+      "lead": "t-800-loop-conductor",
+      "mode": "LOOP",
+      "pipeline": [
+        "discovery",
+        "loop-conductor",
+        "loop-queue",
+        "optional-batch-t800-fix"
+      ],
+      "agents": [
+        "t-800-loop-conductor"
+      ],
+      "notes": "Semi-manual; no auto-continue via stop/followup"
+    },
+    "t800-doctor": {
+      "lead": null,
+      "mode": "OPS",
+      "pipeline": [
+        "discovery",
+        "t800_doctor.py",
+        "optional-narrative"
+      ],
+      "agents": [
+        "t-800-onboard"
+      ],
+      "notes": "Scripts-only default; Task(t-800-onboard) only if user asks narrative"
+    },
+    "t800-plugin-audit": {
+      "lead": "t-800-plugin-auditor",
+      "mode": "AUDIT",
+      "pipeline": [
+        "discovery",
+        "t800_plugin_audit.py",
+        "plugin-auditor",
+        "optional-fix-pack"
+      ],
+      "agents": [
+        "t-800-plugin-auditor"
+      ]
+    },
+    "t800-audit": {
+      "lead": "t-800-system-auditor",
+      "mode": "AUDIT",
+      "pipeline": [
+        "system-auditor"
+      ],
+      "agents": [
+        "t-800-system-auditor"
+      ],
+      "notes": "Bloat audit of whole Cursor system, not single plugin"
+    },
+    "t800-bootstrap": {
+      "lead": "t-800-onboard",
+      "mode": "ONBOARD",
+      "pipeline": [
+        "first-run-status",
+        "onboard",
+        "optional-global-routing-rule"
+      ],
+      "agents": [
+        "t-800-onboard"
+      ]
+    },
+    "t800-onboard": {
+      "lead": "t-800-onboard",
+      "mode": "ONBOARD",
+      "pipeline": [
+        "onboard"
+      ],
+      "agents": [
+        "t-800-onboard"
+      ]
+    },
+    "t800-cloud-hub": {
+      "lead": "t-800-cloud-hub-lead",
+      "mode": "OPS",
+      "pipeline": [
+        "discovery",
+        "cloud-hub-lead"
+      ],
+      "agents": [
+        "t-800-cloud-hub-lead"
+      ],
+      "notes": "Specialists auto inside lead (analyst/prompt/pack/smoke)"
+    },
+    "t800-update": {
+      "lead": null,
+      "mode": "OPS",
+      "pipeline": [
+        "t800-update-from-github",
+        "reload-window"
+      ],
+      "agents": [],
+      "notes": "Scripts-only; sessionStart auto-update companion"
+    },
+    "t-800-factory": {
+      "lead": "t-800-factory",
+      "mode": "CREATE",
+      "pipeline": [
+        "factory"
+      ],
+      "agents": [
+        "t-800-factory"
+      ],
+      "notes": "Direct factory when brain context already ready"
+    },
+    "t-800-sync": {
+      "lead": "t-800-maintainer",
+      "mode": "OPS",
+      "pipeline": [
+        "sync-docs",
+        "update-queue",
+        "maintainer?",
+        "install-verify"
+      ],
+      "agents": [
+        "t-800-maintainer"
+      ],
+      "notes": "KB sync; skill t-800-knowledge-base"
+    },
+    "t-800-maintain": {
+      "lead": "t-800-maintainer",
+      "mode": "OPS",
+      "pipeline": [
+        "maintainer"
+      ],
+      "agents": [
+        "t-800-maintainer"
+      ]
+    },
+    "t-800-operator": {
+      "lead": "t-800-operator",
+      "mode": "ONBOARD",
+      "pipeline": [
+        "operator"
+      ],
+      "agents": [
+        "t-800-operator"
+      ],
+      "notes": "Novice teaching only when user asks"
+    },
+    "t-800-health": {
+      "lead": null,
+      "mode": "OPS",
+      "pipeline": [
+        "health-check"
+      ],
+      "agents": [],
+      "notes": "Scripts-only health-check.sh/.ps1"
+    },
+    "t-800-factory-validate": {
+      "lead": "t-800-factory-auditor",
+      "mode": "AUDIT",
+      "pipeline": [
+        "validate-agents",
+        "audit-agent-graph",
+        "factory-auditor?"
+      ],
+      "agents": [
+        "t-800-factory-auditor"
+      ]
+    }
+  }
+}

@@ -1,6 +1,7 @@
 # Установка T-800 Agent в Cursor Desktop (Windows)
 # Канон: только ~/.cursor/plugins/local/t-800-agent (без зеркал в user-home)
 # Запуск: .\scripts\install-plugin.ps1
+# NOTE: scripts/t800_plugin_sync.py --apply делегирует в install-plugin.sh (не меняет dest / MIR).
 
 $ErrorActionPreference = "Stop"
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path

@@ -4,7 +4,13 @@
 Usage:
   python3 scripts/t800_run_gate.py --memory-path PATH \\
       [--require-validate] [--require-plugin-audit-out DIR] [--plugin-root PATH] \\
-      [--require-agents-mirror] [--strict-create] [--factory-brief PATH|SLUG]
+      [--require-agents-mirror] [--require-frontmatter-yaml] \\
+      [--require-skill-frontmatter] [--require-plugin-json-schema] \\
+      [--require-command-chains] \\
+      [--strict-create] [--factory-brief PATH|SLUG]
+
+  При --strict-create + --plugin-root auto-ON:
+    frontmatter-yaml, skill-frontmatter, plugin-json-schema, command-chains.
 """
 
 from __future__ import annotations
@@ -225,13 +231,69 @@ def main() -> int:
         default=None,
         help="Путь или slug factory-brief (для --strict-create: status done)",
     )
+    parser.add_argument(
+        "--require-frontmatter-yaml",
+        action="store_true",
+        default=False,
+        help=(
+            "Запустить t800_agent_frontmatter_yaml_gate.py (--plugin-root обязателен). "
+            "Auto-ON при --strict-create, если задан --plugin-root. "
+            "Нет скрипта → FAIL."
+        ),
+    )
+    parser.add_argument(
+        "--require-skill-frontmatter",
+        action="store_true",
+        default=False,
+        help=(
+            "Запустить t800_skill_frontmatter_gate.py (--plugin-root обязателен). "
+            "Auto-ON при --strict-create, если задан --plugin-root. "
+            "Нет скрипта → FAIL."
+        ),
+    )
+    parser.add_argument(
+        "--require-plugin-json-schema",
+        action="store_true",
+        default=False,
+        help=(
+            "Запустить t800_plugin_schema_gate.py (--plugin-root обязателен). "
+            "Auto-ON при --strict-create, если задан --plugin-root. "
+            "Нет скрипта → FAIL."
+        ),
+    )
+    parser.add_argument(
+        "--require-command-chains",
+        action="store_true",
+        default=False,
+        help=(
+            "Запустить t800_command_chains_gate.py (--plugin-root обязателен). "
+            "Auto-ON при --strict-create, если задан --plugin-root "
+            "(shared/command-chains.json — deliverable; missing → FAIL). "
+            "Нет скрипта → FAIL."
+        ),
+    )
     args = parser.parse_args()
+
+    # Auto-ON sibling gates under strict-create when plugin-root is set
+    require_frontmatter_yaml = bool(args.require_frontmatter_yaml)
+    require_skill_frontmatter = bool(args.require_skill_frontmatter)
+    require_plugin_json_schema = bool(args.require_plugin_json_schema)
+    require_command_chains = bool(args.require_command_chains)
+    if args.strict_create and args.plugin_root:
+        require_frontmatter_yaml = True
+        require_skill_frontmatter = True
+        require_plugin_json_schema = True
+        require_command_chains = True
 
     memory_path = Path(args.memory_path).expanduser().resolve()
     summary: dict[str, Any] = {
         "ok": True,
         "memory_path": str(memory_path),
         "strict_create": bool(args.strict_create),
+        "require_frontmatter_yaml": require_frontmatter_yaml,
+        "require_skill_frontmatter": require_skill_frontmatter,
+        "require_plugin_json_schema": require_plugin_json_schema,
+        "require_command_chains": require_command_chains,
         "checks": {},
         "error": None,
     }
@@ -353,6 +415,182 @@ def main() -> int:
             )
         summary["checks"]["agents_mirror"] = "ok"
         print("OK  t800_agents_mirror_gate exit 0")
+
+    if require_frontmatter_yaml:
+        if not args.plugin_root:
+            summary["checks"]["frontmatter_yaml"] = "skipped_no_plugin_root"
+            return fail(
+                "Флаг --require-frontmatter-yaml требует --plugin-root.",
+                summary,
+            )
+        plugin_root = Path(args.plugin_root).expanduser().resolve()
+        yaml_gate = plugin_root / "scripts" / "t800_agent_frontmatter_yaml_gate.py"
+        if not yaml_gate.is_file():
+            summary["checks"]["frontmatter_yaml"] = "script_missing"
+            return fail(
+                f"--require-frontmatter-yaml: нет скрипта {yaml_gate}",
+                summary,
+            )
+        try:
+            proc = subprocess.run(
+                [
+                    sys.executable,
+                    str(yaml_gate),
+                    "--plugin-root",
+                    str(plugin_root),
+                ],
+                cwd=str(plugin_root),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        except OSError as exc:
+            summary["checks"]["frontmatter_yaml"] = "error"
+            return fail(
+                f"Не удалось запустить t800_agent_frontmatter_yaml_gate.py: {exc}",
+                summary,
+            )
+        if proc.returncode != 0:
+            summary["checks"]["frontmatter_yaml"] = f"fail_exit_{proc.returncode}"
+            tail = ((proc.stdout or "") + (proc.stderr or ""))[-800:]
+            return fail(
+                f"t800_agent_frontmatter_yaml_gate.py exit {proc.returncode}. {tail}",
+                summary,
+            )
+        summary["checks"]["frontmatter_yaml"] = "ok"
+        print("OK  t800_agent_frontmatter_yaml_gate exit 0")
+
+    if require_skill_frontmatter:
+        if not args.plugin_root:
+            summary["checks"]["skill_frontmatter"] = "skipped_no_plugin_root"
+            return fail(
+                "Флаг --require-skill-frontmatter требует --plugin-root.",
+                summary,
+            )
+        plugin_root = Path(args.plugin_root).expanduser().resolve()
+        skill_gate = plugin_root / "scripts" / "t800_skill_frontmatter_gate.py"
+        if not skill_gate.is_file():
+            summary["checks"]["skill_frontmatter"] = "script_missing"
+            return fail(
+                f"--require-skill-frontmatter: нет скрипта {skill_gate}",
+                summary,
+            )
+        try:
+            proc = subprocess.run(
+                [
+                    sys.executable,
+                    str(skill_gate),
+                    "--plugin-root",
+                    str(plugin_root),
+                ],
+                cwd=str(plugin_root),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        except OSError as exc:
+            summary["checks"]["skill_frontmatter"] = "error"
+            return fail(
+                f"Не удалось запустить t800_skill_frontmatter_gate.py: {exc}",
+                summary,
+            )
+        if proc.returncode != 0:
+            summary["checks"]["skill_frontmatter"] = f"fail_exit_{proc.returncode}"
+            tail = ((proc.stdout or "") + (proc.stderr or ""))[-800:]
+            return fail(
+                f"t800_skill_frontmatter_gate.py exit {proc.returncode}. {tail}",
+                summary,
+            )
+        summary["checks"]["skill_frontmatter"] = "ok"
+        print("OK  t800_skill_frontmatter_gate exit 0")
+
+    if require_plugin_json_schema:
+        if not args.plugin_root:
+            summary["checks"]["plugin_json_schema"] = "skipped_no_plugin_root"
+            return fail(
+                "Флаг --require-plugin-json-schema требует --plugin-root.",
+                summary,
+            )
+        plugin_root = Path(args.plugin_root).expanduser().resolve()
+        schema_gate = plugin_root / "scripts" / "t800_plugin_schema_gate.py"
+        if not schema_gate.is_file():
+            summary["checks"]["plugin_json_schema"] = "script_missing"
+            return fail(
+                f"--require-plugin-json-schema: нет скрипта {schema_gate}",
+                summary,
+            )
+        try:
+            proc = subprocess.run(
+                [
+                    sys.executable,
+                    str(schema_gate),
+                    "--plugin-root",
+                    str(plugin_root),
+                ],
+                cwd=str(plugin_root),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        except OSError as exc:
+            summary["checks"]["plugin_json_schema"] = "error"
+            return fail(
+                f"Не удалось запустить t800_plugin_schema_gate.py: {exc}",
+                summary,
+            )
+        if proc.returncode != 0:
+            summary["checks"]["plugin_json_schema"] = f"fail_exit_{proc.returncode}"
+            tail = ((proc.stdout or "") + (proc.stderr or ""))[-800:]
+            return fail(
+                f"t800_plugin_schema_gate.py exit {proc.returncode}. {tail}",
+                summary,
+            )
+        summary["checks"]["plugin_json_schema"] = "ok"
+        print("OK  t800_plugin_schema_gate exit 0")
+
+    if require_command_chains:
+        if not args.plugin_root:
+            summary["checks"]["command_chains"] = "skipped_no_plugin_root"
+            return fail(
+                "Флаг --require-command-chains требует --plugin-root.",
+                summary,
+            )
+        plugin_root = Path(args.plugin_root).expanduser().resolve()
+        chains_gate = plugin_root / "scripts" / "t800_command_chains_gate.py"
+        if not chains_gate.is_file():
+            summary["checks"]["command_chains"] = "script_missing"
+            return fail(
+                f"--require-command-chains: нет скрипта {chains_gate}",
+                summary,
+            )
+        try:
+            proc = subprocess.run(
+                [
+                    sys.executable,
+                    str(chains_gate),
+                    "--plugin-root",
+                    str(plugin_root),
+                ],
+                cwd=str(plugin_root),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        except OSError as exc:
+            summary["checks"]["command_chains"] = "error"
+            return fail(
+                f"Не удалось запустить t800_command_chains_gate.py: {exc}",
+                summary,
+            )
+        if proc.returncode != 0:
+            summary["checks"]["command_chains"] = f"fail_exit_{proc.returncode}"
+            tail = ((proc.stdout or "") + (proc.stderr or ""))[-800:]
+            return fail(
+                f"t800_command_chains_gate.py exit {proc.returncode}. {tail}",
+                summary,
+            )
+        summary["checks"]["command_chains"] = "ok"
+        print("OK  t800_command_chains_gate exit 0")
 
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     print("PASS: t800_run_gate")

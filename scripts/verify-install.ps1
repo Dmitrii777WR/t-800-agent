@@ -4,6 +4,7 @@
 
 $ErrorActionPreference = "Stop"
 
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $plugin = Join-Path $env:USERPROFILE ".cursor\plugins\local\t-800-agent"
 $agents = Join-Path $plugin "agents"
 $rules = Join-Path $plugin "rules"
@@ -54,6 +55,19 @@ $checks = @(
     @{ Name = "t800-loop-dispatcher.sh"; Path = Join-Path $plugin "scripts\t800-loop-dispatcher.sh"; ShouldExist = $true; MustContain = $null },
     @{ Name = "t800_loop_queue_write.py"; Path = Join-Path $plugin "scripts\t800_loop_queue_write.py"; ShouldExist = $true; MustContain = $null },
     @{ Name = "t800_kb_provenance_gate.py"; Path = Join-Path $plugin "scripts\t800_kb_provenance_gate.py"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "t800_agents_mirror_gate.py"; Path = Join-Path $plugin "scripts\t800_agents_mirror_gate.py"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "t800_plugin_sync.py"; Path = Join-Path $plugin "scripts\t800_plugin_sync.py"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "t800_skill_frontmatter_gate.py"; Path = Join-Path $plugin "scripts\t800_skill_frontmatter_gate.py"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "t800_plugin_schema_gate.py"; Path = Join-Path $plugin "scripts\t800_plugin_schema_gate.py"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "t800_command_chains_gate.py"; Path = Join-Path $plugin "scripts\t800_command_chains_gate.py"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "t800_command_chains_gate.sh"; Path = Join-Path $plugin "scripts\t800_command_chains_gate.sh"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "skill factory-scaffold"; Path = Join-Path $skills "t-800-factory-scaffold\SKILL.md"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "skill fix-pack"; Path = Join-Path $skills "t-800-fix-pack\SKILL.md"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "skill plugin-sync"; Path = Join-Path $skills "t-800-plugin-sync\SKILL.md"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "skill run-gates"; Path = Join-Path $skills "t-800-run-gates\SKILL.md"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "skill command-chains"; Path = Join-Path $skills "t-800-command-chains\SKILL.md"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "shared/command-chains.json"; Path = Join-Path $plugin "shared\command-chains.json"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "registry/plugin.manifest.schema.json"; Path = Join-Path $plugin "registry\plugin.manifest.schema.json"; ShouldExist = $true; MustContain = $null },
     @{ Name = "t-800 legacy alias"; Path = Join-Path $cmds "t-800.md"; ShouldExist = $true; MustContain = "/t800-start" },
     @{ Name = "legacy forge command absent"; Path = Join-Path $cmds "forge.md"; ShouldExist = $false; MustContain = $null },
     @{ Name = "local plugin"; Path = Join-Path $plugin ".cursor-plugin\plugin.json"; ShouldExist = $true; MustContain = "t-800-agent" }
@@ -145,6 +159,54 @@ if (Test-Path $staleSkill) {
 if (-not $stale) {
     Write-Host "OK   no stale user-home t-800 mirrors" -ForegroundColor Green
 }
+
+# P0 Surface+Sync+Gates (post-install: plugin_root == live → CONTENT_DRIFT=0)
+function Invoke-PluginGate {
+    param(
+        [string]$Name,
+        [string]$ScriptName
+    )
+    $path = Join-Path $plugin "scripts\$ScriptName"
+    if (-not (Test-Path $path)) {
+        $path = Join-Path $here $ScriptName
+    }
+    if (-not (Test-Path $path)) {
+        Write-Host "FAIL ${Name}: скрипт не найден ($ScriptName)" -ForegroundColor Red
+        $script:failed++
+        return
+    }
+    & python3 $path --plugin-root $plugin
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "OK   $Name" -ForegroundColor Green
+    }
+    else {
+        Write-Host "FAIL $Name" -ForegroundColor Red
+        $script:failed++
+    }
+}
+
+$syncPy = Join-Path $plugin "scripts\t800_plugin_sync.py"
+if (-not (Test-Path $syncPy)) {
+    $syncPy = Join-Path $here "t800_plugin_sync.py"
+}
+if (-not (Test-Path $syncPy)) {
+    Write-Host "FAIL plugin sync --check: скрипт не найден" -ForegroundColor Red
+    $failed++
+}
+else {
+    & python3 $syncPy --check --plugin-root $plugin
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "OK   plugin sync --check" -ForegroundColor Green
+    }
+    else {
+        Write-Host "FAIL plugin sync --check (CONTENT_DRIFT)" -ForegroundColor Red
+        $failed++
+    }
+}
+
+Invoke-PluginGate -Name "skill frontmatter gate" -ScriptName "t800_skill_frontmatter_gate.py"
+Invoke-PluginGate -Name "plugin schema gate" -ScriptName "t800_plugin_schema_gate.py"
+Invoke-PluginGate -Name "command chains gate" -ScriptName "t800_command_chains_gate.py"
 
 if ($failed -gt 0) {
     throw "T-800 Agent verification failed: $failed problem(s). Run .\scripts\install-plugin.ps1 and restart Cursor."

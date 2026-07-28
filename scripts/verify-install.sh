@@ -138,7 +138,9 @@ fi
 for script in t800_run_gate.py t800_doctor.py t800_audit_to_fixpack.py \
   t800_run_report.py t800_lessons_export.py t800_telemetry.py t800_risk_classifier.py \
   t800_lessons_to_fixpack.py t800_golden_check.py t800-loop-dispatcher.sh t800_loop_queue_write.py \
-  t800_kb_provenance_gate.py t800_agents_mirror_gate.py; do
+  t800_kb_provenance_gate.py t800_agents_mirror_gate.py \
+  t800_plugin_sync.py t800_skill_frontmatter_gate.py t800_plugin_schema_gate.py \
+  t800_command_chains_gate.py t800_command_chains_gate.sh; do
   if [ -f "$PLUGIN/scripts/$script" ]; then
     echo "OK   $script"
   else
@@ -146,6 +148,25 @@ for script in t800_run_gate.py t800_doctor.py t800_audit_to_fixpack.py \
     failed=$((failed + 1))
   fi
 done
+
+# P0 Surface skills (5 new + knowledge-base already checked above)
+check_exists "skill factory-scaffold" "$SKILLS/t-800-factory-scaffold/SKILL.md" true
+check_exists "skill fix-pack" "$SKILLS/t-800-fix-pack/SKILL.md" true
+check_exists "skill plugin-sync" "$SKILLS/t-800-plugin-sync/SKILL.md" true
+check_exists "skill run-gates" "$SKILLS/t-800-run-gates/SKILL.md" true
+check_exists "skill command-chains" "$SKILLS/t-800-command-chains/SKILL.md" true
+if [ -f "$PLUGIN/shared/command-chains.json" ]; then
+  echo "OK   shared/command-chains.json"
+else
+  echo "FAIL shared/command-chains.json missing"
+  failed=$((failed + 1))
+fi
+if [ -f "$PLUGIN/registry/plugin.manifest.schema.json" ]; then
+  echo "OK   registry/plugin.manifest.schema.json"
+else
+  echo "FAIL registry/plugin.manifest.schema.json missing"
+  failed=$((failed + 1))
+fi
 
 # Always-on: agents/*.md ↔ .cursor/agents/ (FS + sha256 + git pair) — FAIL, не WARN
 MIRROR_GATE="$PLUGIN/scripts/t800_agents_mirror_gate.py"
@@ -237,6 +258,47 @@ fi
 if [ "$stale" -eq 0 ]; then
   echo "OK   no stale user-home t-800 mirrors"
 fi
+
+# P0 Surface+Sync+Gates (post-install: plugin_root == live → CONTENT_DRIFT=0)
+run_plugin_gate() {
+  local name="$1" script="$2"
+  local path="$PLUGIN/scripts/$script"
+  if [ ! -f "$path" ]; then
+    path="$HERE/$script"
+  fi
+  if [ ! -f "$path" ]; then
+    echo "FAIL $name: скрипт не найден ($script)"
+    failed=$((failed + 1))
+    return
+  fi
+  if python3 "$path" --plugin-root "$PLUGIN"; then
+    echo "OK   $name"
+  else
+    echo "FAIL $name"
+    failed=$((failed + 1))
+  fi
+}
+
+SYNC_PY="$PLUGIN/scripts/t800_plugin_sync.py"
+if [ ! -f "$SYNC_PY" ]; then
+  SYNC_PY="$HERE/t800_plugin_sync.py"
+fi
+if [ ! -f "$SYNC_PY" ]; then
+  echo "FAIL plugin sync --check: скрипт не найден"
+  failed=$((failed + 1))
+else
+  # After install, PLUGIN is live; --plugin-root "$PLUGIN" vs default --live = same → drift empty
+  if python3 "$SYNC_PY" --check --plugin-root "$PLUGIN"; then
+    echo "OK   plugin sync --check"
+  else
+    echo "FAIL plugin sync --check (CONTENT_DRIFT)"
+    failed=$((failed + 1))
+  fi
+fi
+
+run_plugin_gate "skill frontmatter gate" "t800_skill_frontmatter_gate.py"
+run_plugin_gate "plugin schema gate" "t800_plugin_schema_gate.py"
+run_plugin_gate "command chains gate" "t800_command_chains_gate.py"
 
 if [ "$failed" -gt 0 ]; then
   echo "T-800 Agent verification failed: $failed problem(s). Run bash scripts/install-plugin.sh"
