@@ -110,7 +110,9 @@ def _collect_git_changed(git_root: Path) -> set[str]:
 
 def _rel_to_plugin(path_str: str, plugin_root: Path, git_root: Path) -> str | None:
     """Нормализуем путь из git к относительному от plugin_root (posix)."""
-    raw = path_str.replace("\\", "/").lstrip("./")
+    raw = path_str.replace("\\", "/")
+    while raw.startswith("./"):
+        raw = raw[2:]
     abs_path = (git_root / raw).resolve()
     try:
         rel = abs_path.relative_to(plugin_root.resolve())

@@ -2,6 +2,19 @@
 
 Формат: дата — что изменилось — источник.
 
+## 1.20.0 — 2026-07-28 (Teya Adapter Phase 1+2)
+
+- **`adapters/teya/`** — отделение Teya-specific от generic core (manifest, profiles, discovery, handoff, checklist, policy, evidence bridge)
+- Handoff schema **2.0.0**: provenance fields, artifact_hashes, teya_entities, provenance_status
+- Scripts: `t800_teya_write_handoff.py`, `t800_teya_onboarding_check.py`, `t800_teya_onboarding_gate.py`, `t800_teya_hook_enforce_ready.py`
+- brain-teya / integrator: profiles `teya-plugin-dev` / `teya-client` / legacy `teya-pro`; Teya только через adapter handoff
+- discover: sibling `../TeyaPlugin` не canonical; installed local = readonly fallback
+- hook: modes observe|warn|enforce (default warn); без hardcoded sibling memory path
+- Rollout metadata link `factory_provenance` only (no streak/state); HITL materializer stubs only on Teya side
+- Fixtures: `tests/test_teya_adapter_phase1.py` (28 PASS), `tests/test_teya_adapter_phase2.py` (21 PASS)
+- Contract: `shared/teya-adapter-contract.md`
+- **Не меняет** Teya `rollout_state` / release / HITL / production green
+
 ## 1.19.1 — 2026-07-24
 
 - **P0 Surface+Sync+Gates:** skills 1→6 (factory-scaffold, fix-pack, plugin-sync slash-only, run-gates, command-chains + KB)

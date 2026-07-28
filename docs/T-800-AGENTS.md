@@ -1,6 +1,6 @@
 # T-800 Agent — реестр Task-субагентов (43)
 
-Плагин: **T-800 Agent** v1.19.1 — `/t800-loop` (Loop Engineering v2) + `/t800-fix` + `/t800-doctor` + `t800_run_gate.py --strict-create` + factory-bypass gate + fix-pack из audit + `/t800-plugin-audit` + DEEP research + factory + `/t800-cloud-hub`.
+Плагин: **T-800 Agent** v1.20.0 — `/t800-loop` (Loop Engineering v2) + `/t800-fix` + `/t800-doctor` + `t800_run_gate.py --strict-create` + factory-bypass gate + Teya adapter (`adapters/teya/`) + fix-pack из audit + `/t800-plugin-audit` + DEEP research + factory + `/t800-cloud-hub`.
 
 ## Сценарий старта (4 шага)
 

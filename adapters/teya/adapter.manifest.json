@@ -1,0 +1,65 @@
+{
+  "schema_version": "2.0.0",
+  "adapter_id": "teya",
+  "display_name": "Teya Pro Adapter",
+  "phase": 2,
+  "profiles": [
+    "teya-plugin-dev",
+    "teya-client",
+    "teya-pro"
+  ],
+  "legacy_aliases": {
+    "teya-pro": ["teya-plugin-dev", "teya-client"]
+  },
+  "entrypoints": {
+    "profile_matcher": "adapters/teya/profiles.py",
+    "discovery": "adapters/teya/discovery.py",
+    "handoff": "adapters/teya/handoff.py",
+    "evidence": "adapters/teya/evidence.py",
+    "onboarding_check": "scripts/t800_teya_onboarding_check.py",
+    "onboarding_gate": "scripts/t800_teya_onboarding_gate.py",
+    "hook_policy": "adapters/teya/policy.json",
+    "hook_enforce_ready": "scripts/t800_teya_hook_enforce_ready.py"
+  },
+  "teya_side_scripts": {
+    "verifier": "scripts/teya_t800_handoff_verify.py",
+    "materializer": "scripts/teya_t800_materialize_onboarding.py",
+    "stale_check": "scripts/teya_t800_provenance_stale_check.py",
+    "release_evidence": "scripts/teya_t800_release_evidence.py"
+  },
+  "contracts": {
+    "onboarding_checklist": "adapters/teya/onboarding-checklist-contract.md",
+    "handoff_schema": "adapters/teya/schemas/factory-handoff.schema.json",
+    "evidence_bridge": "adapters/teya/evidence-bridge-contract.md",
+    "shared_pointer": "shared/teya-adapter-contract.md"
+  },
+  "forbidden_for_t800": [
+    "mutate_rollout_state",
+    "create_green_streak",
+    "hitl_promotion",
+    "teya_release_sync_execute",
+    "write_installed_local_teya",
+    "set_status_released",
+    "set_canary_or_enforced",
+    "set_provenance_verified",
+    "write_teya_rollout_artifact",
+    "copy_success_streak"
+  ],
+  "canonical_write_roots": [
+    "git_checkout_via_TEYA_PLUGIN_ROOT",
+    "workspace_teya_plugin_dev"
+  ],
+  "readonly_fallbacks": [
+    "~/.cursor/plugins/local/teya"
+  ],
+  "never_canonical": [
+    "sibling_../TeyaPlugin",
+    "sibling_../../TeyaPlugin"
+  ],
+  "live_contract_pointers": [
+    "$TEYA_PLUGIN_ROOT/shared/agent-quality-contract.md",
+    "$TEYA_PLUGIN_ROOT/shared/capability-registry-contract.md",
+    "$TEYA_PLUGIN_ROOT/shared/risk-engine-contract.md",
+    "$TEYA_PLUGIN_ROOT/shared/client-project-plugin-canonical-path-contract.md"
+  ]
+}

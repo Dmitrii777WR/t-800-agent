@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "t800-teya-factory-handoff",
+  "title": "T-800 → Teya factory handoff (Phase 2 Evidence Bridge)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "factory_brief_id",
+    "factory_run_id",
+    "created_at",
+    "target_profile",
+    "target_plugin_root",
+    "artifact_type",
+    "artifact_ids",
+    "files_created",
+    "files_modified",
+    "requested_capabilities",
+    "requested_risk_effects",
+    "expected_commands",
+    "expected_agents",
+    "expected_gates",
+    "expected_fixtures",
+    "release_required",
+    "release_command",
+    "provenance",
+    "status",
+    "artifact_hashes",
+    "adapter_version",
+    "onboarding_gate_version",
+    "teya_entities",
+    "release_status",
+    "rollout_link_status",
+    "provenance_status"
+  ],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "factory_run_id": { "type": "string" },
+    "factory_brief_id": { "type": "string" },
+    "created_at": { "type": "string" },
+    "source_commit": { "type": ["string", "null"] },
+    "target_commit_before": { "type": ["string", "null"] },
+    "target_commit_after": { "type": ["string", "null"] },
+    "artifact_hashes": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "adapter_version": { "type": "string" },
+    "onboarding_gate_version": { "type": "string" },
+    "onboarding_gate_result": { "type": ["string", "null"] },
+    "onboarding_gate_evidence": { "type": ["object", "null"] },
+    "teya_entities": {
+      "type": "object",
+      "properties": {
+        "agents": { "type": "array", "items": { "type": "string" } },
+        "commands": { "type": "array", "items": { "type": "string" } },
+        "capabilities": { "type": "array", "items": { "type": "string" } },
+        "risks": { "type": "array", "items": { "type": "string" } },
+        "gates": { "type": "array", "items": { "type": "string" } },
+        "fixtures": { "type": "array", "items": { "type": "string" } },
+        "profiles": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "release_status": { "type": "string" },
+    "rollout_link_status": { "type": "string" },
+    "provenance_status": {
+      "type": "string",
+      "enum": ["incomplete", "verified", "stale", "revoked"]
+    },
+    "release_evidence": { "type": ["object", "null"] },
+    "rollout_link": { "type": ["object", "null"] },
+    "target_profile": {
+      "type": "string",
+      "enum": ["teya-plugin-dev", "teya-client", "teya-pro"]
+    },
+    "target_plugin_root": { "type": "string" },
+    "artifact_type": { "type": "string" },
+    "artifact_ids": { "type": "array", "items": { "type": "string" } },
+    "files_created": { "type": "array", "items": { "type": "string" } },
+    "files_modified": { "type": "array", "items": { "type": "string" } },
+    "requested_capabilities": { "type": "array", "items": { "type": "string" } },
+    "requested_risk_effects": { "type": "array", "items": { "type": "string" } },
+    "expected_commands": { "type": "array", "items": { "type": "string" } },
+    "expected_agents": { "type": "array", "items": { "type": "string" } },
+    "expected_gates": { "type": "array", "items": { "type": "string" } },
+    "expected_fixtures": { "type": "array", "items": { "type": "string" } },
+    "release_required": { "type": "boolean" },
+    "release_command": { "type": "string" },
+    "provenance": { "type": "object" },
+    "status": {
+      "type": "string",
+      "enum": [
+        "factory_complete",
+        "onboarding_required",
+        "onboarding_pass",
+        "onboarding_blocked",
+        "released"
+      ]
+    },
+    "rollout_mutation": {
+      "description": "Must be null when written by T-800",
+      "type": ["null", "object"]
+    }
+  },
+  "additionalProperties": true
+}

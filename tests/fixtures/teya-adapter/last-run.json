@@ -1,0 +1,147 @@
+{
+  "pass": 28,
+  "fail": 0,
+  "total": 28,
+  "results": [
+    {
+      "name": "brain_teya_activates_teya-plugin-dev",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "brain_teya_activates_teya-client",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "brain_teya_activates_teya-pro",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "brain_teya_skips_generic",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "is_teya_legacy",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "adapter_not_generic",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "brain_teya_legacy_target_plugin",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_teya_plugin_dev_profile",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_teya_client_profile",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_legacy_teya_pro_alias",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_sibling_not_canonical",
+      "status": "PASS",
+      "detail": "{\"source\": \"env\", \"rejected\": false}"
+    },
+    {
+      "name": "assert_sibling_detected",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "env_teya_root_ok",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_generic_no_teya_release_steps",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_handoff_onboarding_required",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_t800_cannot_set_released",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_t800_cannot_set_canary",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_personal_absolute_path",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_installed_local_teya",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_teya_command_onboarding",
+      "status": "PASS",
+      "detail": "k\": true\n    },\n    {\n      \"id\": \"provenance_link\",\n      \"ok\": true,\n      \"factory_brief_id\": \"brief-pass\",\n      \"run_id\": \"pass-cmd-1\"\n    }\n  ],\n  \"errors\": [],\n  \"verdict\": \"onboarding_pass\"\n}\n"
+    },
+    {
+      "name": "pass_teya_gate_allow",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_command_without_profile_chains_intent",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_agent_without_department_capability",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_adapter_for_generic_profile",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_new_stub_canary_rollout",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "discover_sibling_not_assigned_as_canonical",
+      "status": "PASS",
+      "detail": "{\"plugin_root\": \"/Users/user/Desktop/\\u041c\\u043e\\u0438 \\u0440\\u0430\\u0437\\u0440\\u0430\\u0431\\u043e\\u0442\\u043a\\u0438 \\u043d\\u0430 \\u043a\\u043e\\u0434\\u0435/Cursor/TeyaPlugin\", \"source\": \"env\", \"profile\": \"teya-client\"}"
+    },
+    {
+      "name": "hook_no_hardcoded_sibling_teyaplugin",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "hook_has_modes",
+      "status": "PASS",
+      "detail": ""
+    }
+  ]
+}

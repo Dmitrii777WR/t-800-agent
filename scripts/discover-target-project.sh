@@ -31,6 +31,8 @@ release_handoff="null"
 knowledge_vault_path="null"
 plugin_json=""
 artifact_surface="cursor-workspace"
+plugin_root_source="null"
+write_allowed=true
 
 # 1) project-memory.marker.json (walk up)
 search="$WORKSPACE"
@@ -90,22 +92,36 @@ if [[ -z "$plugin_root" ]] && [[ -d "$WORKSPACE/plugin-memory" ]] && [[ -f "$WOR
 fi
 
 # 3) Teya client: teya-memory/
+# Canonical plugin_root: TEYA_PLUGIN_ROOT → installed readonly fallback.
+# Sibling ../TeyaPlugin is NEVER treated as canonical (Phase 1 adapter boundary).
+plugin_root_source="null"
+write_allowed=true
 if [[ -z "$memory_dir" ]] && [[ -d "$WORKSPACE/teya-memory" ]]; then
   profile="teya-client"
   memory_dir="teya-memory"
   memory_path="$WORKSPACE/teya-memory"
   slug="teya"
-  # plugin_root from env
   if [[ -n "${TEYA_PLUGIN_ROOT:-}" ]] && [[ -d "${TEYA_PLUGIN_ROOT}" ]]; then
     plugin_root="$(cd "${TEYA_PLUGIN_ROOT}" && pwd)"
-  elif command -v python3 >/dev/null 2>&1; then
-    for candidate in "$HOME/.cursor/plugins/local/teya" "$WORKSPACE/../TeyaPlugin" "$WORKSPACE/../../TeyaPlugin"; do
-      if [[ -f "$candidate/scripts/teya_plugin_root.py" ]]; then
-        resolved="$(TEYA_PLUGIN_ROOT="$candidate" python3 "$candidate/scripts/teya_plugin_root.py" 2>/dev/null || true)"
-        if [[ -n "$resolved" ]] && [[ -d "$resolved" ]]; then
-          plugin_root="$(cd "$resolved" && pwd)"
-          break
-        fi
+    plugin_root_source="\"env\""
+    write_allowed=true
+  elif [[ -f "$HOME/.cursor/plugins/local/teya/scripts/teya_plugin_root.py" ]] \
+    || [[ -f "$HOME/.cursor/plugins/local/teya/.cursor-plugin/plugin.json" ]]; then
+    # Readonly fallback for reading contracts — not a write destination
+    plugin_root="$(cd "$HOME/.cursor/plugins/local/teya" && pwd)"
+    plugin_root_source="\"installed_readonly\""
+    write_allowed=false
+    needs_user_question=true
+  else
+    needs_user_question=true
+  fi
+  # Detect sibling presence for operators, but do not assign as plugin_root
+  if [[ -z "${TEYA_PLUGIN_ROOT:-}" ]]; then
+    for sib in "$WORKSPACE/../TeyaPlugin" "$WORKSPACE/../../TeyaPlugin"; do
+      if [[ -f "$sib/scripts/teya_plugin_root.py" ]] || [[ -f "$sib/.cursor-plugin/plugin.json" ]]; then
+        # leave plugin_root as env/installed only; sibling ignored as canonical
+        :
+        break
       fi
     done
   fi
@@ -205,10 +221,31 @@ if [[ -n "$PLUGIN_ROOT_OVERRIDE" ]] && [[ -d "$PLUGIN_ROOT_OVERRIDE/.cursor-plug
   fi
 fi
 
+# Default sources for non-client profiles
+if [[ "$plugin_root_source" == "null" ]] && [[ -n "${plugin_root:-}" ]]; then
+  if [[ "$profile" == "teya-plugin-dev" ]]; then
+    plugin_root_source="\"workspace\""
+  elif [[ "$profile" == "marker" ]]; then
+    plugin_root_source="\"marker\""
+  elif [[ -n "$PLUGIN_ROOT_OVERRIDE" ]]; then
+    plugin_root_source="\"override\""
+  else
+    plugin_root_source="\"discovery\""
+  fi
+fi
+
+# Adapter hint for Director / factory
+adapter="null"
+if [[ "$profile" == "teya-plugin-dev" || "$profile" == "teya-client" || "$profile" == "teya-pro" ]]; then
+  adapter="\"teya\""
+fi
+
 cat <<EOF
 {
   "workspace_root": "$WORKSPACE",
   "plugin_root": "${plugin_root:-}",
+  "plugin_root_source": $plugin_root_source,
+  "write_allowed": $write_allowed,
   "memory_dir": "${memory_dir:-}",
   "memory_path": "${memory_path:-}",
   "profile": "$profile",
@@ -216,6 +253,7 @@ cat <<EOF
   "artifact_surface": "$artifact_surface",
   "release_handoff": $release_handoff,
   "knowledge_vault_path": $knowledge_vault_path,
+  "adapter": $adapter,
   "needs_user_question": $needs_user_question
 }
 EOF

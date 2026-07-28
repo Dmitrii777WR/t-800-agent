@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
-# beforeFileEdit (T-800) — WARN при правке Cursor-артефактов без factory.
-# v1: не hard-deny (allow + userMessage). Обычный код не трогаем.
-# Pattern: Teya-style stdout JSON {continue, permission, userMessage}.
-# Cloud-safe: без секретов в argv; fail-open на parse errors.
+# beforeFileEdit (T-800) — policy modes: observe | warn | enforce
+# Default: warn (allow + userMessage). Enforce only via T800_TEYA_HOOK_MODE=enforce
+# (or T800_HOOK_MODE). No auto-enable. Sibling Teya checkout paths are NOT memory SoT.
 set -u
 
 payload=$(cat 2>/dev/null || true)
+
+# Mode: observe | warn | enforce (default warn)
+HOOK_MODE="${T800_TEYA_HOOK_MODE:-${T800_HOOK_MODE:-warn}}"
+HOOK_MODE=$(printf '%s' "$HOOK_MODE" | tr '[:upper:]' '[:lower:]')
+case "$HOOK_MODE" in
+  observe|warn|enforce) ;;
+  *) HOOK_MODE="warn" ;;
+esac
 
 allow() {
   printf '{"continue":true,"permission":"allow"}'
@@ -13,12 +20,20 @@ allow() {
 }
 
 warn_allow() {
-  # Escape for JSON string (minimal)
   local msg="${1:-}"
   msg=${msg//\\/\\\\}
   msg=${msg//\"/\\\"}
   msg=${msg//$'\n'/\\n}
   printf '{"continue":true,"permission":"allow","userMessage":"%s"}' "$msg"
+  exit 0
+}
+
+deny() {
+  local msg="${1:-}"
+  msg=${msg//\\/\\\\}
+  msg=${msg//\"/\\\"}
+  msg=${msg//$'\n'/\\n}
+  printf '{"continue":true,"permission":"deny","userMessage":"%s"}' "$msg"
   exit 0
 }
 
@@ -41,7 +56,6 @@ if [[ -z "${edited_path}" ]]; then
   allow
 fi
 
-# Normalize path separators
 norm=${edited_path//\\//}
 
 is_artifact=0
@@ -63,7 +77,6 @@ case "$norm" in
     ;;
 esac
 
-# Basename fallbacks (relative edits)
 base=$(basename "$norm")
 dir=$(dirname "$norm")
 dir_base=$(basename "$dir")
@@ -87,28 +100,54 @@ if [[ "$is_artifact" -eq 0 ]]; then
   allow
 fi
 
-# Optional soft bypass: manifest already has completed factory (best-effort)
-# Look for nearby plugin-memory / t-800-memory / memory under cwd
+# Soft bypass: discovered memory / env — NEVER sibling ../TeyaPlugin as SoT
 HERE="$(cd "$(dirname "$0")" 2>/dev/null && pwd)" || HERE="."
 PLUGIN_ROOT="$(cd "$HERE/.." 2>/dev/null && pwd)" || PLUGIN_ROOT=""
+
+factory_in_manifest() {
+  local man="$1"
+  [[ -f "$man" ]] || return 1
+  if grep -Eqi '"agent"[[:space:]]*:[[:space:]]*"t-800-factory"' "$man" 2>/dev/null \
+    && grep -Eqi '"status"[[:space:]]*:[[:space:]]*"(completed|ok|done)"' "$man" 2>/dev/null; then
+    return 0
+  fi
+  if grep -Eqi '"factory"[[:space:]]*:[[:space:]]*"(completed|ok|done)"' "$man" 2>/dev/null; then
+    return 0
+  fi
+  return 1
+}
+
 for mem in \
   "${T800_MEMORY_PATH:-}" \
   "./plugin-memory" \
   "./t-800-memory" \
-  "${PLUGIN_ROOT}/../TeyaPlugin/plugin-memory"
+  "${PLUGIN_ROOT}/../t-800-memory"
 do
   [[ -z "$mem" ]] && continue
-  man="${mem}/run-manifest.json"
-  if [[ -f "$man" ]]; then
-    if grep -Eqi '"agent"[[:space:]]*:[[:space:]]*"t-800-factory"' "$man" 2>/dev/null \
-      && grep -Eqi '"status"[[:space:]]*:[[:space:]]*"(completed|ok|done)"' "$man" 2>/dev/null; then
-      allow
-    fi
-    # top-level "factory": "completed"
-    if grep -Eqi '"factory"[[:space:]]*:[[:space:]]*"(completed|ok|done)"' "$man" 2>/dev/null; then
-      allow
-    fi
+  if factory_in_manifest "${mem}/run-manifest.json"; then
+    allow
   fi
 done
 
-warn_allow "T-800 WARN: правка Cursor-артефакта (${base}) без T800_FACTORY_RUN_ID / factory в run-manifest. Не пишите agents/skills/commands/rules/hooks из main chat — /t800-start или /t800-fix → Task(t-800-factory). Machine gate: t800_factory_bypass_gate.py / t800_run_gate.py --strict-create."
+# Optional: discovery memory_path (best-effort, no sibling TeyaPlugin)
+if [[ -x "${PLUGIN_ROOT}/scripts/discover-target-project.sh" ]]; then
+  disc=$(bash "${PLUGIN_ROOT}/scripts/discover-target-project.sh" --workspace "." 2>/dev/null || true)
+  mem_from_disc=$(printf '%s' "$disc" | sed -n 's/.*"memory_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+  if [[ -n "$mem_from_disc" ]] && factory_in_manifest "${mem_from_disc}/run-manifest.json"; then
+    allow
+  fi
+fi
+
+MSG="T-800 WARN: правка Cursor-артефакта (${base}) без T800_FACTORY_RUN_ID / factory в run-manifest. Используйте /t800-start или /t800-fix → Task(t-800-factory). Gate: t800_factory_bypass_gate.py / t800_teya_onboarding_gate.py. mode=${HOOK_MODE}"
+
+case "$HOOK_MODE" in
+  observe)
+    allow
+    ;;
+  enforce)
+    deny "T-800 DENY: правка Cursor-артефакта (${base}) вне factory run (T800_TEYA_HOOK_MODE=enforce)."
+    ;;
+  *)
+    warn_allow "$MSG"
+    ;;
+esac

@@ -1,0 +1,112 @@
+{
+  "pass": 21,
+  "fail": 0,
+  "total": 21,
+  "results": [
+    {
+      "name": "fail_t800_sets_verified",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_t800_write_verified",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_t800_writes_rollout_artifact",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_incomplete_to_verified",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_hashes_match",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_registry_profile_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_rollout_metadata_link_no_state_change",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_forged_hash",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_materializer_dry_run",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_materializer_without_hitl",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_materializer_hitl_shadow_only",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_materializer_creates_canary",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_stale_on_file_change",
+      "status": "PASS",
+      "detail": "['file_changed:agents/teya-ev-agent.md']"
+    },
+    {
+      "name": "fail_release_without_writer_env",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_stale_as_release_evidence",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_release_evidence_teya_only",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_personal_and_installed_paths",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_duplicate_run_id",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "fail_factory_pass_as_runtime_green",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_hook_enforce_not_default",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "pass_hook_readiness_true_after_gates",
+      "status": "PASS",
+      "detail": "{\"hook_enforce_ready\": true, \"auto_enable_enforce\": false, \"default_mode\": \"warn\", \"checks\": {\"phase1_fixtures\": true, \"phase2_fixtures\": true, \"factory_bypass_gate\": true, \"materializer_present\": true, \"materializer_dry_run\": true, \"stale_detection_present\": true, \"provenance_bridge_present\": true}"
+    }
+  ]
+}

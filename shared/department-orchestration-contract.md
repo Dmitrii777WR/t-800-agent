@@ -137,7 +137,7 @@ progress:
 | CLI / SDK | brain-dev |
 | security / readonly / permissions | brain-security |
 | terminal/browser tools в промпте | brain-tools |
-| profile teya-* | brain-teya **обязательно** |
+| profile `teya-plugin-dev` / `teya-client` / legacy `teya-pro` | brain-teya **обязательно** (`adapters/teya/profiles.py`) |
 
 3. Максимум **2** domain за прогон (кроме teya + один Cursor domain)  
 4. Собрать `brief_for_factory` — не дублировать весь research, а **сверить** с KB и официальными URL  
@@ -206,7 +206,7 @@ progress:
 
 ## Версия
 
-- Обновлён: 2026-07-17 · T-800 **1.17.0** (`/t800-loop`, loop-conductor system-adjacent)  
+- Обновлён: 2026-07-28 · T-800 **1.20.0** (`adapters/teya` Phase 1+2; `/t800-loop`, loop-conductor)  
 - Обновлён: 2026-07-09 · T-800 **1.13.0** (`/t800-fix`, `/t800-doctor`, run_gate)  
 - Loop: 2026-07-09 · T-800 **1.12.0** (STATE / machine gates)  
 - Введён отделы: 2026-07-09 · T-800 **1.11.0**  

@@ -1,8 +1,8 @@
 # T800-SYSTEM-MAP.md
 
 Карта системы для внешнего архитектора (проектирование / усиление **loop engineering**).  
-Сгенерировано: 2026-07-17 (обновлено под **1.19.1**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
-Версия плагина на момент карты: **1.19.1**.  
+Сгенерировано: 2026-07-17 (обновлено под **1.20.0**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
+Версия плагина на момент карты: **1.20.0**.  
 Правило документа: факты (файл / кто пишет / кто читает / авто|руками). Без маркетинга.
 
 ---
@@ -11,7 +11,7 @@
 
 | Метрика | Значение | Источник |
 |---------|----------|----------|
-| Версия | `1.19.1` | `.cursor-plugin/plugin.json` |
+| Версия | `1.20.0` | `.cursor-plugin/plugin.json` |
 | Display name | T-800 Agent | там же |
 | GitHub | `https://github.com/Khar-AG/t-800-agent` | `shared/release-channel.json` |
 | Branch релиза | `main` | `shared/release-channel.json` |
@@ -28,8 +28,8 @@
 | Размер checkout | **~21M** (многое — `knowledge-base/raw/` HTML) | du |
 | Agents body size | ~2735+ строк суммарно по `agents/*.md` | wc |
 | Hooks | `sessionStart` (один; dispatcher внутри bootstrap), `beforeFileEdit` | `hooks.json` |
-| Tests | `tests/TEST-SCENARIOS.md` + fixtures loop/ + golden; нет CI unit-suite | файл |
-| Teya integration | discovery profiles `teya-*` + release handoff (adapter package lands in 1.20.0) | shared/target-plugin-profiles.md |
+| Tests | `tests/TEST-SCENARIOS.md` + fixtures loop/ + `tests/test_teya_adapter_phase1.py` + golden; нет CI unit-suite | файл |
+| Teya integration | **Adapter only** `adapters/teya/` (Phase 1) — не orchestration kernel | adapters/teya |
 | Хостинг | локальный Cursor plugin: `~/.cursor/plugins/local/t-800-agent/` | install scripts |
 | Деплой | `bash scripts/install-plugin.sh` → copy в plugins/local; автообновление с GitHub на `sessionStart` | INSTALL + auto-update-contract |
 

@@ -1,0 +1,48 @@
+{
+  "schema_version": "2.0.0",
+  "phase": 2,
+  "hook_boundary": {
+    "default_mode": "warn",
+    "modes": {
+      "observe": "Log only; always allow artifact edits",
+      "warn": "Allow + userMessage when no factory run (default)",
+      "enforce": "Deny artifact edits outside confirmed factory run (opt-in only)"
+    },
+    "enforce_requires": [
+      "hook_enforce_ready=true",
+      "phase1_fixtures_pass",
+      "phase2_fixtures_pass",
+      "factory_bypass_gate_pass",
+      "materializer_dry_run_pass",
+      "stale_detection_pass",
+      "explicit_env_T800_TEYA_HOOK_MODE=enforce"
+    ],
+    "auto_enable_enforce": false,
+    "hook_enforce_ready": false
+  },
+  "env_keys": {
+    "hook_mode": "T800_TEYA_HOOK_MODE",
+    "factory_run_id": "T800_FACTORY_RUN_ID",
+    "memory_path": "T800_MEMORY_PATH",
+    "release_evidence_writer": "TEYA_RELEASE_EVIDENCE_WRITER"
+  },
+  "evidence_bridge": {
+    "handoff": "plugin-memory/factory-handoffs/<run-id>.json",
+    "provenance": "plugin-memory/orchestration/provenance/<run-id>.json",
+    "verifier": "teya_t800_handoff_verify.py",
+    "stale_check": "teya_t800_provenance_stale_check.py",
+    "materializer": "teya_t800_materialize_onboarding.py",
+    "release_evidence": "teya_t800_release_evidence.py"
+  },
+  "hook_enforce_ready": true,
+  "hook_enforce_ready_checked_at": "2026-07-28T14:10:23.368845Z",
+  "hook_enforce_ready_checks": {
+    "phase1_fixtures": true,
+    "phase2_fixtures": true,
+    "factory_bypass_gate": true,
+    "materializer_present": true,
+    "materializer_dry_run": true,
+    "stale_detection_present": true,
+    "provenance_bridge_present": true
+  }
+}
