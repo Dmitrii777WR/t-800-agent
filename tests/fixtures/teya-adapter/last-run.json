@@ -131,7 +131,7 @@
     {
       "name": "discover_sibling_not_assigned_as_canonical",
       "status": "PASS",
-      "detail": "{\"plugin_root\": \"/Users/user/Desktop/\\u041c\\u043e\\u0438 \\u0440\\u0430\\u0437\\u0440\\u0430\\u0431\\u043e\\u0442\\u043a\\u0438 \\u043d\\u0430 \\u043a\\u043e\\u0434\\u0435/Cursor/TeyaPlugin\", \"source\": \"env\", \"profile\": \"teya-client\"}"
+      "detail": "{\"plugin_root\": \"$TEYA_PLUGIN_ROOT\", \"source\": \"env\", \"profile\": \"teya-client\"}"
     },
     {
       "name": "hook_no_hardcoded_sibling_teyaplugin",

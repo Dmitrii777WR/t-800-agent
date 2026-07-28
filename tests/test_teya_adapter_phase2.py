@@ -605,9 +605,21 @@ def main() -> int:
         )
 
     summary = {"pass": PASS, "fail": FAIL, "total": PASS + FAIL, "results": RESULTS}
+    # Never commit personal absolute paths from local TEYA_PLUGIN_ROOT into fixtures
+    blob = json.dumps(summary, ensure_ascii=False, indent=2)
+    home = str(Path.home())
+    if home in blob or "/Users/" in blob or "/home/" in blob:
+        for r in summary["results"]:
+            d = r.get("detail")
+            if isinstance(d, str) and (home in d or "/Users/" in d or "/home/" in d):
+                r["detail"] = (
+                    '{"plugin_root": "$TEYA_PLUGIN_ROOT", "source": "env", '
+                    '"profile": "teya-client"}'
+                )
+        blob = json.dumps(summary, ensure_ascii=False, indent=2)
     out = ROOT / "tests" / "fixtures" / "teya-adapter" / "phase2-last-run.json"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    out.write_text(blob + "\n", encoding="utf-8")
     print(json.dumps({"pass": PASS, "fail": FAIL, "total": PASS + FAIL}, ensure_ascii=False))
     return 0 if FAIL == 0 else 1
 
