@@ -1,8 +1,8 @@
 # T800-SYSTEM-MAP.md
 
 Карта системы для внешнего архитектора (проектирование / усиление **loop engineering**).  
-Сгенерировано: 2026-07-29 (обновлено под **1.21.4**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
-Версия плагина на момент карты: **1.21.4**.  
+Сгенерировано: 2026-07-29 (обновлено под **1.21.5**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
+Версия плагина на момент карты: **1.21.5**.  
 Правило документа: факты (файл / кто пишет / кто читает / авто|руками). Без маркетинга.
 
 ---
@@ -11,7 +11,7 @@
 
 | Метрика | Значение | Источник |
 |---------|----------|----------|
-| Версия | `1.21.4` | `.cursor-plugin/plugin.json` |
+| Версия | `1.21.5` | `.cursor-plugin/plugin.json` |
 | Display name | T-800 Agent | там же |
 | GitHub | `https://github.com/Khar-AG/t-800-agent` | `shared/release-channel.json` |
 | Branch релиза | `main` | `shared/release-channel.json` |
@@ -375,7 +375,7 @@
 
 ## 8. Болевые точки (топ реальных)
 
-Источники: CHANGELOG 1.12–1.17.0, STATE Lessons, TEST scenarios 6–7, fix-pack drafts, контракты loop v2.
+Источники: CHANGELOG 1.12–1.21.4 (+ hygiene 1.21.5), STATE Lessons, TEST scenarios 6–7, fix-pack drafts, контракты loop v2.
 
 | # | Боль | Доказательство / симптом | Лечится сейчас? |
 |---|------|--------------------------|-----------------|
@@ -390,7 +390,7 @@
 | 9 | **Директор зовёт leaf в обход lead** | department-contract запрещает | Нет machine detector |
 | 10 | **Повторяющиеся install/path Lessons** | STATE: «verify/health должны проверять PLUGIN paths» | Патчились в 1.12.1; риск регресса при правке install |
 | 11 | **Hook не блокирует** | before-artifact-edit allow+WARN | v1 hard-deny отложен |
-| 12 | **Нет метрик прогонов** | нет duration/tokens/retry counters | Полный пробел для loop KPI |
+| 12 | **Метрики прогонов** (CLOSED/partial) | schema KPI 1.21.1: `duration_ms`, tokens, retries, `--summarize` (`t800_telemetry.py`, `shared/telemetry-kpi-contract.md`) | CLOSED schema; gap = live token capture из Cursor UI не wired |
 | 13 | **KB UPDATE-QUEUE ≠ prompt patches** | путаница с Teya Brain proposals | Разные механизмы; легко спроектировать loop не туда |
 | 14 | **Cloud Hub secrets / drift** | dual-write contract; smoke checklist | Процессный, не machine |
 | 15 | **Дубли `.cursor/agents/` mirror** в plugin tree | файлы есть рядом с `agents/` | Риск рассинхрона; verify/install должны держать parity |
@@ -401,9 +401,9 @@
 
 | Метрика | Логируется? | Где |
 |---------|-------------|-----|
-| Длительность прогона | **НЕТ** | — |
-| Число ретраев repair | **НЕТ** (только текстовый budget в контракте) | — |
-| Токены / $ | **НЕТ** | Cursor UI может показывать, плагин не пишет |
+| Длительность прогона | **PARTIAL** (schema 1.21.1) | optional `duration_ms` → `{memory}/telemetry/`; `--summarize` |
+| Число ретраев repair | **PARTIAL** (schema 1.21.1) | optional `retries` + текстовый budget в контракте |
+| Токены / $ | **PARTIAL** (поля schema) | `tokens_in`/`tokens_out` в schema; live capture из Cursor UI — не wired |
 | Доля прогонов без человека | **НЕТ** | — |
 | Exit codes gates | Да, если запущены | stdout/stderr + иногда JSON |
 | Audit inventory | Да | `audits/<run-id>/` |
@@ -411,7 +411,7 @@
 | Auto-update cache | Да | TTL 6ч в auto-check script (локальный cache) |
 | Hook WARN events | Только userMessage в момент edit | не агрегируется |
 
-**Вывод для архитектора loop:** без нового telemetry-слоя evaluator-optimizer будет слепым по KPI.
+**Вывод для архитектора loop:** telemetry-слой KPI есть с **1.21.1** (`t800_telemetry.py` + `--summarize`); evaluator ещё **semi-manual**, **auto-LOW OFF**.
 
 ---
 
@@ -470,7 +470,7 @@
 | Golden smoke (paths/hashes) | `t800_golden_check.py` + `docs/examples/self-golden/` |
 | Post-run retrospective agent | **Нет** отдельного; роль conductor + lessons schema |
 | Auto-apply low-risk prompt patches | **OFF** default (`loop-policy`); semi-manual HITL |
-| Unified run JSON + metrics | Частично: `runs/<id>/report.json`; полный KPI telemetry — ещё gap |
+| Unified run JSON + metrics | Частично: `runs/<id>/report.json`; KPI schema+summarize **1.21.1**; gap = auto token metering из IDE |
 | Golden E2E prompt regen | Частично: self-golden + fixtures; не полный autonomous client workspace |
 
 Brief внедрения: `t-800-memory/factory-briefs/v1.12-loop-engineering.yaml` (+ контракт `shared/loop-engineering-contract.md` v2).
@@ -631,7 +631,7 @@ bash scripts/verify-install.sh
 
 ## Приложение E — Полный roster registry (43)
 
-Источник: `registry/agents-registry.json` на **1.17.0**. `calls`/`calledBy` усечены если длинные.  
+Источник: сверять `registry/agents-registry.json` с текущей версией (**1.21.5**); roster count **43**. `calls`/`calledBy` усечены если длинные.  
 Добавлено с 1.16.1: `t-800-loop-conductor` (readonly, `/t800-loop`).
 
 | id | category | readonly | calls | calledBy |
@@ -810,7 +810,7 @@ Install **не** ставит его молча (Lesson в STATE + CHANGELOG 1.1
 
 ## Приложение K — Сравнение Teya post-run loop vs T-800 loop MVP
 
-| Свойство | Teya Pro (эталон из задания) | T-800 **1.17.0** |
+| Свойство | Teya Pro (эталон из задания) | T-800 **1.21.5** |
 |----------|------------------------------|------------------|
 | Триггер после прогона | post-run 4/4 | observe dispatcher + **semi-manual** `/t800-loop` (не stop/followup) |
 | Ретроспектива | `teya-post-run-retrospective` | `t800_run_report` → lessons + `t-800-loop-conductor` |
@@ -820,9 +820,9 @@ Install **не** ставит его молча (Lesson в STATE + CHANGELOG 1.1
 | Machine gate «готово» | свои gates сайта/темы | `t800_run_gate.py` + golden + factory-auditor |
 | Repair budget | свои ретраи отделов | max 2 на factory auditor |
 | Релиз плагина | `/teya-release-sync` и т.п. | git push main + auto-update |
-| Метрики токенов | НЕТ ДАННЫХ (типично) | НЕТ ДАННЫХ |
+| Метрики токенов | НЕТ ДАННЫХ (типично) | schema KPI 1.21.1; live UI tokens — optional / не wired |
 
-Вывод: T-800 **1.17** замыкает semi-manual loop (report→lessons→classify→queue→`/t800-fix`), но **auto-LOW OFF** и полного KPI-telemetry ещё нет.
+Вывод: T-800 **1.21.5** замыкает semi-manual loop (report→lessons→classify→queue→`/t800-fix`); **KPI layer 1.21.1 есть**; **auto-LOW OFF**; live tokens из Cursor UI — optional.
 
 ---
 

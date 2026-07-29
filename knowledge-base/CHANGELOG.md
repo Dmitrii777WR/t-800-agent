@@ -2,6 +2,12 @@
 
 Формат: дата — что изменилось — источник.
 
+## 1.21.5 — 2026-07-29 (Docs hygiene SYSTEM-MAP KPI)
+
+- **`T800-SYSTEM-MAP.md`**: header/version **1.21.5**; источники CHANGELOG 1.12–1.21.4 (+ hygiene); KPI row CLOSED/partial (schema 1.21.1); telemetry вывод + App K без «полного KPI ещё нет»; registry note → текущая версия / roster 43; Teya vs T-800 **1.21.5**
+- **`shared/plugin-audit-contract.md`**: footer → 2026-07-29 · T-800 **1.21.5**
+- Version bump `.cursor-plugin/plugin.json` → **1.21.5**
+
 ## 1.21.4 — 2026-07-29 (Side chat / Slack / async docs)
 
 - **`shared/operator-surface-2026-07-contract.md`**: main = factory; `/side` = разведка; Slack = plan-before-start; async/`Build in Parallel` для research fan-out
