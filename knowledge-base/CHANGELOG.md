@@ -2,6 +2,13 @@
 
 Формат: дата — что изменилось — источник.
 
+## 1.22.1 — 2026-07-29 (PATCH: hook enforce + golden 1.22)
+
+- **Hook:** `factory_in_manifest` allow только `in_progress|running|started|active` (не `completed|ok|done`) — sibling `t-800-memory` с factory completed больше не обходит enforce; bypass `T800_FACTORY_RUN_ID` сохранён
+- **Golden:** `docs/examples/self-golden/expected.json` — paths 1.22 (usage_ingest, auto_low, HITL, hook, contracts/templates/tests) + hashes
+- **Tests:** `tests/test_hook_enforce_default.py` — isolated deny без sibling memory
+- Version bump `.cursor-plugin/plugin.json` → **1.22.1**
+
 ## 1.22.0 — 2026-07-29 (Strengthen: usage ingest + auto-LOW HITL + hook enforce)
 
 - **Usage ingest:** `scripts/t800_usage_ingest.py` + `templates/usage-draft.json.template`; merge env/file/CLI → telemetry `event=usage_ingest` `source=ui_or_env`; секция в `shared/telemetry-kpi-contract.md`

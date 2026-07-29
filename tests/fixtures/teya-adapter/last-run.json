@@ -56,7 +56,7 @@
     {
       "name": "fail_sibling_not_canonical",
       "status": "PASS",
-      "detail": "{\"source\": \"env\", \"rejected\": false}"
+      "detail": "{\"source\": \"installed_readonly\", \"rejected\": true}"
     },
     {
       "name": "assert_sibling_detected",

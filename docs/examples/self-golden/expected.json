@@ -41,7 +41,7 @@
     },
     {
       "path": "templates/loop-policy.json.template",
-      "sha256": "f0f686026d7127416d2ead28d27fd948ee2c7e664395e4c3452b50fb482ba155"
+      "sha256": "ce40dc836721acf02ac8f6070d0403e80bd27aebc45430b7d81bdcafbdcfa300"
     },
     {
       "path": "templates/golden-expected.json.template",
@@ -66,6 +66,42 @@
     {
       "path": "tests/test_prompt_eval_gate.py",
       "sha256": "64c39e501baa8f9379fa9f161b531537a75d5db1fd4f2ee6875ea38de62cf5ac"
+    },
+    {
+      "path": "scripts/t800_usage_ingest.py",
+      "sha256": "d9d334c29e31f46574a09f292a44515dd9ee1e566da3787e100409f16d177e69"
+    },
+    {
+      "path": "scripts/t800_auto_low_batch.py",
+      "sha256": "6e3a710391b5851d9db6e7cc6616f1aa4ab37664e7ad71fb1ff6e0aff6523dca"
+    },
+    {
+      "path": "scripts/t800_loop_hitl_approve.py",
+      "sha256": "53fd366a07cbbb78ab15be4c0ac2e5a4d58dccfc14d9bab94a5d860743aa0216"
+    },
+    {
+      "path": "shared/auto-low-hitl-contract.md",
+      "sha256": "843a1f2c77e8d26797e0beedfe429d56b2814bf76fcd6c5e042467c71f16434f"
+    },
+    {
+      "path": "templates/usage-draft.json.template",
+      "sha256": "2470b9314b856c332ffcdf5700cc1ef2169ba21bb2e562d5cbde2d3b2071ec37"
+    },
+    {
+      "path": "tests/test_usage_ingest.py",
+      "sha256": "25518dfc4e1b5f70328ab98f789d1adf567ff1065e94c7ce25eb7b02982c5911"
+    },
+    {
+      "path": "tests/test_auto_low_hitl.py",
+      "sha256": "c29c62a7faa091a244cf341250d2feadbb7d857985679e60170081fed24305ea"
+    },
+    {
+      "path": "tests/test_hook_enforce_default.py",
+      "sha256": "9788d79142b2ec579a99ae7a5b64f63861eb1f8a73d5f5de9892f797ee284c08"
+    },
+    {
+      "path": "hooks/before-artifact-edit.sh",
+      "sha256": "fc75f18bbfde04a90af688a19bf3f2577e3e0a4c7ed6cfb4338f1c15de7db0fe"
     }
   ]
 }

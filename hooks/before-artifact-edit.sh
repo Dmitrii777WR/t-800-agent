@@ -108,11 +108,12 @@ PLUGIN_ROOT="$(cd "$HERE/.." 2>/dev/null && pwd)" || PLUGIN_ROOT=""
 factory_in_manifest() {
   local man="$1"
   [[ -f "$man" ]] || return 1
+  # in_progress markers only — NOT completed/ok/done
   if grep -Eqi '"agent"[[:space:]]*:[[:space:]]*"t-800-factory"' "$man" 2>/dev/null \
-    && grep -Eqi '"status"[[:space:]]*:[[:space:]]*"(completed|ok|done)"' "$man" 2>/dev/null; then
+    && grep -Eqi '"status"[[:space:]]*:[[:space:]]*"(in_progress|running|started|active)"' "$man" 2>/dev/null; then
     return 0
   fi
-  if grep -Eqi '"factory"[[:space:]]*:[[:space:]]*"(completed|ok|done)"' "$man" 2>/dev/null; then
+  if grep -Eqi '"factory"[[:space:]]*:[[:space:]]*"(in_progress|running|started|active)"' "$man" 2>/dev/null; then
     return 0
   fi
   return 1
@@ -141,7 +142,7 @@ fi
 
 MSG_WARN="T-800 WARN: правка Cursor-артефакта (${base}) без T800_FACTORY_RUN_ID / factory в run-manifest. Используйте /t800-start или /t800-fix → Task(t-800-factory). Gate: t800_factory_bypass_gate.py. mode=${HOOK_MODE}"
 
-MSG_DENY="T-800 DENY: правка Cursor-артефакта (${base}) вне factory run. Используйте /t800-start или /t800-fix → Task(t-800-factory). Opt-out: T800_HOOK_MODE=warn|observe (или T800_TEYA_HOOK_MODE). Bypass: T800_FACTORY_RUN_ID / factory completed в run-manifest."
+MSG_DENY="T-800 DENY: правка Cursor-артефакта (${base}) вне factory run. Используйте /t800-start или /t800-fix → Task(t-800-factory). Opt-out: T800_HOOK_MODE=warn|observe (или T800_TEYA_HOOK_MODE). Bypass: T800_FACTORY_RUN_ID / factory in_progress в run-manifest."
 
 case "$HOOK_MODE" in
   observe)

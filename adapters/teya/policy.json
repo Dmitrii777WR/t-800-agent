@@ -36,7 +36,7 @@
     "release_evidence": "teya_t800_release_evidence.py"
   },
   "hook_enforce_ready": true,
-  "hook_enforce_ready_checked_at": "2026-07-28T14:10:23.368845Z",
+  "hook_enforce_ready_checked_at": "2026-07-29T10:32:14.958345Z",
   "hook_enforce_ready_checks": {
     "phase1_fixtures": true,
     "phase2_fixtures": true,
