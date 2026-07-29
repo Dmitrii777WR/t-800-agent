@@ -2,6 +2,14 @@
 
 Формат: дата — что изменилось — источник.
 
+## 1.20.1 — 2026-07-29 (Hardening gates)
+
+- **`t800_run_gate.py`**: `--require-kb-provenance`; auto-ON при `--strict-create` + `--plugin-root`: agents-mirror, kb-provenance, frontmatter-yaml, skill-frontmatter, plugin-schema, command-chains
+- **`verify-install.sh` / `.ps1`**: запуск `t800_kb_provenance_gate.py` (hard-FAIL); ps1 — agents mirror gate run
+- **`tests/test_teya_adapter_phase2.py`**: без TeyaPlugin → SKIP exit 0 + `phase2-last-run.json` status=skipped
+- Docs: `/t800-loop` в НАЧАЛО-РАБОТЫ / ПОЛНАЯ-ИНСТРУКЦИЯ; plugin-sync / run-gates skills — prefer `--check`
+- GitHub Release **v1.20.1** (закрывает gap релизов 1.18–1.20)
+
 ## 1.20.0 — 2026-07-28 (Teya Adapter Phase 1+2)
 
 - **`adapters/teya/`** — отделение Teya-specific от generic core (manifest, profiles, discovery, handoff, checklist, policy, evidence bridge)

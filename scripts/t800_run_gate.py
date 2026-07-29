@@ -4,13 +4,15 @@
 Usage:
   python3 scripts/t800_run_gate.py --memory-path PATH \\
       [--require-validate] [--require-plugin-audit-out DIR] [--plugin-root PATH] \\
-      [--require-agents-mirror] [--require-frontmatter-yaml] \\
+      [--require-agents-mirror] [--require-kb-provenance] \\
+      [--require-frontmatter-yaml] \\
       [--require-skill-frontmatter] [--require-plugin-json-schema] \\
       [--require-command-chains] \\
       [--strict-create] [--factory-brief PATH|SLUG]
 
   При --strict-create + --plugin-root auto-ON:
-    frontmatter-yaml, skill-frontmatter, plugin-json-schema, command-chains.
+    agents-mirror, kb-provenance, frontmatter-yaml, skill-frontmatter,
+    plugin-json-schema, command-chains.
 """
 
 from __future__ import annotations
@@ -213,6 +215,17 @@ def main() -> int:
         default=False,
         help=(
             "Запустить t800_agents_mirror_gate.py (--plugin-root обязателен). "
+            "Auto-ON при --strict-create, если задан --plugin-root. "
+            "Non-zero → FAIL. По умолчанию ВЫКЛ."
+        ),
+    )
+    parser.add_argument(
+        "--require-kb-provenance",
+        action="store_true",
+        default=False,
+        help=(
+            "Запустить t800_kb_provenance_gate.py (--plugin-root обязателен). "
+            "Auto-ON при --strict-create, если задан --plugin-root. "
             "Non-zero → FAIL. По умолчанию ВЫКЛ."
         ),
     )
@@ -275,11 +288,15 @@ def main() -> int:
     args = parser.parse_args()
 
     # Auto-ON sibling gates under strict-create when plugin-root is set
+    require_agents_mirror = bool(args.require_agents_mirror)
+    require_kb_provenance = bool(args.require_kb_provenance)
     require_frontmatter_yaml = bool(args.require_frontmatter_yaml)
     require_skill_frontmatter = bool(args.require_skill_frontmatter)
     require_plugin_json_schema = bool(args.require_plugin_json_schema)
     require_command_chains = bool(args.require_command_chains)
     if args.strict_create and args.plugin_root:
+        require_agents_mirror = True
+        require_kb_provenance = True
         require_frontmatter_yaml = True
         require_skill_frontmatter = True
         require_plugin_json_schema = True
@@ -290,6 +307,8 @@ def main() -> int:
         "ok": True,
         "memory_path": str(memory_path),
         "strict_create": bool(args.strict_create),
+        "require_agents_mirror": require_agents_mirror,
+        "require_kb_provenance": require_kb_provenance,
         "require_frontmatter_yaml": require_frontmatter_yaml,
         "require_skill_frontmatter": require_skill_frontmatter,
         "require_plugin_json_schema": require_plugin_json_schema,
@@ -365,7 +384,7 @@ def main() -> int:
             summary["checks"]["validate"] = "ok"
             print("OK  validate-agents.sh exit 0")
 
-    if args.require_agents_mirror:
+    if require_agents_mirror:
         if not args.plugin_root:
             summary["checks"]["agents_mirror"] = "skipped_no_plugin_root"
             return fail(
@@ -415,6 +434,50 @@ def main() -> int:
             )
         summary["checks"]["agents_mirror"] = "ok"
         print("OK  t800_agents_mirror_gate exit 0")
+
+    if require_kb_provenance:
+        if not args.plugin_root:
+            summary["checks"]["kb_provenance"] = "skipped_no_plugin_root"
+            return fail(
+                "Флаг --require-kb-provenance требует --plugin-root.",
+                summary,
+            )
+        plugin_root = Path(args.plugin_root).expanduser().resolve()
+        kb_gate = plugin_root / "scripts" / "t800_kb_provenance_gate.py"
+        if not kb_gate.is_file():
+            summary["checks"]["kb_provenance"] = "script_missing"
+            return fail(
+                f"--require-kb-provenance: нет скрипта {kb_gate}",
+                summary,
+            )
+        try:
+            proc = subprocess.run(
+                [
+                    sys.executable,
+                    str(kb_gate),
+                    "--plugin-root",
+                    str(plugin_root),
+                ],
+                cwd=str(plugin_root),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        except OSError as exc:
+            summary["checks"]["kb_provenance"] = "error"
+            return fail(
+                f"Не удалось запустить t800_kb_provenance_gate.py: {exc}",
+                summary,
+            )
+        if proc.returncode != 0:
+            summary["checks"]["kb_provenance"] = f"fail_exit_{proc.returncode}"
+            tail = ((proc.stdout or "") + (proc.stderr or ""))[-800:]
+            return fail(
+                f"t800_kb_provenance_gate.py exit {proc.returncode}. {tail}",
+                summary,
+            )
+        summary["checks"]["kb_provenance"] = "ok"
+        print("OK  t800_kb_provenance_gate exit 0")
 
     if require_frontmatter_yaml:
         if not args.plugin_root:

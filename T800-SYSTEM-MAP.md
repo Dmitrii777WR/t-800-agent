@@ -1,8 +1,8 @@
 # T800-SYSTEM-MAP.md
 
 Карта системы для внешнего архитектора (проектирование / усиление **loop engineering**).  
-Сгенерировано: 2026-07-17 (обновлено под **1.20.0**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
-Версия плагина на момент карты: **1.20.0**.  
+Сгенерировано: 2026-07-29 (обновлено под **1.20.1**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
+Версия плагина на момент карты: **1.20.1**.  
 Правило документа: факты (файл / кто пишет / кто читает / авто|руками). Без маркетинга.
 
 ---
@@ -11,7 +11,7 @@
 
 | Метрика | Значение | Источник |
 |---------|----------|----------|
-| Версия | `1.20.0` | `.cursor-plugin/plugin.json` |
+| Версия | `1.20.1` | `.cursor-plugin/plugin.json` |
 | Display name | T-800 Agent | там же |
 | GitHub | `https://github.com/Khar-AG/t-800-agent` | `shared/release-channel.json` |
 | Branch релиза | `main` | `shared/release-channel.json` |
@@ -181,7 +181,9 @@
 
 | Gate | Что проверяет | Авто / человек | При провале | Ретраи | Где логика | Машиночитаемый вердикт? |
 |------|---------------|----------------|-------------|--------|------------|-------------------------|
-| `t800_run_gate.py` | наличие `STATE.md`; опц. inventory; опц. validate-agents; опц. `--strict-create` (manifest factory + fragment factory status + brief done); `--require-frontmatter-yaml` / `--require-skill-frontmatter` / `--require-plugin-json-schema` / `--require-command-chains` (все auto под `--strict-create`+`--plugin-root`) | Авто (exit code) | стоп «готово»; Директор должен чинить | budget 2 на уровне **контракта** (не внутри скрипта) | `scripts/t800_run_gate.py` | **Да:** JSON `{ok, checks, error}` на stdout |
+| `t800_run_gate.py` | наличие `STATE.md`; опц. inventory; опц. validate-agents; опц. `--strict-create` (manifest factory + fragment factory status + brief done); `--require-agents-mirror` / `--require-kb-provenance` / `--require-frontmatter-yaml` / `--require-skill-frontmatter` / `--require-plugin-json-schema` / `--require-command-chains` (mirror+kb+FM gates auto под `--strict-create`+`--plugin-root`) | Авто (exit code) | стоп «готово»; Директор должен чинить | budget 2 на уровне **контракта** (не внутри скрипта) | `scripts/t800_run_gate.py` | **Да:** JSON `{ok, checks, error}` на stdout |
+| `t800_agents_mirror_gate.py` | parity `agents/` ↔ `.cursor/agents/`; auto под `--strict-create`+`--plugin-root`; always-on в verify-install | Авто | FAIL drift | sync/agents | `scripts/t800_agents_mirror_gate.py` | check `agents_mirror` в run_gate |
+| `t800_kb_provenance_gate.py` | KB changes in manifest or manual provenance; auto под strict-create; verify-install run | Авто | FAIL orphan KB | через factory/maintainer | `scripts/t800_kb_provenance_gate.py` | check `kb_provenance` в run_gate |
 | `t800_agent_frontmatter_yaml_gate.py` | валидный YAML frontmatter agents (PyYAML); `--file` / `--plugin-root`; вызывается из `t800_run_gate.py` через `--require-frontmatter-yaml` или auto под `--strict-create`+`--plugin-root` | Авто (exit code) | FAIL exit ≠0 → repair agent FM | через factory | `scripts/t800_agent_frontmatter_yaml_gate.py` | **Да:** текст OK/FAIL + exit; check `frontmatter_yaml` в JSON run_gate |
 | `t800_skill_frontmatter_gate.py` | frontmatter skills/*/SKILL.md; auto под `--strict-create`+`--plugin-root` | Авто | FAIL → repair skill FM | через factory | `scripts/t800_skill_frontmatter_gate.py` | check `skill_frontmatter` в run_gate |
 | `t800_plugin_schema_gate.py` | `.cursor-plugin/plugin.json` vs `registry/plugin.manifest.schema.json`; auto под strict-create | Авто | FAIL → repair plugin.json/schema | через factory | `scripts/t800_plugin_schema_gate.py` | check `plugin_json_schema` в run_gate |

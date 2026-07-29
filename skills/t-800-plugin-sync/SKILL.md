@@ -28,7 +28,7 @@ Skill задаёт **порядок шагов**. Скрипты install/sync �
 ## Алгоритм
 
 1. Confirm SoT `plugin_root` (git checkout T-800).
-2. Sync `--check` → отчёт CONTENT_DRIFT (если скрипт есть).
+2. Sync **`--check`** → отчёт CONTENT_DRIFT (если скрипт есть). Не запускайте скрипт без флагов — default = apply.
 3. Apply MIR **только** в `~/.cursor/plugins/local/t-800-agent`.
 4. `verify-install` / health по docs.
 5. Сказать пользователю: **Reload Window**.

@@ -299,6 +299,7 @@ fi
 run_plugin_gate "skill frontmatter gate" "t800_skill_frontmatter_gate.py"
 run_plugin_gate "plugin schema gate" "t800_plugin_schema_gate.py"
 run_plugin_gate "command chains gate" "t800_command_chains_gate.py"
+run_plugin_gate "kb provenance gate" "t800_kb_provenance_gate.py"
 
 if [ "$failed" -gt 0 ]; then
   echo "T-800 Agent verification failed: $failed problem(s). Run bash scripts/install-plugin.sh"

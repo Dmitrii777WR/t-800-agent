@@ -561,7 +561,23 @@ def main() -> int:
     os.environ.setdefault("TEYA_T800_ROOT", str(ROOT))
     print("=== Teya Adapter Phase 2 fixtures ===")
     if not find_teya():
-        print("WARN: TeyaPlugin not found — many tests will FAIL")
+        print("SKIP: TeyaPlugin not found (set TEYA_PLUGIN_ROOT or sibling ../TeyaPlugin)")
+        out = ROOT / "tests" / "fixtures" / "teya-adapter" / "phase2-last-run.json"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        skip_summary = {
+            "status": "skipped",
+            "reason": "TeyaPlugin not found",
+            "pass": 0,
+            "fail": 0,
+            "total": 0,
+            "results": [],
+        }
+        out.write_text(
+            json.dumps(skip_summary, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        print(json.dumps({"pass": 0, "fail": 0, "total": 0, "skipped": True}, ensure_ascii=False))
+        return 0
 
     test_t800_cannot_set_verified()
     test_t800_cannot_write_rollout_artifact()

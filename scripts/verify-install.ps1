@@ -185,6 +185,9 @@ function Invoke-PluginGate {
     }
 }
 
+Invoke-PluginGate -Name "agents mirror gate" -ScriptName "t800_agents_mirror_gate.py"
+Invoke-PluginGate -Name "kb provenance gate" -ScriptName "t800_kb_provenance_gate.py"
+
 $syncPy = Join-Path $plugin "scripts\t800_plugin_sync.py"
 if (-not (Test-Path $syncPy)) {
     $syncPy = Join-Path $here "t800_plugin_sync.py"

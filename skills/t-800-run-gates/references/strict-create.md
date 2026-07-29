@@ -2,11 +2,16 @@
 
 На CREATE (`/t800-start`, factory CREATE) перед «готово»:
 
+При `--strict-create` + `--plugin-root` auto-ON: agents-mirror, kb-provenance, frontmatter-yaml, skill-frontmatter, plugin-json-schema, command-chains.
+
 ```bash
 python3 scripts/t800_run_gate.py --strict-create \
   --memory-path "<memory_path>" \
-  [--plugin-root "<plugin_root>"]
+  --plugin-root "<plugin_root>" \
+  [--factory-brief "<slug>"]
 ```
+
+Флаги вручную: `--require-agents-mirror`, `--require-kb-provenance`, `--require-frontmatter-yaml`, …
 
 ## Обычно требует
 

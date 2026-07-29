@@ -152,7 +152,13 @@ def _apply_install(plugin_root: Path) -> tuple[bool, str | None]:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
+    ap = argparse.ArgumentParser(
+        description=__doc__,
+        epilog=(
+            "Внимание: без --check и --apply по умолчанию выполняется --apply "
+            "(изменяет live MIR). Для аудита всегда указывайте --check."
+        ),
+    )
     ap.add_argument("--plugin-root", type=Path, default=Path("."))
     ap.add_argument(
         "--live",
