@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0",
+  "as_of": "2026-07-29",
+  "source": "https://cursor.com/docs/hooks",
+  "policy": {
+    "cloud_command_based_only": true,
+    "default_fail_open": true,
+    "forbid_prompt_type_hooks_for_cloud": true,
+    "forbid_sole_conversation_gate": true,
+    "conversation_hooks_since": "3.11"
+  },
+  "hooks": [
+    {
+      "name": "beforeSubmitPrompt",
+      "cloud_supported": true,
+      "role": "gate_candidate",
+      "sole_gate_forbidden": true,
+      "notes": "Cloud conversation hook; не единственный production gate"
+    },
+    {
+      "name": "afterAgentResponse",
+      "cloud_supported": true,
+      "role": "observe",
+      "sole_gate_forbidden": true,
+      "notes": "Observe-only; sole production gate запрещён"
+    },
+    {
+      "name": "afterAgentThought",
+      "cloud_supported": true,
+      "role": "observe",
+      "sole_gate_forbidden": true,
+      "notes": "Observe-only; sole production gate запрещён"
+    },
+    {
+      "name": "stop",
+      "cloud_supported": true,
+      "role": "gate_candidate",
+      "sole_gate_forbidden": true,
+      "notes": "Followup loops — anti-Ralph; не sole production gate"
+    },
+    {
+      "name": "subagentStart",
+      "cloud_supported": true,
+      "role": "gate_candidate",
+      "sole_gate_forbidden": false,
+      "notes": "Допустимый companion gate для cloud"
+    },
+    {
+      "name": "subagentStop",
+      "cloud_supported": true,
+      "role": "observe",
+      "sole_gate_forbidden": true,
+      "notes": "Observe после субагента"
+    },
+    {
+      "name": "preCompact",
+      "cloud_supported": true,
+      "role": "observe",
+      "sole_gate_forbidden": true,
+      "notes": "Observe перед compaction"
+    },
+    {
+      "name": "beforeShellExecution",
+      "cloud_supported": true,
+      "role": "gate_candidate",
+      "sole_gate_forbidden": false,
+      "notes": "Допустимый companion gate (shell)"
+    },
+    {
+      "name": "afterFileEdit",
+      "cloud_supported": true,
+      "role": "observe",
+      "sole_gate_forbidden": true,
+      "notes": "Observe после правки файла"
+    },
+    {
+      "name": "sessionStart",
+      "cloud_supported": false,
+      "role": "local_only",
+      "sole_gate_forbidden": false,
+      "notes": "Только локальный IDE; в cloud отсутствует"
+    },
+    {
+      "name": "beforeMCPExecution",
+      "cloud_supported": false,
+      "role": "local_only",
+      "sole_gate_forbidden": false,
+      "notes": "Только локальный IDE; в cloud отсутствует"
+    }
+  ]
+}

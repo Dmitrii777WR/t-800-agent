@@ -159,6 +159,37 @@ python3 scripts/t800_golden_check.py --expected docs/examples/self-golden/expect
 
 ---
 
+## Сценарий 10 — Side chat / Slack / Parallel (Phase 5)
+
+**Контекст:** оператор путает main chat, `/side`, Slack agent и async Task.
+
+**Ввод пользователя:**
+```
+Чем Side chat (/side) отличается от main? Как работать со Slack agent и Build in Parallel?
+```
+
+**Ожидание:**
+- Делегат `Task(t-800-operator)` (readonly: true)
+- В ответе: `/side` = разведка; main = factory; Slack = plan then run; async/`Parallel` ok для research fan-out
+- Ссылка на `playbooks/06-side-chat-i-async.md` или контракт `shared/operator-surface-2026-07-contract.md`
+
+**Проверка (machine, из `plugin_root` t-800-agent):**
+
+```bash
+python3 tests/test_operator_docs_gate.py
+# ожидание: exit 0
+
+python3 scripts/t800_operator_docs_gate.py --plugin-root .
+# ожидание: JSON ok=true; маркеры /side, Slack, Parallel|async во всех 4 файлах
+
+python3 scripts/t800_agents_mirror_gate.py --plugin-root .
+# ожидание: exit 0 (agents ↔ .cursor/agents)
+```
+
+**Статус:** [ ] PASS [ ] FAIL
+
+---
+
 ## Сценарий 8 — KB provenance gate
 
 **Цель:** machine gate не пускает orphan-файлы в `knowledge-base/` без manifest или manual provenance.

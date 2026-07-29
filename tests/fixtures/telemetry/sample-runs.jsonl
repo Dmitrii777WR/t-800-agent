@@ -1,0 +1,3 @@
+{"event":"run_complete","stage":"factory","status":"pass","duration_ms":100,"tokens_in":10,"tokens_out":20,"retries":0,"run_id":"r1"}
+{"event":"run_complete","stage":"research","status":"pass","duration_ms":200,"tokens_in":30,"tokens_out":40,"retries":1,"run_id":"r2"}
+{"event":"run_complete","stage":"brain","status":"partial","duration_ms":300,"tokens_in":50,"tokens_out":60,"retries":2,"run_id":"r3"}

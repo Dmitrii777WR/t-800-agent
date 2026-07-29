@@ -10,6 +10,7 @@
 | frontmatter YAML gate (agents/commands) | if touched | if touched | — | — |
 | future `--require-skills-validate` | when landed | when skills | — | — |
 | `t800_factory_bypass_gate.py` | advisory/required per release | same | — | — |
+| `t800_prompt_eval_gate.py` | optional / verify-install | optional / verify-install | — | behavioral markers (must_contain) |
 | `t800_doctor.py` | optional | optional | — | preferred for /t800-doctor |
 | command-chains orphan gate | if chains/cmds | if cmds | — | plugin-audit |
 

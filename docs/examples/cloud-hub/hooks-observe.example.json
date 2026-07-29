@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "_comment": "EXAMPLE observe-only cloud-safe hooks (command-based). Не sole production gate. См. shared/cloud-hooks-matrix-contract.md",
+  "hooks": {
+    "afterAgentResponse": [
+      {
+        "command": "./hooks/cloud-observe-after-response.sh",
+        "timeout": 20
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "./hooks/cloud-observe-after-edit.sh",
+        "timeout": 15
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "./hooks/cloud-observe-subagent-stop.sh",
+        "timeout": 15
+      }
+    ]
+  }
+}

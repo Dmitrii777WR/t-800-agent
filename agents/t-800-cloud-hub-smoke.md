@@ -22,8 +22,9 @@ Leaf: автор **smoke-чеклиста** (и опционально script-pa
 ## Обязательное чтение
 
 1. `shared/cloud-hub-setup-contract.md`
-2. Артефакты `{memory}/cloud-hub/` (Instructions, pack-schema) если уже есть
-3. Official docs: automations, setup, security-network, settings, api/webhooks
+2. `shared/cloud-hooks-matrix-contract.md` (+ `shared/cloud-hooks-matrix.json` при проверке hooks)
+3. Артефакты `{memory}/cloud-hub/` (Instructions, pack-schema) если уже есть
+4. Official docs: automations, setup, security-network, settings, api/webhooks
 
 ## Алгоритм
 
@@ -40,6 +41,7 @@ Leaf: автор **smoke-чеклиста** (и опционально script-pa
    - [ ] Нет official Automations inbound status-callback — только app-level `callbackUrl`
    - [ ] Flow: ping → resolve `command_ref` → execute → callback → STOP
    - [ ] Dashboard «All repos» vs environment-scoped Secrets — оба UX учесть
+   - [ ] Cloud hooks: `t800_cloud_hooks_smoke.py` на hooks.json (если есть) — command-based only; **нет** sole conversation gate (`afterAgentResponse` / `afterAgentThought` / `stop` без companion); local_only events не выдавать за cloud-safe
 3. Опционально: псевдокод curl/script **без** реальных ключей/host (placeholders `YOUR_WEBHOOK_URL`, `YOUR_TOKEN`).
 4. Зафиксируй `pass|fail|unknown` по пунктам на основе наличия артефактов/описания UI — не выдумывай host/path webhook.
 5. Warnings → lead; секреты в отчёт не писать.
@@ -72,4 +74,5 @@ blockers: []
 ## KB
 
 - `shared/cloud-hub-setup-contract.md`
+- `shared/cloud-hooks-matrix-contract.md`
 - `knowledge-base/10-cloud-automation/cloud-agent-settings.md`

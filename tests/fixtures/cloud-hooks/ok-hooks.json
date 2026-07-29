@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "./hooks/session-start.sh",
+        "timeout": 60
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "./hooks/before-shell.sh",
+        "timeout": 15
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": "./hooks/after-response-observe.sh",
+        "timeout": 15
+      }
+    ]
+  }
+}

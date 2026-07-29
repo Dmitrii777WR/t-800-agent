@@ -108,6 +108,13 @@ Task(t-800-research-lead)   # передай research_mode
 bash scripts/t800_loop_state.sh touch --memory-path "<memory_path>" --stage "research" --message "mode=DEEP|LIGHT|SKIP; synthesis готов|skipped"
 ```
 
+## 2a. Router (Cost / Balance / Intelligence)
+
+- **DEEP** research → prefer **Cost** или **Balance** (длинный fan-out)
+- factory architect / builder → **Intelligence** или **Balance**
+- `model: inherit` + Router Auto в UI — не pin vendor slug
+- Канон: `shared/router-cost-policy-contract.md`
+
 ## 2b. Prompt craft (условно)
 
 Если artifact ∈ {agent, skill, command}:

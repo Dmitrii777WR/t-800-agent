@@ -140,7 +140,9 @@ for script in t800_run_gate.py t800_doctor.py t800_audit_to_fixpack.py \
   t800_lessons_to_fixpack.py t800_golden_check.py t800-loop-dispatcher.sh t800_loop_queue_write.py \
   t800_kb_provenance_gate.py t800_agents_mirror_gate.py \
   t800_plugin_sync.py t800_skill_frontmatter_gate.py t800_plugin_schema_gate.py \
-  t800_command_chains_gate.py t800_command_chains_gate.sh; do
+  t800_command_chains_gate.py t800_command_chains_gate.sh \
+  t800_cloud_hooks_smoke.py t800_router_policy_gate.py t800_prompt_eval_gate.py \
+  t800_operator_docs_gate.py; do
   if [ -f "$PLUGIN/scripts/$script" ]; then
     echo "OK   $script"
   else
@@ -148,6 +150,48 @@ for script in t800_run_gate.py t800_doctor.py t800_audit_to_fixpack.py \
     failed=$((failed + 1))
   fi
 done
+if [ -f "$PLUGIN/shared/cloud-hooks-matrix.json" ]; then
+  echo "OK   shared/cloud-hooks-matrix.json"
+else
+  echo "FAIL shared/cloud-hooks-matrix.json missing"
+  failed=$((failed + 1))
+fi
+if [ -f "$PLUGIN/shared/router-cost-policy-contract.md" ]; then
+  echo "OK   shared/router-cost-policy-contract.md"
+else
+  echo "FAIL shared/router-cost-policy-contract.md missing"
+  failed=$((failed + 1))
+fi
+if [ -f "$PLUGIN/shared/prompt-eval-contract.md" ]; then
+  echo "OK   shared/prompt-eval-contract.md"
+else
+  echo "FAIL shared/prompt-eval-contract.md missing"
+  failed=$((failed + 1))
+fi
+if [ -f "$PLUGIN/shared/operator-surface-2026-07-contract.md" ]; then
+  echo "OK   shared/operator-surface-2026-07-contract.md"
+else
+  echo "FAIL shared/operator-surface-2026-07-contract.md missing"
+  failed=$((failed + 1))
+fi
+if [ -f "$PLUGIN/playbooks/06-side-chat-i-async.md" ]; then
+  echo "OK   playbooks/06-side-chat-i-async.md"
+else
+  echo "FAIL playbooks/06-side-chat-i-async.md missing"
+  failed=$((failed + 1))
+fi
+if [ -f "$PLUGIN/skills/t-800-run-gates/references/router-modes.md" ]; then
+  echo "OK   skills/.../references/router-modes.md"
+else
+  echo "FAIL skills/.../references/router-modes.md missing"
+  failed=$((failed + 1))
+fi
+if [ -f "$PLUGIN/tests/fixtures/prompt-eval/cases.json" ]; then
+  echo "OK   tests/fixtures/prompt-eval/cases.json"
+else
+  echo "FAIL tests/fixtures/prompt-eval/cases.json missing"
+  failed=$((failed + 1))
+fi
 
 # P0 Surface skills (5 new + knowledge-base already checked above)
 check_exists "skill factory-scaffold" "$SKILLS/t-800-factory-scaffold/SKILL.md" true
@@ -300,6 +344,9 @@ run_plugin_gate "skill frontmatter gate" "t800_skill_frontmatter_gate.py"
 run_plugin_gate "plugin schema gate" "t800_plugin_schema_gate.py"
 run_plugin_gate "command chains gate" "t800_command_chains_gate.py"
 run_plugin_gate "kb provenance gate" "t800_kb_provenance_gate.py"
+run_plugin_gate "router policy gate" "t800_router_policy_gate.py"
+run_plugin_gate "prompt eval gate" "t800_prompt_eval_gate.py"
+run_plugin_gate "operator docs gate" "t800_operator_docs_gate.py"
 
 if [ "$failed" -gt 0 ]; then
   echo "T-800 Agent verification failed: $failed problem(s). Run bash scripts/install-plugin.sh"

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -29,6 +30,35 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def parse_ts(raw: str) -> datetime:
+    text = raw.strip()
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    return datetime.fromisoformat(text)
+
+
+def resolve_duration_ms(
+    explicit: int | None,
+    started_at: str | None,
+    ended_at: str | None,
+) -> int | None:
+    """--duration-ms wins; иначе started/ended CLI или env T800_RUN_*_AT."""
+    if explicit is not None:
+        if explicit < 0:
+            raise ValueError("duration_ms должен быть int >= 0")
+        return explicit
+    start_raw = started_at or os.environ.get("T800_RUN_STARTED_AT")
+    end_raw = ended_at or os.environ.get("T800_RUN_ENDED_AT")
+    if not start_raw or not end_raw:
+        return None
+    start = parse_ts(start_raw)
+    end = parse_ts(end_raw)
+    delta_ms = int((end - start).total_seconds() * 1000)
+    if delta_ms < 0:
+        raise ValueError("ended_at раньше started_at")
+    return delta_ms
 
 
 def load_json(path: Path | None) -> Any | None:
@@ -131,6 +161,28 @@ def main() -> int:
     parser.add_argument("--status", default=None, help="Override status: pass|fail|partial")
     parser.add_argument("--slug", default=None)
     parser.add_argument("--no-telemetry", action="store_true")
+    parser.add_argument(
+        "--duration-ms",
+        type=int,
+        default=None,
+        help="KPI: длительность прогона (ms) в telemetry event",
+    )
+    parser.add_argument(
+        "--retries",
+        type=int,
+        default=0,
+        help="KPI: число ретраев в telemetry event (default 0)",
+    )
+    parser.add_argument(
+        "--started-at",
+        default=None,
+        help="ISO timestamp старта (для duration_ms, если нет --duration-ms)",
+    )
+    parser.add_argument(
+        "--ended-at",
+        default=None,
+        help="ISO timestamp конца (для duration_ms, если нет --duration-ms)",
+    )
     args = parser.parse_args()
 
     memory_path = Path(args.memory_path).expanduser().resolve()
@@ -194,15 +246,24 @@ def main() -> int:
         return 1
 
     if not args.no_telemetry:
-        append_telemetry(
-            memory_path,
-            {
-                "event": "run_report",
-                "run_id": run_id,
-                "status": status,
-                "path": str(out_path),
-            },
-        )
+        try:
+            duration_ms = resolve_duration_ms(args.duration_ms, args.started_at, args.ended_at)
+        except ValueError as exc:
+            print(f"FAIL: {exc}", file=sys.stderr)
+            return 1
+        if args.retries < 0:
+            print("FAIL: --retries должен быть int >= 0", file=sys.stderr)
+            return 1
+        telem_event: dict[str, Any] = {
+            "event": "run_report",
+            "run_id": run_id,
+            "status": status,
+            "path": str(out_path),
+            "retries": args.retries,
+        }
+        if duration_ms is not None:
+            telem_event["duration_ms"] = duration_ms
+        append_telemetry(memory_path, telem_event)
 
     summary = {
         "ok": True,

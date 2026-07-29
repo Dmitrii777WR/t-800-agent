@@ -287,6 +287,7 @@ repair:
 ## Связанные
 
 - `shared/lesson-schema-contract.md`  
+- `shared/telemetry-kpi-contract.md` — KPI schema 1.1 (`duration_ms` / tokens / retries, `--summarize`)  
 - `shared/department-orchestration-contract.md`  
 - `shared/fix-pipeline-contract.md`  
 - `shared/project-memory-contract.md`  
@@ -297,6 +298,7 @@ repair:
 - `scripts/t800_run_gate.py`  
 - `scripts/t800_risk_classifier.py`  
 - `scripts/t800_loop_queue_write.py`  
+- `scripts/t800_telemetry.py`  
 - `commands/t800-loop.md`  
 - `agents/t-800-loop-conductor.md`  
 

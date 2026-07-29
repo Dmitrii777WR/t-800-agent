@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "sole_production_gate": "afterAgentResponse"
+  },
+  "version": 1,
+  "hooks": {
+    "afterAgentResponse": [
+      {
+        "command": "./x.sh"
+      }
+    ]
+  }
+}

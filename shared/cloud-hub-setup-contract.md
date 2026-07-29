@@ -84,8 +84,20 @@ Dual-write ≠ duplicate roots: `shared/project-memory-dual-write-contract.md`.
 - Specialist → specialist; depth > 2
 - Вызов kb-curator на каждый hub-setup
 
-## 10. Связанные артефакты
+## 10. Cloud hooks matrix
+
+Машиночитаемая матрица Cursor 3.11+ conversation / cloud hooks:
+
+- Контракт: [`shared/cloud-hooks-matrix-contract.md`](cloud-hooks-matrix-contract.md)
+- JSON: [`shared/cloud-hooks-matrix.json`](cloud-hooks-matrix.json)
+- Smoke: `python3 scripts/t800_cloud_hooks_smoke.py --hooks PATH` / `--fixture-dir tests/fixtures/cloud-hooks`
+- Пример observe-only: `docs/examples/cloud-hub/hooks-observe.example.json`
+
+Законы: **command-based only** (не `type: prompt`); **fail-open** по умолчанию; **запрет sole conversation gate** на `afterAgentResponse` / `afterAgentThought` / `stop` без companion `beforeShellExecution` / `subagentStart`. Local-only (`sessionStart`, `beforeMCPExecution`) — WARN локально; FAIL при `--require-cloud-safe`.
+
+## 11. Связанные артефакты
 
 - Агенты: `t-800-cloud-hub-lead` (+ analyst, prompt, pack, smoke)
 - KB cadence: `t-800-cursor-kb-curator` → `t-800-maintainer`
 - Примеры паттернов: `docs/examples/cloud-hub/README.md` (EXAMPLE only)
+- Cloud hooks: `shared/cloud-hooks-matrix-contract.md`

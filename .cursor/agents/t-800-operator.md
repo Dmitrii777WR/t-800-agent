@@ -73,6 +73,7 @@ is_background: false
 | Subagents | `knowledge-base/03-kontekst/subagents.md` |
 | MCP | `knowledge-base/03-kontekst/mcp-basics.md` |
 | Автоматизация | `playbooks/01-pervaya-avtomatizaciya.md` |
+| Side / Slack / Parallel | `playbooks/06-side-chat-i-async.md` |
 | Безопасность / Run Modes | `knowledge-base/04-bezopasnost/security-run-modes.md` |
 | Cloud Agents / Settings / Automations / Hooks | `knowledge-base/10-cloud-automation/` |
 | Teams / Dashboard / Billing | `knowledge-base/11-team-admin/` |
@@ -103,6 +104,14 @@ flowchart LR
 4. Нужны: Pro+, team, не Legacy Privacy Mode
 
 Подробно: `knowledge-base/02-agent-i-rezhimy/canvas-i-shared-canvases.md`
+
+## Side chat / Slack / Parallel (кратко)
+
+- **Main chat** — factory и `/t800-*` pipeline; не путать с болтовнёй
+- **Side chat** (`/side`) — разведка и уточнения; файлы agents/skills **не** писать
+- **Slack** — agent: сначала план, потом run (plan-before-start)
+- **Async / Parallel** — `Build in Parallel` или async Task ok для research fan-out
+- Playbook: `playbooks/06-side-chat-i-async.md` · контракт `shared/operator-surface-2026-07-contract.md`
 
 ## Свежесть KB
 

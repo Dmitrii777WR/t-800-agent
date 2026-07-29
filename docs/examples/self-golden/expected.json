@@ -5,7 +5,7 @@
   "files": [
     {
       "path": "scripts/t800_run_report.py",
-      "sha256": "427cab4701d22837d21262b9c4ddef5b39dccd3754a0fce6274a58d83d48c849"
+      "sha256": "aa85f0ee9bdbef19c210226a59f8953f1e57fc16cffd33eb27d6681313406a53"
     },
     {
       "path": "scripts/t800_lessons_export.py",
@@ -13,7 +13,7 @@
     },
     {
       "path": "scripts/t800_telemetry.py",
-      "sha256": "e624912b498fc5b5e8f0169f0209b90e182d509b8887a794f51263e1bf15ca08"
+      "sha256": "9268a555494e2fac566251baff5c05b31a194885105bb395b1d6ffe3802bb2bc"
     },
     {
       "path": "scripts/t800_risk_classifier.py",
@@ -50,6 +50,22 @@
     {
       "path": "docs/examples/self-golden/README.md",
       "sha256": "b10a7472bcda18bdde0d1afdc14fb0578ade81dc4fbb5d8efc23dfaf632d2633"
+    },
+    {
+      "path": "scripts/t800_prompt_eval_gate.py",
+      "sha256": "ef99e82a757de91958e41e276041d9859e2b7b1e8c47d30e5ae62e0ec927866a"
+    },
+    {
+      "path": "shared/prompt-eval-contract.md",
+      "sha256": "625a6d6510f3e5897656ff5a308a7bd0207878b5852c25e3b6530a94f985b57b"
+    },
+    {
+      "path": "tests/fixtures/prompt-eval/cases.json",
+      "sha256": "40cde68e03db9a966d015aa69a968dab90f81be21e5ab03cc8965cc9d7f187c3"
+    },
+    {
+      "path": "tests/test_prompt_eval_gate.py",
+      "sha256": "64c39e501baa8f9379fa9f161b531537a75d5db1fd4f2ee6875ea38de62cf5ac"
     }
   ]
 }

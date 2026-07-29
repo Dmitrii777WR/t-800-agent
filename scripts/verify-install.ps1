@@ -61,6 +61,17 @@ $checks = @(
     @{ Name = "t800_plugin_schema_gate.py"; Path = Join-Path $plugin "scripts\t800_plugin_schema_gate.py"; ShouldExist = $true; MustContain = $null },
     @{ Name = "t800_command_chains_gate.py"; Path = Join-Path $plugin "scripts\t800_command_chains_gate.py"; ShouldExist = $true; MustContain = $null },
     @{ Name = "t800_command_chains_gate.sh"; Path = Join-Path $plugin "scripts\t800_command_chains_gate.sh"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "t800_cloud_hooks_smoke.py"; Path = Join-Path $plugin "scripts\t800_cloud_hooks_smoke.py"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "t800_router_policy_gate.py"; Path = Join-Path $plugin "scripts\t800_router_policy_gate.py"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "t800_prompt_eval_gate.py"; Path = Join-Path $plugin "scripts\t800_prompt_eval_gate.py"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "t800_operator_docs_gate.py"; Path = Join-Path $plugin "scripts\t800_operator_docs_gate.py"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "shared/cloud-hooks-matrix.json"; Path = Join-Path $plugin "shared\cloud-hooks-matrix.json"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "shared/router-cost-policy-contract.md"; Path = Join-Path $plugin "shared\router-cost-policy-contract.md"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "shared/prompt-eval-contract.md"; Path = Join-Path $plugin "shared\prompt-eval-contract.md"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "shared/operator-surface-2026-07-contract.md"; Path = Join-Path $plugin "shared\operator-surface-2026-07-contract.md"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "playbooks/06-side-chat-i-async.md"; Path = Join-Path $plugin "playbooks\06-side-chat-i-async.md"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "tests/fixtures/prompt-eval/cases.json"; Path = Join-Path $plugin "tests\fixtures\prompt-eval\cases.json"; ShouldExist = $true; MustContain = $null },
+    @{ Name = "skills/.../router-modes.md"; Path = Join-Path $skills "t-800-run-gates\references\router-modes.md"; ShouldExist = $true; MustContain = $null },
     @{ Name = "skill factory-scaffold"; Path = Join-Path $skills "t-800-factory-scaffold\SKILL.md"; ShouldExist = $true; MustContain = $null },
     @{ Name = "skill fix-pack"; Path = Join-Path $skills "t-800-fix-pack\SKILL.md"; ShouldExist = $true; MustContain = $null },
     @{ Name = "skill plugin-sync"; Path = Join-Path $skills "t-800-plugin-sync\SKILL.md"; ShouldExist = $true; MustContain = $null },
@@ -187,6 +198,9 @@ function Invoke-PluginGate {
 
 Invoke-PluginGate -Name "agents mirror gate" -ScriptName "t800_agents_mirror_gate.py"
 Invoke-PluginGate -Name "kb provenance gate" -ScriptName "t800_kb_provenance_gate.py"
+Invoke-PluginGate -Name "router policy gate" -ScriptName "t800_router_policy_gate.py"
+Invoke-PluginGate -Name "prompt eval gate" -ScriptName "t800_prompt_eval_gate.py"
+Invoke-PluginGate -Name "operator docs gate" -ScriptName "t800_operator_docs_gate.py"
 
 $syncPy = Join-Path $plugin "scripts\t800_plugin_sync.py"
 if (-not (Test-Path $syncPy)) {

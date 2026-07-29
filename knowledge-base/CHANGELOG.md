@@ -2,6 +2,48 @@
 
 Формат: дата — что изменилось — источник.
 
+## 1.21.4 — 2026-07-29 (Side chat / Slack / async docs)
+
+- **`shared/operator-surface-2026-07-contract.md`**: main = factory; `/side` = разведка; Slack = plan-before-start; async/`Build in Parallel` для research fan-out
+- Docs: `docs/НАЧАЛО-РАБОТЫ.md`, `docs/ПОЛНАЯ-ИНСТРУКЦИЯ.md` (§ Side / Slack / Parallel)
+- Playbook: `playbooks/06-side-chat-i-async.md`
+- Operator bullets (+ mirror `.cursor/agents/`); **readonly: true** сохранён
+- Gate: `scripts/t800_operator_docs_gate.py` + `tests/test_operator_docs_gate.py` (маркеры `/side`, `Slack`, `Parallel|async`)
+- `tests/TEST-SCENARIOS.md` сценарий 10; `verify-install.sh` / `.ps1`
+
+## 1.21.3 — 2026-07-29 (Prompt eval gate)
+
+- **`shared/prompt-eval-contract.md`**: Phase 4 behavioral eval — must_contain / must_not_contain для 3 поверхностей
+- Fixtures: `tests/fixtures/prompt-eval/cases.json` (factory-bypass rule, loop-conductor open-only, intake no-WebSearch)
+- Gate: `scripts/t800_prompt_eval_gate.py` (+ optional `--promptfoo` WARN skip) + `tests/test_prompt_eval_gate.py`
+- `verify-install.sh` / `.ps1`: script + contract + run prompt-eval gate
+- `skills/t-800-run-gates/references/gate-matrix.md`: строка prompt-eval
+- Self-golden: `docs/examples/self-golden/expected.json` + hashes
+
+## 1.21.2 — 2026-07-29 (Router cost policy)
+
+- **`shared/router-cost-policy-contract.md`**: DEEP → Cost|Balance; factory architect/builder → Intelligence|Balance; `model: inherit` + Router Auto
+- Skill note: `skills/t-800-run-gates/references/router-modes.md` + ссылка в `SKILL.md`
+- `commands/t800-start.md` §2a Router; `agents/t-800-research-lead.md` DEEP Cost/Balance note (+ mirror)
+- Gate: `scripts/t800_router_policy_gate.py` + `tests/test_router_policy_note.py`
+- `verify-install.sh` / `.ps1`: script list + run router policy gate
+
+## 1.21.1 — 2026-07-29 (KPI telemetry)
+
+- **`scripts/t800_telemetry.py`**: schema **1.1** — optional `duration_ms` / `tokens_in` / `tokens_out` / `retries` (int≥0); CLI `--summarize` → `{memory}/telemetry/summary.json`; `--strict-kpi` (>50% без `duration_ms` → exit 1)
+- Контракт: `shared/telemetry-kpi-contract.md`; ссылка в `shared/loop-engineering-contract.md`
+- `t800_run_report.py`: optional `--duration-ms` / `--retries` (+ `--started-at`/`--ended-at` или env)
+- Tests: `tests/test_telemetry_kpi.py` + fixture `tests/fixtures/telemetry/sample-runs.jsonl`
+
+## 1.21.0 — 2026-07-29 (Cloud hooks matrix)
+
+- **`shared/cloud-hooks-matrix.json`** + **`shared/cloud-hooks-matrix-contract.md`**: матрица Cursor 3.11 cloud conversation hooks (observe / gate_candidate / local_only, sole_gate_forbidden)
+- **`scripts/t800_cloud_hooks_smoke.py`**: validate hooks.json — command-only, fail-open WARN на local_only, FAIL sole conversation gate / type=prompt; `--fixture-dir`
+- Fixtures: `tests/fixtures/cloud-hooks/` + runner `tests/test_cloud_hooks_smoke.py`
+- Example: `docs/examples/cloud-hub/hooks-observe.example.json`
+- `shared/cloud-hub-setup-contract.md` § Cloud hooks matrix; `t-800-cloud-hub-smoke` checklist
+- `verify-install.sh` / `.ps1`: наличие smoke script + matrix JSON
+
 ## 1.20.1 — 2026-07-29 (Hardening gates)
 
 - **`t800_run_gate.py`**: `--require-kb-provenance`; auto-ON при `--strict-create` + `--plugin-root`: agents-mirror, kb-provenance, frontmatter-yaml, skill-frontmatter, plugin-schema, command-chains

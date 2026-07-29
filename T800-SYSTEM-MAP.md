@@ -1,8 +1,8 @@
 # T800-SYSTEM-MAP.md
 
 Карта системы для внешнего архитектора (проектирование / усиление **loop engineering**).  
-Сгенерировано: 2026-07-29 (обновлено под **1.20.1**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
-Версия плагина на момент карты: **1.20.1**.  
+Сгенерировано: 2026-07-29 (обновлено под **1.21.4**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
+Версия плагина на момент карты: **1.21.4**.  
 Правило документа: факты (файл / кто пишет / кто читает / авто|руками). Без маркетинга.
 
 ---
@@ -11,7 +11,7 @@
 
 | Метрика | Значение | Источник |
 |---------|----------|----------|
-| Версия | `1.20.1` | `.cursor-plugin/plugin.json` |
+| Версия | `1.21.4` | `.cursor-plugin/plugin.json` |
 | Display name | T-800 Agent | там же |
 | GitHub | `https://github.com/Khar-AG/t-800-agent` | `shared/release-channel.json` |
 | Branch релиза | `main` | `shared/release-channel.json` |
@@ -28,7 +28,7 @@
 | Размер checkout | **~21M** (многое — `knowledge-base/raw/` HTML) | du |
 | Agents body size | ~2735+ строк суммарно по `agents/*.md` | wc |
 | Hooks | `sessionStart` (один; dispatcher внутри bootstrap), `beforeFileEdit` | `hooks.json` |
-| Tests | `tests/TEST-SCENARIOS.md` + fixtures loop/ + `tests/test_teya_adapter_phase1.py` + golden; нет CI unit-suite | файл |
+| Tests | `tests/TEST-SCENARIOS.md` + fixtures loop/prompt-eval/ + `tests/test_*`.py + golden; нет полного CI suite | файл |
 | Teya integration | **Adapter only** `adapters/teya/` (Phase 1) — не orchestration kernel | adapters/teya |
 | Хостинг | локальный Cursor plugin: `~/.cursor/plugins/local/t-800-agent/` | install scripts |
 | Деплой | `bash scripts/install-plugin.sh` → copy в plugins/local; автообновление с GitHub на `sessionStart` | INSTALL + auto-update-contract |
@@ -39,7 +39,7 @@
 |------|------------|
 | Артефакты Cursor | Markdown agents/commands/skills, `.mdc` rules, `hooks.json` |
 | Оркестрация | Cursor Agent + `Task(subagent_type=…)` (лиды отделов) |
-| Machine gates | Bash + Python3 (`t800_run_gate.py`, `t800_doctor.py`, `t800_plugin_audit.py`, `t800_factory_bypass_gate.py`, skill/schema/chains gates, `t800_plugin_sync.py`) |
+| Machine gates | Bash + Python3 (`t800_run_gate.py`, `t800_doctor.py`, `t800_plugin_audit.py`, `t800_factory_bypass_gate.py`, `t800_prompt_eval_gate.py`, skill/schema/chains gates, `t800_plugin_sync.py`) |
 | Registry | JSON `registry/agents-registry.json` |
 | KB sync | PowerShell `scripts/sync-docs.ps1` (Windows-канон в контракте; macOS — ручной/частичный) |
 | Память прогона | Markdown + JSON в `{memory_path}/` целевого проекта |
@@ -184,6 +184,9 @@
 | `t800_run_gate.py` | наличие `STATE.md`; опц. inventory; опц. validate-agents; опц. `--strict-create` (manifest factory + fragment factory status + brief done); `--require-agents-mirror` / `--require-kb-provenance` / `--require-frontmatter-yaml` / `--require-skill-frontmatter` / `--require-plugin-json-schema` / `--require-command-chains` (mirror+kb+FM gates auto под `--strict-create`+`--plugin-root`) | Авто (exit code) | стоп «готово»; Директор должен чинить | budget 2 на уровне **контракта** (не внутри скрипта) | `scripts/t800_run_gate.py` | **Да:** JSON `{ok, checks, error}` на stdout |
 | `t800_agents_mirror_gate.py` | parity `agents/` ↔ `.cursor/agents/`; auto под `--strict-create`+`--plugin-root`; always-on в verify-install | Авто | FAIL drift | sync/agents | `scripts/t800_agents_mirror_gate.py` | check `agents_mirror` в run_gate |
 | `t800_kb_provenance_gate.py` | KB changes in manifest or manual provenance; auto под strict-create; verify-install run | Авто | FAIL orphan KB | через factory/maintainer | `scripts/t800_kb_provenance_gate.py` | check `kb_provenance` в run_gate |
+| `t800_router_policy_gate.py` | note-gate: `shared/router-cost-policy-contract.md` + маркеры Cost/Balance/Intelligence/DEEP/inherit + skill `references/router-modes.md`; always-on verify-install; **не** auto в `--strict-create` | Авто | FAIL missing note/markers | через factory PATCH | `scripts/t800_router_policy_gate.py` | **Да:** JSON `{ok, markers, errors}` |
+| `t800_prompt_eval_gate.py` | behavioral must_contain/must_not_contain по `tests/fixtures/prompt-eval/cases.json` (3 surfaces); optional `--promptfoo` WARN skip; always-on verify-install; **не** auto в `--strict-create` | Авто | FAIL missing/forbidden markers | через factory PATCH | `scripts/t800_prompt_eval_gate.py` | **Да:** JSON `{ok, cases, passed, failed}` |
+| `t800_operator_docs_gate.py` | маркеры `/side`, `Slack`, `Parallel|async` в contract + docs + playbook 06; always-on verify-install; **не** auto в `--strict-create` | Авто | FAIL missing markers | через factory PATCH | `scripts/t800_operator_docs_gate.py` | **Да:** JSON `{ok, files, errors}` |
 | `t800_agent_frontmatter_yaml_gate.py` | валидный YAML frontmatter agents (PyYAML); `--file` / `--plugin-root`; вызывается из `t800_run_gate.py` через `--require-frontmatter-yaml` или auto под `--strict-create`+`--plugin-root` | Авто (exit code) | FAIL exit ≠0 → repair agent FM | через factory | `scripts/t800_agent_frontmatter_yaml_gate.py` | **Да:** текст OK/FAIL + exit; check `frontmatter_yaml` в JSON run_gate |
 | `t800_skill_frontmatter_gate.py` | frontmatter skills/*/SKILL.md; auto под `--strict-create`+`--plugin-root` | Авто | FAIL → repair skill FM | через factory | `scripts/t800_skill_frontmatter_gate.py` | check `skill_frontmatter` в run_gate |
 | `t800_plugin_schema_gate.py` | `.cursor-plugin/plugin.json` vs `registry/plugin.manifest.schema.json`; auto под strict-create | Авто | FAIL → repair plugin.json/schema | через factory | `scripts/t800_plugin_schema_gate.py` | check `plugin_json_schema` в run_gate |
@@ -284,7 +287,7 @@
 | maintainer | KB + sync, не промпты агентов (по description) |
 | Директор main chat | **Запрещено** правилом; hook WARN; bypass_gate FAIL если запущен |
 
-Проверка «не сломало старое поведение»: structural gates да; behavioral golden tests — **НЕТ** (кроме ручных `tests/TEST-SCENARIOS.md`).
+Проверка «не сломало старое поведение»: structural gates да; узкий behavioral — `t800_prompt_eval_gate.py` (3 surfaces); полный suite — **НЕТ** (кроме ручных `tests/TEST-SCENARIOS.md`).
 
 ---
 

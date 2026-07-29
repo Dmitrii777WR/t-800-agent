@@ -27,7 +27,8 @@ metadata:
 - `scripts/t800_run_gate.py --help`
 
 Матрица: [gate-matrix.md](references/gate-matrix.md).  
-CREATE: [strict-create.md](references/strict-create.md).
+CREATE: [strict-create.md](references/strict-create.md).  
+Router modes: [router-modes.md](references/router-modes.md) (`shared/router-cost-policy-contract.md`).
 
 ## Алгоритм
 

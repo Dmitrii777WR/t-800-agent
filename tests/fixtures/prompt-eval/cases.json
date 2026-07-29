@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "description": "Phase 4 prompt-eval: must_contain / must_not_contain for 3 critical surfaces",
+  "cases": [
+    {
+      "id": "factory_bypass_rule",
+      "file": "rules/t-800-mandatory-routing.mdc",
+      "must_contain": [
+        "Task(t-800-factory)",
+        "## BLOCKER"
+      ],
+      "must_not_contain": [
+        "Разрешено Write в agents/ из main chat",
+        "можно править agents без factory"
+      ]
+    },
+    {
+      "id": "loop_conductor_open_only",
+      "file": "agents/t-800-loop-conductor.md",
+      "must_contain": [
+        "status=open",
+        "open only"
+      ],
+      "must_not_contain": [
+        "approve applied as open",
+        "auto-approve closed"
+      ]
+    },
+    {
+      "id": "intake_clarifier_no_websearch",
+      "file": "agents/t-800-intake-clarifier.md",
+      "must_contain": [
+        "Do NOT WebSearch",
+        "Do NOT invent answers"
+      ],
+      "must_not_contain": [
+        "WebSearch обязателен",
+        "invent answers freely"
+      ]
+    }
+  ]
+}
