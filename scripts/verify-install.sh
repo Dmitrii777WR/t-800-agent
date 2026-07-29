@@ -142,7 +142,8 @@ for script in t800_run_gate.py t800_doctor.py t800_audit_to_fixpack.py \
   t800_plugin_sync.py t800_skill_frontmatter_gate.py t800_plugin_schema_gate.py \
   t800_command_chains_gate.py t800_command_chains_gate.sh \
   t800_cloud_hooks_smoke.py t800_router_policy_gate.py t800_prompt_eval_gate.py \
-  t800_operator_docs_gate.py; do
+  t800_operator_docs_gate.py \
+  t800_usage_ingest.py t800_loop_hitl_approve.py t800_auto_low_batch.py; do
   if [ -f "$PLUGIN/scripts/$script" ]; then
     echo "OK   $script"
   else
@@ -172,6 +173,24 @@ if [ -f "$PLUGIN/shared/operator-surface-2026-07-contract.md" ]; then
   echo "OK   shared/operator-surface-2026-07-contract.md"
 else
   echo "FAIL shared/operator-surface-2026-07-contract.md missing"
+  failed=$((failed + 1))
+fi
+if [ -f "$PLUGIN/shared/auto-low-hitl-contract.md" ]; then
+  echo "OK   shared/auto-low-hitl-contract.md"
+else
+  echo "FAIL shared/auto-low-hitl-contract.md missing"
+  failed=$((failed + 1))
+fi
+if [ -f "$PLUGIN/templates/usage-draft.json.template" ]; then
+  echo "OK   templates/usage-draft.json.template"
+else
+  echo "FAIL templates/usage-draft.json.template missing"
+  failed=$((failed + 1))
+fi
+if [ -f "$PLUGIN/tests/fixtures/auto-low/policy.enabled.json" ]; then
+  echo "OK   tests/fixtures/auto-low/policy.enabled.json"
+else
+  echo "FAIL tests/fixtures/auto-low/policy.enabled.json missing"
   failed=$((failed + 1))
 fi
 if [ -f "$PLUGIN/playbooks/06-side-chat-i-async.md" ]; then

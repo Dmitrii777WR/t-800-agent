@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.1",
+  "run_id": "fixture-auto-low",
+  "lessons": [
+    {
+      "id": "low-docs-changelog-1",
+      "symptom": "Обновить одну строку CHANGELOG (fixture LOW)",
+      "severity": "low",
+      "class": "docs",
+      "risk_class": "LOW",
+      "status": "open",
+      "proposed_patch": {
+        "files": ["knowledge-base/CHANGELOG.md"],
+        "change": "Добавить примечание fixture (не применять в prod без HITL)"
+      }
+    }
+  ]
+}

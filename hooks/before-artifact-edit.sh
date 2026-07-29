@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
 # beforeFileEdit (T-800) — policy modes: observe | warn | enforce
-# Default: warn (allow + userMessage). Enforce only via T800_TEYA_HOOK_MODE=enforce
-# (or T800_HOOK_MODE). No auto-enable. Sibling Teya checkout paths are NOT memory SoT.
+# Default: enforce (deny artifact edits outside factory). Opt-out:
+#   T800_HOOK_MODE=warn|observe  or  T800_TEYA_HOOK_MODE=warn|observe
+# Sibling Teya checkout paths are NOT memory SoT.
 set -u
 
 payload=$(cat 2>/dev/null || true)
 
-# Mode: observe | warn | enforce (default warn)
-HOOK_MODE="${T800_TEYA_HOOK_MODE:-${T800_HOOK_MODE:-warn}}"
+# Mode: observe | warn | enforce (default enforce since 1.22.0)
+HOOK_MODE="${T800_TEYA_HOOK_MODE:-${T800_HOOK_MODE:-enforce}}"
 HOOK_MODE=$(printf '%s' "$HOOK_MODE" | tr '[:upper:]' '[:lower:]')
 case "$HOOK_MODE" in
   observe|warn|enforce) ;;
-  *) HOOK_MODE="warn" ;;
+  *) HOOK_MODE="enforce" ;;
 esac
 
 allow() {
@@ -138,16 +139,18 @@ if [[ -x "${PLUGIN_ROOT}/scripts/discover-target-project.sh" ]]; then
   fi
 fi
 
-MSG="T-800 WARN: правка Cursor-артефакта (${base}) без T800_FACTORY_RUN_ID / factory в run-manifest. Используйте /t800-start или /t800-fix → Task(t-800-factory). Gate: t800_factory_bypass_gate.py / t800_teya_onboarding_gate.py. mode=${HOOK_MODE}"
+MSG_WARN="T-800 WARN: правка Cursor-артефакта (${base}) без T800_FACTORY_RUN_ID / factory в run-manifest. Используйте /t800-start или /t800-fix → Task(t-800-factory). Gate: t800_factory_bypass_gate.py. mode=${HOOK_MODE}"
+
+MSG_DENY="T-800 DENY: правка Cursor-артефакта (${base}) вне factory run. Используйте /t800-start или /t800-fix → Task(t-800-factory). Opt-out: T800_HOOK_MODE=warn|observe (или T800_TEYA_HOOK_MODE). Bypass: T800_FACTORY_RUN_ID / factory completed в run-manifest."
 
 case "$HOOK_MODE" in
   observe)
     allow
     ;;
-  enforce)
-    deny "T-800 DENY: правка Cursor-артефакта (${base}) вне factory run (T800_TEYA_HOOK_MODE=enforce)."
+  warn)
+    warn_allow "$MSG_WARN"
     ;;
   *)
-    warn_allow "$MSG"
+    deny "$MSG_DENY"
     ;;
 esac

@@ -16,9 +16,33 @@
 | `run_id` | string | optional | id прогона |
 | `stage` | string | optional | отдел / этап (для `by_stage`) |
 | `status` | string | optional | pass\|fail\|partial\|… |
-| `event` | string | optional | тип события (`run_report`, `run_complete`, …) |
+| `event` | string | optional | тип события (`run_report`, `run_complete`, `usage_ingest`, …) |
+| `source` | string | optional | для ingest: `ui_or_env` |
 
 **Append-only:** события schema 1.0 без KPI остаются валидными. Негативные / не-int KPI → `ValueError` / exit 1.
+
+## Usage ingest (1.22.0)
+
+Мост ручного ввода из Cursor Usage UI / env → тот же JSONL.
+
+| | |
+|--|--|
+| Script | `scripts/t800_usage_ingest.py` |
+| Template | `templates/usage-draft.json.template` |
+| Event | `event=usage_ingest`, `source=ui_or_env` |
+| Path | `{memory_path}/telemetry/runs.jsonl` |
+
+**Merge (низкий → высокий приоритет):** empty → `--from-env` → `--from-file` → CLI flags.
+
+Env (`--from-env`): `T800_USAGE_TOKENS_IN`, `T800_USAGE_TOKENS_OUT`, `T800_USAGE_DURATION_MS`, `T800_USAGE_RUN_ID`.
+
+Нужно хотя бы одно из: `tokens_in` / `tokens_out` / `duration_ms`.
+
+```bash
+python3 scripts/t800_usage_ingest.py --memory-path PATH --tokens-in 10 --tokens-out 20
+python3 scripts/t800_usage_ingest.py --memory-path PATH --from-env
+python3 scripts/t800_usage_ingest.py --memory-path PATH --from-file usage-draft.json
+```
 
 ## Пути
 
@@ -63,4 +87,5 @@ python3 scripts/t800_telemetry.py --memory-path PATH --summarize --strict-kpi
 
 ## Версия
 
+- Обновлён: 2026-07-29 · T-800 **1.22.0** (usage ingest)
 - Введён: 2026-07-29 · T-800 **1.21.1** · schema **1.1**

@@ -35,22 +35,25 @@ report → lessons → classify → fixpack → /t800-loop → /t800-fix
 | events_jsonl | `{memory_path}/loop/events.jsonl` |
 | paused | `{memory_path}/.loop-paused` |
 | policy | `{memory_path}/loop-policy.json` |
+| auto_low_hitl | `{memory_path}/.loop-auto-low-approved` |
+| auto_low_log | `{memory_path}/telemetry/auto-low-log.jsonl` |
 
 ## Фазы: Prove → Harden → Automate
 
 | Фаза | Содержание |
 |------|------------|
 | **Prove** | fixtures `tests/fixtures/loop/`; `t800_golden_check.py` (sha256); classifier **zero false LOW** (denylist wins); `report.json` + `lessons.json` schema-valid на self-t800 |
-| **Harden** | fail-open dispatcher + bootstrap; `.loop-paused`; Anti-Ralph out-list; `before-artifact-edit` WARN-only; `risk_class` script-only |
-| **Automate** | `bootstrap_invoke` observe (ONE sessionStart); `/t800-loop` semi-manual batch после HITL — **не** stop+followup |
+| **Harden** | fail-open dispatcher + bootstrap; `.loop-paused`; Anti-Ralph out-list; `before-artifact-edit` **default enforce** (opt-out `T800_HOOK_MODE`/`T800_TEYA_HOOK_MODE`=warn\|observe); `risk_class` script-only |
+| **Automate** | `bootstrap_invoke` observe (ONE sessionStart); `/t800-loop` semi-manual batch после HITL — **не** stop+followup; optional auto-LOW batch после HITL-файла (см. `auto-low-hitl-contract.md`) |
 
 ### Daily budget (после Prove)
 
 После **5 зелёных** semi-manual batch (`/t800-loop` → `/t800-fix` + gate pass):
 
-- daily budget **N = 3** автоматических LOW-кандидатов в день (policy).
-- **auto-LOW всё ещё OFF по умолчанию**, пока Prove не закрыт (fixtures + zero false LOW + golden).
-- Включение auto-LOW — явное решение в `{memory_path}/loop-policy.json`, не default плагина.
+- daily budget **N = 3** автоматических LOW-кандидатов в день (policy `auto_low.daily_budget`).
+- **auto-LOW всё ещё OFF по умолчанию** в template (`auto_low.enabled=false`).
+- Включение: (1) `auto_low.enabled: true` в `{memory}/loop-policy.json`; (2) HITL `t800_loop_hitl_approve.py --auto-low`; (3) `t800_auto_low_batch.py` (default dry-run; `--apply` → packs only → `/t800-fix`).
+- Контракт: `shared/auto-low-hitl-contract.md`.
 
 ## Anti-Ralph OUT list
 
@@ -287,7 +290,8 @@ repair:
 ## Связанные
 
 - `shared/lesson-schema-contract.md`  
-- `shared/telemetry-kpi-contract.md` — KPI schema 1.1 (`duration_ms` / tokens / retries, `--summarize`)  
+- `shared/telemetry-kpi-contract.md` — KPI schema 1.1 + usage ingest 1.22.0  
+- `shared/auto-low-hitl-contract.md` — auto-LOW после HITL  
 - `shared/department-orchestration-contract.md`  
 - `shared/fix-pipeline-contract.md`  
 - `shared/project-memory-contract.md`  
@@ -299,11 +303,15 @@ repair:
 - `scripts/t800_risk_classifier.py`  
 - `scripts/t800_loop_queue_write.py`  
 - `scripts/t800_telemetry.py`  
+- `scripts/t800_usage_ingest.py`  
+- `scripts/t800_loop_hitl_approve.py`  
+- `scripts/t800_auto_low_batch.py`  
 - `commands/t800-loop.md`  
 - `agents/t-800-loop-conductor.md`  
 
 ## Версия
 
+- Обновлён: 2026-07-29 · T-800 **1.22.0** (hook enforce default + auto-LOW HITL + usage ingest)  
 - Обновлён: 2026-07-17 · Loop Engineering **2.0.0** (+ Revert protocol golden FAIL / `.loop-paused` kill switch)  
 - Предыдущий канон gate: 2026-07-09 · T-800 **1.13.0** (`t800_run_gate.py`, `/t800-fix`)  
 - Введён MVP: 2026-07-09 · T-800 **1.12.0**

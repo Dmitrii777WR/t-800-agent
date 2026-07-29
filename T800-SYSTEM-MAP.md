@@ -1,8 +1,8 @@
 # T800-SYSTEM-MAP.md
 
 Карта системы для внешнего архитектора (проектирование / усиление **loop engineering**).  
-Сгенерировано: 2026-07-29 (обновлено под **1.21.5**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
-Версия плагина на момент карты: **1.21.5**.  
+Сгенерировано: 2026-07-29 (обновлено под **1.22.0**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
+Версия плагина на момент карты: **1.22.0**.  
 Правило документа: факты (файл / кто пишет / кто читает / авто|руками). Без маркетинга.
 
 ---
@@ -11,7 +11,7 @@
 
 | Метрика | Значение | Источник |
 |---------|----------|----------|
-| Версия | `1.21.5` | `.cursor-plugin/plugin.json` |
+| Версия | `1.22.0` | `.cursor-plugin/plugin.json` |
 | Display name | T-800 Agent | там же |
 | GitHub | `https://github.com/Khar-AG/t-800-agent` | `shared/release-channel.json` |
 | Branch релиза | `main` | `shared/release-channel.json` |
@@ -201,7 +201,7 @@
 | `t800_plugin_audit.py` | inventory/graph/orphans/alwaysApply | Авто | exit 1/2 | — | `scripts/t800_plugin_audit.py` | **Да:** `inventory.json`, `scorecard.json` |
 | `factory-auditor` (агент) | prompt-auditor ok + scripts + registry + quality | Агент readonly + scripts | `status: blocked` → factory repair | ≤2 в factory lead | `agents/t-800-factory-auditor.md` | **Частично:** YAML в ответе/fragment (`status`, `machine_gates`, `ralph_wiggum_risk`); не единый schema-файл |
 | `prompt-auditor` | качество промпта agent/skill/command | Агент | blocked ship | через factory | `agents/t-800-prompt-auditor.md` | YAML в fragment/ответе |
-| `beforeFileEdit` hook | правка Cursor-артефактов | Hook | **WARN allow** (не hard-deny v1) | — | `hooks/before-artifact-edit.sh` | JSON stdout `{continue, permission, userMessage}` |
+| `beforeFileEdit` hook | правка Cursor-артефактов | Hook | **default DENY (enforce)**; opt-out warn/observe via env | — | `hooks/before-artifact-edit.sh` | JSON stdout `{continue, permission, userMessage}` |
 | Mandatory routing rule | запрет Write артефактов вне factory | Advisory rule | социальный / gate scripts если запущены | — | `rules/t-800-mandatory-routing.mdc` (+ global copy после bootstrap) | Нет (текст правила) |
 | Research coverage_matrix | полнота DEEP research | Агент synthesizer/lead | FAIL incomplete → не идти дальше (контракт) | человек/повтор research | `shared/deep-research-contract.md` | Обычно в fragment/research_brief YAML — **не** отдельный gate script |
 | alwaysApply hard (≥20) | bloat rules | `t800_plugin_audit.py --strict-alwaysapply large` | exit 2 | человек | plugin-audit-contract | scorecard JSON |
@@ -375,13 +375,13 @@
 
 ## 8. Болевые точки (топ реальных)
 
-Источники: CHANGELOG 1.12–1.21.4 (+ hygiene 1.21.5), STATE Lessons, TEST scenarios 6–7, fix-pack drafts, контракты loop v2.
+Источники: CHANGELOG 1.12–1.22.0, STATE Lessons, TEST scenarios 6–7, fix-pack drafts, контракты loop v2.
 
 | # | Боль | Доказательство / симптом | Лечится сейчас? |
 |---|------|--------------------------|-----------------|
-| 1 | **Обход factory** (агенты пишутся из main/Plan Implement) | Инцидент Zen Intel → v1.16.1 bypass_gate + hook WARN + strict-create | Частично: WARN не hard-deny; gates надо **запускать** |
+| 1 | **Обход factory** (агенты пишутся из main/Plan Implement) | Инцидент Zen Intel → v1.16.1 bypass_gate + hook WARN + strict-create | **1.22.0:** hook default **enforce**; opt-out warn; gates надо запускать |
 | 2 | **Self-PASS без scripts** (Ralph) | loop-contract + auditor `ralph_wiggum_risk` | Контрактом; enforcement = дисциплина Директора |
-| 3 | **Lessons не замыкаются в патч** | STATE Lessons есть; авто `/t800-fix` нет | Нет closed loop |
+| 3 | **Lessons не замыкаются в патч** | STATE Lessons есть; авто `/t800-fix` нет | Semi-manual + optional auto-LOW HITL path (OFF в template) |
 | 4 | **fix-pack drafts сырые** | `fix-packs/final-smoke.md`: «уточните пути вручную» | Скрипт генерит draft, человек доводит |
 | 5 | **run-manifest ≠ один прогон** | кумулятивный JSON с phase-0…v1.12 | Путает strict-create / аудиты истории |
 | 6 | **Зеркала user-home** ломали модель установки | v1.12.1 no-mirror | Исправлено; VERIFY следит |
@@ -389,8 +389,8 @@
 | 8 | **DEEP research дорогой / неполный** | coverage_matrix FAIL; Context7 always-on запрещён | Режим LIGHT/SKIP; всё равно зависит от lead |
 | 9 | **Директор зовёт leaf в обход lead** | department-contract запрещает | Нет machine detector |
 | 10 | **Повторяющиеся install/path Lessons** | STATE: «verify/health должны проверять PLUGIN paths» | Патчились в 1.12.1; риск регресса при правке install |
-| 11 | **Hook не блокирует** | before-artifact-edit allow+WARN | v1 hard-deny отложен |
-| 12 | **Метрики прогонов** (CLOSED/partial) | schema KPI 1.21.1: `duration_ms`, tokens, retries, `--summarize` (`t800_telemetry.py`, `shared/telemetry-kpi-contract.md`) | CLOSED schema; gap = live token capture из Cursor UI не wired |
+| 11 | **Hook не блокирует** (CLOSED 1.22.0) | before-artifact-edit default **enforce** | Opt-out warn/observe; Teya adapter `auto_enable_enforce` всё ещё false |
+| 12 | **Метрики прогонов** (CLOSED/partial) | schema KPI 1.21.1 + **usage_ingest** bridge 1.22.0 | CLOSED schema + manual paste from UI; auto live capture из Cursor API — не wired |
 | 13 | **KB UPDATE-QUEUE ≠ prompt patches** | путаница с Teya Brain proposals | Разные механизмы; легко спроектировать loop не туда |
 | 14 | **Cloud Hub secrets / drift** | dual-write contract; smoke checklist | Процессный, не machine |
 | 15 | **Дубли `.cursor/agents/` mirror** в plugin tree | файлы есть рядом с `agents/` | Риск рассинхрона; verify/install должны держать parity |
@@ -403,7 +403,7 @@
 |---------|-------------|-----|
 | Длительность прогона | **PARTIAL** (schema 1.21.1) | optional `duration_ms` → `{memory}/telemetry/`; `--summarize` |
 | Число ретраев repair | **PARTIAL** (schema 1.21.1) | optional `retries` + текстовый budget в контракте |
-| Токены / $ | **PARTIAL** (поля schema) | `tokens_in`/`tokens_out` в schema; live capture из Cursor UI — не wired |
+| Токены / $ | **PARTIAL** (schema + ingest) | `tokens_in`/`tokens_out`; `t800_usage_ingest.py` paste from UI; live Cursor API — не wired |
 | Доля прогонов без человека | **НЕТ** | — |
 | Exit codes gates | Да, если запущены | stdout/stderr + иногда JSON |
 | Audit inventory | Да | `audits/<run-id>/` |
@@ -411,7 +411,7 @@
 | Auto-update cache | Да | TTL 6ч в auto-check script (локальный cache) |
 | Hook WARN events | Только userMessage в момент edit | не агрегируется |
 
-**Вывод для архитектора loop:** telemetry-слой KPI есть с **1.21.1** (`t800_telemetry.py` + `--summarize`); evaluator ещё **semi-manual**, **auto-LOW OFF**.
+**Вывод для архитектора loop:** telemetry KPI + **usage_ingest** с **1.22.0**; evaluator ещё **semi-manual**, **auto-LOW OFF** в template (HITL path documented).
 
 ---
 
@@ -631,7 +631,7 @@ bash scripts/verify-install.sh
 
 ## Приложение E — Полный roster registry (43)
 
-Источник: сверять `registry/agents-registry.json` с текущей версией (**1.21.5**); roster count **43**. `calls`/`calledBy` усечены если длинные.  
+Источник: сверять `registry/agents-registry.json` с текущей версией (**1.22.0**); roster count **43**. `calls`/`calledBy` усечены если длинные.  
 Добавлено с 1.16.1: `t-800-loop-conductor` (readonly, `/t800-loop`).
 
 | id | category | readonly | calls | calledBy |
@@ -810,7 +810,7 @@ Install **не** ставит его молча (Lesson в STATE + CHANGELOG 1.1
 
 ## Приложение K — Сравнение Teya post-run loop vs T-800 loop MVP
 
-| Свойство | Teya Pro (эталон из задания) | T-800 **1.21.5** |
+| Свойство | Teya Pro (эталон из задания) | T-800 **1.22.0** |
 |----------|------------------------------|------------------|
 | Триггер после прогона | post-run 4/4 | observe dispatcher + **semi-manual** `/t800-loop` (не stop/followup) |
 | Ретроспектива | `teya-post-run-retrospective` | `t800_run_report` → lessons + `t-800-loop-conductor` |
@@ -820,9 +820,9 @@ Install **не** ставит его молча (Lesson в STATE + CHANGELOG 1.1
 | Machine gate «готово» | свои gates сайта/темы | `t800_run_gate.py` + golden + factory-auditor |
 | Repair budget | свои ретраи отделов | max 2 на factory auditor |
 | Релиз плагина | `/teya-release-sync` и т.п. | git push main + auto-update |
-| Метрики токенов | НЕТ ДАННЫХ (типично) | schema KPI 1.21.1; live UI tokens — optional / не wired |
+| Метрики токенов | НЕТ ДАННЫХ (типично) | schema KPI + usage_ingest paste; live UI API — optional / не wired |
 
-Вывод: T-800 **1.21.5** замыкает semi-manual loop (report→lessons→classify→queue→`/t800-fix`); **KPI layer 1.21.1 есть**; **auto-LOW OFF**; live tokens из Cursor UI — optional.
+Вывод: T-800 **1.22.0** — hook core **enforce** (adapter Teya `auto_enable_enforce` false); semi-manual loop + optional auto-LOW HITL (OFF в template); KPI + usage bridge.
 
 ---
 
@@ -869,7 +869,7 @@ Lessons там же про verify/health paths и bootstrap consent — **пов
 3. Structured Lessons schema (`findings[].risk`, `evidence`, `suggested_files`).
 4. Команда `/t800-loop` или расширение `/t800-fix`: retrospective → draft pack → optional auto PATCH if risk=low.
 5. Golden smoke: workspace fixture + expected hash list.
-6. Opt-in `beforeFileEdit` hard-deny.
+6. Hook `beforeFileEdit` default enforce (1.22.0); opt-out warn/observe.
 7. Запрет новых research/brain агентов сохранить (усиливать scripts, не roster).
 
 ---

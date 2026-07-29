@@ -2,6 +2,15 @@
 
 Формат: дата — что изменилось — источник.
 
+## 1.22.0 — 2026-07-29 (Strengthen: usage ingest + auto-LOW HITL + hook enforce)
+
+- **Usage ingest:** `scripts/t800_usage_ingest.py` + `templates/usage-draft.json.template`; merge env/file/CLI → telemetry `event=usage_ingest` `source=ui_or_env`; секция в `shared/telemetry-kpi-contract.md`
+- **Auto-LOW HITL:** `auto_low.enabled=false` в `templates/loop-policy.json.template`; `t800_loop_hitl_approve.py` / `t800_auto_low_batch.py` (default dry-run; `--apply` → packs only, never factory); `shared/auto-low-hitl-contract.md`; `/t800-loop` §3b
+- **Hook:** `hooks/before-artifact-edit.sh` default **enforce**; opt-out `T800_HOOK_MODE` / `T800_TEYA_HOOK_MODE`=warn|observe; Teya `adapters/teya/policy.json` — note only (`auto_enable_enforce` остаётся false, `default_mode` warn)
+- Tests: `test_usage_ingest.py`, `test_auto_low_hitl.py`, `test_hook_enforce_default.py` + fixtures `tests/fixtures/auto-low/`
+- Docs: `T800-SYSTEM-MAP.md`, `docs/ПОЛНАЯ-ИНСТРУКЦИЯ.md`; `verify-install.sh` / `.ps1`
+- Version bump `.cursor-plugin/plugin.json` → **1.22.0**
+
 ## 1.21.5 — 2026-07-29 (Docs hygiene SYSTEM-MAP KPI)
 
 - **`T800-SYSTEM-MAP.md`**: header/version **1.21.5**; источники CHANGELOG 1.12–1.21.4 (+ hygiene); KPI row CLOSED/partial (schema 1.21.1); telemetry вывод + App K без «полного KPI ещё нет»; registry note → текущая версия / roster 43; Teya vs T-800 **1.21.5**

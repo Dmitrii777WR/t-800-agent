@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "disable_low_rules": [],
+  "allow_low_rules": null,
+  "paused_file": ".loop-paused",
+  "auto_low": {
+    "enabled": true,
+    "require_hitl_file": ".loop-auto-low-approved",
+    "daily_budget": 3,
+    "max_per_batch": 3
+  }
+}

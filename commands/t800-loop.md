@@ -70,6 +70,16 @@ python3 scripts/t800_lessons_to_fixpack.py --memory-path "<memory_path>" --lesso
 MEDIUM / HIGH / BLOCK_CANDIDATE и закрытые (`applied`/`rejected`) — не silent batch.  
 MEDIUM / HIGH / BLOCK_CANDIDATE — только после явного HITL.
 
+## 3b. Опционально — HITL auto-LOW batch
+
+Контракт: `shared/auto-low-hitl-contract.md`. Template: `auto_low.enabled=false`.
+
+1. Включить в `{memory_path}/loop-policy.json`: `auto_low.enabled: true`.
+2. Approve: `python3 scripts/t800_loop_hitl_approve.py --memory-path "<memory_path>" --auto-low`
+3. Preview (default dry-run): `python3 scripts/t800_auto_low_batch.py --memory-path "<memory_path>" --lessons "<run_id|path>"`
+4. Apply packs only: `… --apply` → затем `/t800-fix` (**не** factory).
+5. Revoke: `python3 scripts/t800_loop_hitl_approve.py --memory-path "<memory_path>" --auto-low --revoke`
+
 ## 4. Дальше — /t800-fix
 
 После HITL по очереди:
