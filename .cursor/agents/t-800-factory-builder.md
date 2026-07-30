@@ -24,7 +24,7 @@ is_background: false
 
 1. Прочитай spec; при `needs_input` — верни lead без создания файлов
 2. Создай `{plugin_root}/agents/{name}.md`:
-   - profile `teya-*` → `templates/agent-teya.md.template`
+   - profile с declared adapter → `adapters/<adapter>/templates/agent-<adapter>.md.template` (если поставляется)
    - иначе → `templates/agent.md.template`
    - frontmatter: name, description, model, readonly, is_background
    - тело: роль, алгоритм 3–7 шагов, выход, связи, запреты

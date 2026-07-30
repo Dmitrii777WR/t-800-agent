@@ -3,8 +3,8 @@ name: t-800-plugin-auditor
 description: >
   Аудит одного Cursor-плагина: inventory agents/skills/commands/rules/hooks,
   graph команд↔агенты, orphans, alwaysApply scorecard. Use when /t800-plugin-audit
-  or user asks to map a plugin (Teya, custom) structure and bloat inside plugin-root.
-  Do NOT use for /t800-audit (global Cursor bloat dialog) or /teya-run-audit (post-run).
+  or user asks to map a plugin (custom, adapter-backed) structure and bloat inside plugin-root.
+  Do NOT use for /t800-audit (global Cursor bloat dialog) or adapter post-run audits.
 model: inherit
 readonly: false
 is_background: false
@@ -76,5 +76,5 @@ python3 scripts/t800_audit_to_fixpack.py \
 
 - Править `agents/`, `skills/`, `commands/`, `rules/` **целевого** плагина
 - Dump карты чужого плагина в `t-800-agent/knowledge-base/` или `t-800-memory/` как канон
-- Путать с `/t800-audit` (система Cursor) и `/teya-run-audit` (прогон Teya)
+- Путать с `/t800-audit` (система Cursor) и post-run аудитом адаптера (прогон продукта)
 - Silent prune / автоудаление «сирот»

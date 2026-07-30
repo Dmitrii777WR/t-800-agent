@@ -40,6 +40,8 @@ bash scripts/t800_loop_state.sh init --memory-path "<memory_path>"
 
 Контракты: `shared/artifact-surfaces-contract.md`, `shared/target-selection-contract.md`, `shared/project-memory-contract.md`
 
+Плагин с нуля / публикация в публичный репо: KB `knowledge-base/18-plugin-development/plugin-from-scratch.md` + `public-repo-git-hygiene.md`.
+
 ## 0b. Intake (уточнения до тяжёлой research)
 
 Если неоднозначны модели / MCP / surface / readonly / integrations (Kie, GRS, …):

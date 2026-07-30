@@ -2,7 +2,9 @@
 title: "Subagent vs Skill vs Rule vs Command vs Hook"
 audience: advanced
 tier: 4
-last_synced: 2026-07-06
+last_synced: 2026-07-30
+provenance: manual
+author: t-800
 ---
 
 # Выбор правильного артефакта
@@ -46,9 +48,27 @@ flowchart TD
 | Command | `.cursor/commands/` | `plugins/local/.../commands/` | `~/.cursor/commands/` |
 | Hook | `.cursor/hooks.json` | `plugins/local/.../hooks.json` | `~/.cursor/hooks.json` |
 
+## Как устроен файл команды (commands/*.md)
+
+Команда — это markdown-промпт в `commands/<name>.md` плагина (или `.cursor/commands/` проекта), вызывается слэшем `/<name>`. По docs плагинов commands — «agent-executable command files»: один из компонентов бандла наряду с rules, skills, agents, hooks и MCP.
+
+Факты по репо T-800:
+
+- **Без frontmatter** — все 18 файлов в `commands/` начинаются сразу с `# Заголовка`; обязательных полей нет
+- Заголовок = имя вызова: `commands/t800-start.md` → `/t800-start`
+- Типичная структура (обобщение по `t800-start.md`):
+  1. **Роль/назначение** — одна строка, что команда делает и для какого surface
+  2. **Законы и контракты** — ссылки на `shared/*-contract.md`, правила оркестрации
+  3. **Нумерованные шаги** — последовательность отделов/стадий с явными `Task(agent)` и командами скриптов
+  4. **Gates** — условия «готово»: auditor PASS, machine-скрипты exit 0
+  5. **Handoff** — что отчитать пользователю и что запускать дальше
+- Placeholders в угловых скобках (`<memory_path>`), таблицы режимов (DEEP/LIGHT/SKIP), строки прогресса — по вкусу команды
+- От skill отличается тем, что это всегда явный ручной вызов целого сценария, а не авто-подхват по description
+
 ## Ссылки
 
 - https://cursor.com/ru/docs/subagents
 - https://cursor.com/docs/skills
 - https://cursor.com/ru/docs/context/rules
 - https://cursor.com/docs/hooks
+- https://cursor.com/docs/plugins

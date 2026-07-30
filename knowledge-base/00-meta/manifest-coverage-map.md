@@ -2,6 +2,8 @@
 title: "Карта покрытия manifest → карточки KB"
 audience: maintainer
 last_synced: 2026-07-06
+provenance: manual
+author: t-800
 ---
 
 # Manifest coverage map
@@ -30,6 +32,9 @@ source: https://cursor.com/docs/agent/agents-window
 source: https://cursor.com/help/ai-features/ask-mode
 source: https://cursor.com/ru/help/ai-features/agent
 source: https://cursor.com/ru/help/ai-features/tab
+source: https://cursor.com/docs/approval-agents
+source: https://cursor.com/help/ai-features/side-chats
+source: https://cursor.com/help/ai-features/conversation-search
 
 → `02-agent-i-rezhimy/`
 
@@ -74,6 +79,8 @@ source: https://cursor.com/docs/account/teams/setup
 source: https://cursor.com/docs/account/teams/dashboard
 source: https://cursor.com/docs/models-and-pricing
 source: https://cursor.com/help/models-and-usage/usage-limits
+source: https://cursor.com/help/models-and-usage/token-rate
+source: https://cursor.com/help/models-and-usage/cursor-router
 source: https://cursor.com/docs/integrations/github
 source: https://cursor.com/docs/integrations/linear
 source: https://cursor.com/docs/integrations/slack
@@ -91,6 +98,14 @@ source: https://cursor.com/docs/sdk/typescript
 source: https://cursor.com/docs/cloud-agent/api/endpoints
 
 → `12-advanced-dev/`
+
+## Plugins
+
+source: https://cursor.com/docs/plugins
+source: https://cursor.com/docs/cursor-router
+source: https://cursor.com/docs/customize-cursor
+
+→ `18-plugin-development/`
 
 ## Factory (T-800)
 

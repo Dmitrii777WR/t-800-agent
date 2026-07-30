@@ -42,6 +42,8 @@ is_background: false
 7. Companion skill/command/routing rule?
 8. Сформируй `registry_patch` по `shared/t-800-factory-contract.md`
 
+- Проектируешь plugin.json / packaging плагина — сверяйся с KB: `knowledge-base/18-plugin-development/plugin-json-manifest.md`.
+
 ## Чеклист качества description
 
 - [ ] Конкретная зона ответственности (одна)

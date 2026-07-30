@@ -3,7 +3,9 @@ title: "Гайд по созданию субагентов"
 source: https://cursor.com/ru/docs/subagents
 audience: advanced
 tier: 4
-last_synced: 2026-07-06
+last_synced: 2026-07-30
+provenance: manual
+author: t-800
 ---
 
 # Создание субагентов — полный гайд
@@ -48,13 +50,27 @@ is_background: false
 
 ## Поля frontmatter
 
-| Поле | Обязательно | Значения | Зачем |
-|------|-------------|----------|-------|
-| `name` | Да | `kebab-case`, латиница | ID для `Task(name)` и `/name` |
-| `description` | **Критично** | 1–3 предложения + триггеры | Agent решает, делегировать ли |
-| `model` | Нет | `inherit` или slug модели | Разная «мощность» под задачу |
-| `readonly` | Нет | `true` / `false` | `true` = без правок файлов и shell |
-| `is_background` | Нет | `true` / `false` | Фоновый vs блокирующий |
+| Поле | Обязательно | Default | Зачем |
+|------|-------------|---------|-------|
+| `name` | Нет | Из имени файла | ID для `Task(name)` и `/name`; lowercase + дефисы |
+| `description` | Нет (но **критично**) | — | 1–3 предложения + триггеры; Agent решает по нему, делегировать ли |
+| `model` | Нет | `inherit` | `inherit` = модель родителя; или конкретный ID модели |
+| `readonly` | Нет | `false` | `true` = без правок файлов и state-changing shell |
+| `is_background` | Нет | `false` | `true` = фоновый запуск без блокировки родителя |
+
+### Параметры модели `[id=value]`
+
+К ID модели можно дописать квадратные скобки с опциями через запятую:
+
+| Пример | Поведение |
+|--------|-----------|
+| `composer-2.5[]` | Пустые скобки — базовый (не fast) вариант |
+| `composer-2.5[fast=false]` | Стандартный вариант явно |
+| `claude-opus-5[effort=high]` | Reasoning effort `high` |
+| `claude-opus-5[context=300k]` | Окно контекста 300k |
+| `claude-opus-5[effort=high,context=300k]` | Комбинация опций |
+
+Доступные опции зависят от модели. Если модель заблокирована админом, недоступна на тарифе или требует Max Mode на legacy-плане — Cursor молча откатится на совместимую.
 
 ## Как вызывать
 

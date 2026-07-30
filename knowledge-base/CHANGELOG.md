@@ -1,6 +1,20 @@
+---
+title: "Changelog базы знаний T-800"
+provenance: manual
+author: t-800
+---
+
 # Changelog базы знаний T-800
 
 Формат: дата — что изменилось — источник.
+
+## 2026-07-31 — Волна 3: база знаний (без bump версии)
+
+- Новый раздел `18-plugin-development/` (5 файлов): plugin.json-манифест, плагин с нуля (scaffold→install→packaging), git-гигиена публичных репо, Cursor Router + INDEX
+- `02-agent-i-rezhimy/side-chats-and-search.md` — side chats (/side, /btw), conversation search
+- Drift-обновления по cursor.com: hooks.md (21 событие, matcher, cloud-матрица), subagents.md (is_background, model-параметры, cloud), pricing (Router/пулы/Token Rate), agents-window.md, hooks-and-scripts.md (+гайд scripts), agent-vs-skill-vs-command.md (+commands how-to)
+- `raw/` восстановлен: 49 .md-снапшотов первоисточников (fetch 2026-07-30); manifest.json — 8 новых URL, `last_full_sync: 2026-07-30`
+- INDEX.md: +разделы 17 и 18
 
 ## 1.22.1 — 2026-07-29 (PATCH: hook enforce + golden 1.22)
 
@@ -133,7 +147,7 @@
 - Контракт: `shared/plan-to-factory-handoff-contract.md`
 - BLOCKER в `rules/t-800-mandatory-routing.mdc`: запрет Write/StrReplace артефактов Cursor вне factory
 - Machine gates: `scripts/t800_factory_bypass_gate.py`, `t800_run_gate.py --strict-create`
-- Hook `beforeFileEdit` → `hooks/before-artifact-edit.sh` (v1: WARN, не hard-deny)
+- Hook `preToolUse` (matcher `Write|StrReplace|EditNotebook`) → `hooks/before-artifact-edit.sh` (v1: WARN, не hard-deny)
 - Тест-сценарий 6 в `tests/TEST-SCENARIOS.md`
 
 ## 1.16.0 — 2026-07-13

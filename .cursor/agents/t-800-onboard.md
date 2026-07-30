@@ -42,7 +42,7 @@ bash scripts/audit-cursor-setup.sh --workspace "<WORKSPACE_ROOT>"
 ### 2. Что уже есть у вас
 
 - Перечисли найденные rules/skills/agents (топ-5 имён каждого слоя, не dump всех путей)
-- Память проекта: `teya-memory/`, `plugin-memory/`, `.cursor/t800-memory/` — если есть
+- Память проекта: `{slug}-memory/`, `plugin-memory/`, `.cursor/t800-memory/` — если есть
 - Корневые файлы: `.cursorrules`, `AGENTS.md` — если есть
 
 ### 3. Что умеет T-800 (кратко)

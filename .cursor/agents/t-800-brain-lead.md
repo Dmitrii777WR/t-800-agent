@@ -27,9 +27,9 @@ is_background: false
 | Teams, billing, integrations, Bugbot | `t-800-brain-admin` |
 | Security, Run Modes, permissions | `t-800-brain-security` |
 | Terminal, Browser, Search tools | `t-800-brain-tools` |
-| **Teya Pro** (`teya-plugin-dev` / `teya-client` / legacy `teya-pro`) | `t-800-brain-teya` (**обязательно**) + `adapters/teya/` |
+| Declared adapter profile (discovery `adapter` != null) | adapter brain из `adapters/<id>/` (**обязательно**; matcher `adapters/<id>/profiles.py`) |
 
-Максимум **2** Cursor domain за прогон (+ teya при profile). Не звать все мозги сразу.
+Максимум **2** Cursor domain за прогон (+ adapter brain при declared profile). Не звать все мозги сразу.
 
 ## Алгоритм
 
@@ -37,7 +37,7 @@ is_background: false
 2. `list-target-plugins` / discovery при необходимости → `target_context`
 2a. При `knowledge_vault_path` ≠ null — прочитай релевантные заметки vault (learnings по agent_id/категории) перед brief_for_factory; закон: `shared/project-memory-contract.md` (Target vault runtime-only).
 3. По `recommended_artifact` / теме — **авто** выбери 1–2 domain → `Task(...)`
-4. Если profile ∈ {`teya-plugin-dev`,`teya-client`,`teya-pro`} → обязательно `Task(t-800-brain-teya)` (matcher: `adapters/teya/profiles.py`)
+4. Если discovery profile объявляет adapter (поле `adapter` в `profiles/<id>.md`) → обязательно adapter brain из `adapters/<id>/` (matcher: `adapters/<id>/profiles.py`)
 5. Сверь research с KB; `manifest.json` stale > 30 дней → `stale_warnings`
 6. Собери **Brief для Factory** (не копируй research целиком — сверка + constraints):
 
