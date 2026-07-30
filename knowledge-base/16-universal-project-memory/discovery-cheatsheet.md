@@ -1,3 +1,7 @@
+---
+provenance: manual
+author: t-800-factory
+---
 # Discovery — шпаргалка
 
 ```bash
@@ -7,8 +11,8 @@ bash scripts/init-project-memory.sh --workspace "." --slug my-plugin
 
 | profile | memory | plugin_root |
 |---------|--------|-------------|
-| teya-client | teya-memory/ | TEYA_PLUGIN_ROOT |
-| teya-plugin-dev | plugin-memory/ | workspace |
+| declared adapter (клиент) | memory_dir из `profiles/*.md` | env_key / fallback из профиля |
+| declared adapter (dev) | memory_dir из `profiles/*.md` | workspace |
 | generic-plugin | {slug}-memory/ | workspace |
 | self-t800 | t-800-memory/ | t-800-agent/ |
 

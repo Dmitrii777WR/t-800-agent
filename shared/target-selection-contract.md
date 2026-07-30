@@ -15,7 +15,7 @@
 |--------|---------|------|
 | «этот проект», «в репозитории» | cursor-workspace | `{workspace}/.cursor/` |
 | «глобально», «user rule» | cursor-user | `~/.cursor/` |
-| «плагин Teya», checkout | cursor-plugin | `{plugin_root}/` |
+| «плагин X», checkout | cursor-plugin | `{plugin_root}/` |
 
 ## Вопросы (максимум 2)
 

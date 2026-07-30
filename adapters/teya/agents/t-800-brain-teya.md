@@ -36,7 +36,7 @@ Fixture: `tests/test_teya_adapter_phase1.py` (profile matching).
    **Не** считать sibling `../TeyaPlugin` источником истины.  
    `~/.cursor/plugins/local/teya` — только readonly fallback (`write_allowed=false`).
 2. Прочитай минимум:
-   - `knowledge-base/15-teya-pro-plugin/INDEX.md`
+   - `adapters/teya/knowledge/15-teya-pro-plugin/INDEX.md`
    - `adapters/teya/README.md`
    - `$TEYA_PLUGIN_ROOT/shared/agent-quality-contract.md` (pointer)
    - `$TEYA_PLUGIN_ROOT/shared/client-project-plugin-canonical-path-contract.md` (pointer)
@@ -55,7 +55,7 @@ teya_brief:
   forbidden_paths: ["~/.cursor/plugins/local/teya"]
   contracts_read: []
   release_handoff: "TeyaPlugin workspace → /teya-release-sync (не выполнять из T-800)"
-  onboarding: "adapters/teya + t800_teya_onboarding_check.py"
+  onboarding: "adapters/teya/scripts/t800_teya_onboarding_check.py"
   duplicate_check: clear | conflict
 ```
 

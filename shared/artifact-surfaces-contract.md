@@ -21,7 +21,7 @@
 
 | surface | memory_path |
 |---------|-------------|
-| cursor-plugin | `plugin-memory/`, `teya-memory/`, `{slug}-memory/` (discovery) |
+| cursor-plugin | `plugin-memory/`, `{slug}-memory/` (discovery) |
 | cursor-workspace | `{workspace}/.cursor/t800-memory/` или marker |
 | cursor-user | `~/.cursor/t800-memory/` |
 
@@ -29,7 +29,7 @@
 
 ## Integrator
 
-- **cursor-plugin** — registry, install-plugin, teya release-sync
+- **cursor-plugin** — registry, install-plugin, adapter release handoff (при declared adapter)
 - **cursor-workspace** — только `.cursor/` в workspace, без plugin registry
 - **cursor-user** — только `~/.cursor/`, предупреди про Reload Window
 

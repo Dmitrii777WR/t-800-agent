@@ -1,6 +1,7 @@
 # T-800 — профили целевого проекта
 
-**T-800 — generic factory** для любого Cursor plugin. Teya — отдельный продукт; интеграция только через **`adapters/teya/`** (`shared/teya-adapter-contract.md`).
+**T-800 — generic factory** для любого Cursor plugin. Product-специфика живёт в декларативных
+discovery-профилях **`profiles/<id>.md`** и адаптерах **`adapters/<id>/`**.
 
 ```bash
 bash scripts/discover-target-project.sh --workspace "<WORKSPACE>"
@@ -12,43 +13,39 @@ bash scripts/discover-target-project.sh --workspace "<WORKSPACE>"
 
 | profile | plugin_root (куда писать agents/skills) | memory (отчёты прогона) | Release | Adapter |
 |---------|-------------------------------------------|-------------------------|---------|---------|
-| `teya-plugin-dev` | workspace TeyaPlugin (git) | `plugin-memory/` | handoff `/teya-release-sync` | **teya** |
-| `teya-client` | `$TEYA_PLUGIN_ROOT` (env/marker; installed = readonly) | `teya-memory/` в клиенте | handoff → TeyaPlugin | **teya** |
+| declared adapter profile | из профиля: env / workspace self (installed = readonly) | `markers.memory_dir_present` | из `release_handoff` профиля | **из поля `adapter`** |
 | `generic-plugin` | workspace или marker | `{slug}-memory/` | по README / marker | none |
 | `self-t800` | `t-800-agent/` | `t-800-memory/` | `install-plugin.sh` + Reload | none |
-| `marker` | из `project-memory.marker.json` | из marker | из marker | teya if Teya checkout |
+| `marker` | из `project-memory.marker.json` | из marker | из marker | из совпавшего профиля |
+
+Product-профили декларируют маркеры детекта (`require` / `any_of` / `memory_dir_present`),
+`memory_dir`, `release_handoff`, `plugin_root` (env_key / readonly_fallback / never_canonical)
+и `adapter` — см. `profiles/*.md`. Пример: adapter `<id>` (см. `adapters/<id>/`).
 
 ## Устаревшие ID (миграция брифов)
 
 | Старый `target_plugin` | Новый |
 |--------------------------|-------|
-| `teya-pro` | **legacy alias** — активирует brain-teya + adapter; нормализуй в `teya-plugin-dev` или `teya-client` по discovery |
+| legacy product alias | нормализуй в declared profile по discovery (matcher `adapters/<id>/profiles.py`) |
 | `t-800-agent` | `self-t800` |
 | `generic-plugin` | без изменений |
 
-Machine: `from adapters.teya.profiles import match_brain_teya, is_teya_profile`
+Machine matcher adapter-профилей: `adapters/<id>/profiles.py` (путь из `adapters/<id>/adapter.manifest.json` → `entrypoints.profile_matcher`).
 
-## teya-client (правка Teya из клиента)
+## Declared adapter profile (правка продукта из клиента)
 
-1. Discovery: `teya-memory/` в workspace
-2. `plugin_root` = `$TEYA_PLUGIN_ROOT` (git checkout) — **не** sibling `../TeyaPlugin` как SoT
-3. Installed `~/.cursor/plugins/local/teya` — только readonly fallback (`write_allowed=false`)
+1. Discovery: маркеры из `profiles/<id>.md`
+2. `plugin_root` = env_key профиля (git checkout) — **не** sibling guess как SoT
+3. Installed `~/.cursor/plugins/local/<id>` — только readonly fallback (`write_allowed=false`)
 4. **Запрещено** писать в installed local
-5. Fragments / handoffs → `teya-memory/` (`factory-handoffs/<run-id>.json`)
-6. Handoff: «Открой TeyaPlugin → `/teya-release-sync`» (не выполнять из T-800)
-
-## teya-plugin-dev
-
-1. workspace = TeyaPlugin git
-2. Читать BOOT: `plugin-memory/HANDOFF.md`
-3. Post-factory: `plugin-memory/factory-handoffs/` + `t800_teya_onboarding_gate.py`
-4. Run manifest эфемерно: `.teya-plugin-run/` **или** traces в `plugin-memory/`
+5. Fragments / handoffs → memory профиля (`factory-handoffs/<run-id>.json`)
+6. Handoff: `release_handoff` из discovery (не выполнять из T-800)
 
 ## generic-plugin
 
 1. Нет memory → `bash scripts/init-project-memory.sh --slug <name>`
-2. Integrator пишет в `agents/`, `skills/`, `commands/` относительно `plugin_root`
-3. **Без** Teya release/smoke/registries
+2. Integrator пиши в `agents/`, `skills/`, `commands/` относительно `plugin_root`
+3. **Без** adapter release/smoke/registries
 
 ## Выбор (architect)
 
@@ -56,8 +53,9 @@ Discovery `needs_user_question: true` → один вопрос:
 
 «Укажите папку git checkout плагина (plugin_root) или откройте workspace плагина.»
 
-Не угадывать путь молча. Не брать sibling `../TeyaPlugin` как canonical.
+Не угадывать путь молча. Не брать sibling-пути как canonical.
 
-## TEYA_PLUGIN_ROOT
+## plugin_root env
 
-`~/.teya/teya.env.global` или `teya-memory/teya.env.local` — только для Teya.
+Ключ и env-файл резолвятся из профиля (`plugin_root.env_key` / `plugin_root.env_file`),
+без source файла секретов — только grep ключа.

@@ -43,7 +43,7 @@ report → lessons → classify → fixpack → /t800-loop → /t800-fix
 | Фаза | Содержание |
 |------|------------|
 | **Prove** | fixtures `tests/fixtures/loop/`; `t800_golden_check.py` (sha256); classifier **zero false LOW** (denylist wins); `report.json` + `lessons.json` schema-valid на self-t800 |
-| **Harden** | fail-open dispatcher + bootstrap; `.loop-paused`; Anti-Ralph out-list; `before-artifact-edit` **default enforce** (opt-out `T800_HOOK_MODE`/`T800_TEYA_HOOK_MODE`=warn\|observe); `risk_class` script-only |
+| **Harden** | fail-open dispatcher + bootstrap; `.loop-paused`; Anti-Ralph out-list; `before-artifact-edit` **default enforce** (opt-out `T800_HOOK_MODE`=warn\|observe); `risk_class` script-only |
 | **Automate** | `bootstrap_invoke` observe (ONE sessionStart); `/t800-loop` semi-manual batch после HITL — **не** stop+followup; optional auto-LOW batch после HITL-файла (см. `auto-low-hitl-contract.md`) |
 
 ### Daily budget (после Prove)
@@ -145,7 +145,7 @@ Fallback: шаги родителя в `/t800-loop`. Агент **никогда
 ## Универсальность
 
 Только discovery + `{memory_path}` + profiles.  
-**Запрещено** вшивать business logic чужого плагина (Teya/client) в loop-промпты/скрипты.
+**Запрещено** вшивать business logic чужого плагина (client/adapter) в loop-промпты/скрипты.
 
 ## Четыре условия (перед тяжёлым loop / DEEP)
 

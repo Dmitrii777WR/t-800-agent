@@ -58,7 +58,7 @@ ORCH_RE = re.compile(
     re.I,
 )
 CRED_RE = re.compile(
-    r"(\.env|credentials|api[_-]?key|secret|token|password|teya\.env)",
+    r"(\.env|credentials|api[_-]?key|secret|token|password)",
     re.I,
 )
 TYPO_RE = re.compile(

@@ -131,7 +131,7 @@ def check_commands(commands_dir: Path) -> list[str]:
     Legacy T-800 commands without ``---`` FM are skipped (not FAIL):
     Cursor Invalid enum incident targets agents; adding FM to all
     commands is a separate migration outside this gate's FAIL set.
-    If frontmatter exists — same strict rules as Teya (description str).
+    If frontmatter exists — same strict rules as adapter plugins (description str).
     """
     errors: list[str] = []
     if not commands_dir.is_dir():

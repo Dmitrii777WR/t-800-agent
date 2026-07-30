@@ -9,17 +9,21 @@
     "teya-pro"
   ],
   "legacy_aliases": {
-    "teya-pro": ["teya-plugin-dev", "teya-client"]
+    "teya-pro": [
+      "teya-plugin-dev",
+      "teya-client"
+    ]
   },
   "entrypoints": {
     "profile_matcher": "adapters/teya/profiles.py",
     "discovery": "adapters/teya/discovery.py",
     "handoff": "adapters/teya/handoff.py",
+    "handoff_write": "adapters/teya/scripts/t800_teya_write_handoff.py",
     "evidence": "adapters/teya/evidence.py",
-    "onboarding_check": "scripts/t800_teya_onboarding_check.py",
-    "onboarding_gate": "scripts/t800_teya_onboarding_gate.py",
+    "onboarding_check": "adapters/teya/scripts/t800_teya_onboarding_check.py",
+    "onboarding_gate": "adapters/teya/scripts/t800_teya_onboarding_gate.py",
     "hook_policy": "adapters/teya/policy.json",
-    "hook_enforce_ready": "scripts/t800_teya_hook_enforce_ready.py"
+    "hook_enforce_ready": "adapters/teya/scripts/t800_teya_hook_enforce_ready.py"
   },
   "teya_side_scripts": {
     "verifier": "scripts/teya_t800_handoff_verify.py",
@@ -31,7 +35,7 @@
     "onboarding_checklist": "adapters/teya/onboarding-checklist-contract.md",
     "handoff_schema": "adapters/teya/schemas/factory-handoff.schema.json",
     "evidence_bridge": "adapters/teya/evidence-bridge-contract.md",
-    "shared_pointer": "shared/teya-adapter-contract.md"
+    "shared_pointer": "adapters/teya/teya-adapter-contract.md"
   },
   "forbidden_for_t800": [
     "mutate_rollout_state",

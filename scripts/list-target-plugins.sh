@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 # list-target-plugins.sh — известные plugin_root для выбора цели (универсальный отдел)
+# Источники: known-plugins registry, declarative profiles/*.md (env_key/env_file),
+# workspace marker, workspace .cursor-plugin.
 set -euo pipefail
 
 REGISTRY="${T800_KNOWN_PLUGINS:-$HOME/.t800/known-plugins.json}"
 WORKSPACE="."
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROFILES_DIR="$(cd "$SCRIPT_DIR/.." 2>/dev/null && pwd)/profiles"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -15,16 +19,11 @@ done
 
 WORKSPACE="$(cd "$WORKSPACE" && pwd)"
 
-# TEYA_PLUGIN_ROOT из global env
-if [[ -z "${TEYA_PLUGIN_ROOT:-}" ]] && [[ -f "$HOME/.teya/teya.env.global" ]]; then
-  TEYA_PLUGIN_ROOT="$(grep -E '^TEYA_PLUGIN_ROOT=' "$HOME/.teya/teya.env.global" | tail -1 | cut -d= -f2- | tr -d '\r' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
-fi
-
-python3 - <<'PY' "$REGISTRY" "$WORKSPACE" "${TEYA_PLUGIN_ROOT:-}"
-import json, sys, os
+python3 - <<'PY' "$REGISTRY" "$WORKSPACE" "$PROFILES_DIR"
+import json, os, re, sys
 from pathlib import Path
 
-registry_path, workspace, teya_root = sys.argv[1], Path(sys.argv[2]), sys.argv[3]
+registry_path, workspace, profiles_dir = sys.argv[1], Path(sys.argv[2]), Path(sys.argv[3])
 plugins = []
 
 def add_unique(slug, name, root, handoff, source):
@@ -42,6 +41,23 @@ def add_unique(slug, name, root, handoff, source):
         "source": source,
     })
 
+def read_env_key(env_key, env_file):
+    """env var → env_file KEY=... → None"""
+    val = os.environ.get(env_key, "").strip()
+    if val:
+        return val
+    if env_file:
+        f = Path(env_file).expanduser()
+        if f.is_file():
+            try:
+                for line in f.read_text(encoding="utf-8", errors="replace").splitlines():
+                    line = line.strip()
+                    if line.startswith(env_key + "="):
+                        return line.split("=", 1)[1].strip()
+            except OSError:
+                pass
+    return None
+
 # Registry file
 if Path(registry_path).is_file():
     try:
@@ -57,9 +73,35 @@ if Path(registry_path).is_file():
     except (json.JSONDecodeError, OSError):
         pass
 
-# Env TEYA
-if teya_root:
-    add_unique("teya", "Teya Pro", teya_root, "/teya-release-sync", "teya.env.global")
+# Declarative profiles (adapters declare env_key/env_file; zero product hardcode)
+JSON_BLOCK = re.compile(r"```json\s*\n(.*?)```", re.DOTALL)
+if profiles_dir.is_dir():
+    for md in sorted(profiles_dir.glob("*.md")):
+        try:
+            text = md.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        m = JSON_BLOCK.search(text)
+        if not m:
+            continue
+        try:
+            prof = json.loads(m.group(1))
+        except json.JSONDecodeError:
+            continue
+        pr = prof.get("plugin_root") or {}
+        env_key = pr.get("env_key")
+        if not env_key:
+            continue
+        root = read_env_key(env_key, pr.get("env_file"))
+        if root:
+            slug = prof.get("adapter") or prof.get("id") or md.stem
+            add_unique(
+                slug,
+                slug,
+                root,
+                prof.get("release_handoff"),
+                f"profile:{prof.get('id', md.stem)}",
+            )
 
 # Workspace marker
 marker = workspace / "project-memory.marker.json"

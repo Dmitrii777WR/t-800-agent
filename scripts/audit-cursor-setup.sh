@@ -93,9 +93,12 @@ for name in (".cursorrules", "AGENTS.md", "CLAUDE.md"):
         project_rules.append({"path": str(p), "name": name})
 
 memory_hints = []
-for rel in ("teya-memory", "plugin-memory", "t-800-memory", ".cursor/t800-memory"):
-    p = workspace / rel if not rel.startswith(".cursor") else workspace / rel
-    if p.is_dir():
+if workspace.is_dir():
+    for p in sorted(workspace.iterdir()):
+        if p.is_dir() and p.name.endswith("-memory"):
+            memory_hints.append(p.name)
+for rel in (".cursor/t800-memory",):
+    if (workspace / rel).is_dir() and rel not in memory_hints:
         memory_hints.append(rel)
 
 t800_installed = (cursor_home / "plugins" / "local" / "t-800-agent").is_dir()

@@ -92,7 +92,7 @@ materialize: "python3 scripts/t800_loop_queue_write.py --memory-path …  # stdi
 - **Write / StrReplace** в `loop-queue.md` и любые правки артефактов (readonly)
 - Назначать `risk_class` (особенно `LOW`) без `t800_risk_classifier.py`
 - stop / followup / auto-reprompt / `subagentStop` followup (Anti-Ralph)
-- Business logic чужого плагина (Teya/client) — только profiles + `{memory_path}`
+- Business logic чужого плагина (adapter/client) — только profiles + `{memory_path}`
 - Полный `/t800-start` CREATE и правка agents/skills/rules вне factory
 
 ## KB

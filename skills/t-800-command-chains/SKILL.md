@@ -6,7 +6,7 @@ description: >
   Use when правка commands/*, registry, graph команд↔агенты,
   или после добавления /t800-* команды.
   Do NOT use when soft prose orchestration в agent body без JSON,
-  plugin-audit полный отчёт (→ t-800-plugin-auditor), или SEO/Teya chains.
+  plugin-audit полный отчёт (→ t-800-plugin-auditor), или product chains адаптера.
 paths:
   - "**/command_chains*"
   - "**/command-chains*"

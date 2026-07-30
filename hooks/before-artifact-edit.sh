@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # preToolUse (T-800) — policy modes: observe | warn | enforce
 # Default: enforce (deny artifact edits outside factory). Opt-out:
-#   T800_HOOK_MODE=warn|observe  or  T800_TEYA_HOOK_MODE=warn|observe
-# Sibling Teya checkout paths are NOT memory SoT.
+#   T800_HOOK_MODE=warn|observe
+# Sibling product checkout paths are NOT memory SoT.
 set -u
 
 payload=$(cat 2>/dev/null || true)
 
 # Mode: observe | warn | enforce (default enforce since 1.22.0)
-HOOK_MODE="${T800_TEYA_HOOK_MODE:-${T800_HOOK_MODE:-enforce}}"
+HOOK_MODE="${T800_HOOK_MODE:-enforce}"
 HOOK_MODE=$(printf '%s' "$HOOK_MODE" | tr '[:upper:]' '[:lower:]')
 case "$HOOK_MODE" in
   observe|warn|enforce) ;;
@@ -112,7 +112,7 @@ if [[ "$is_artifact" -eq 0 ]]; then
   allow
 fi
 
-# Soft bypass: discovered memory / env — NEVER sibling ../TeyaPlugin as SoT
+# Soft bypass: discovered memory / env — NEVER sibling checkout as SoT
 HERE="$(cd "$(dirname "$0")" 2>/dev/null && pwd)" || HERE="."
 PLUGIN_ROOT="$(cd "$HERE/.." 2>/dev/null && pwd)" || PLUGIN_ROOT=""
 
@@ -142,7 +142,7 @@ do
   fi
 done
 
-# Optional: discovery memory_path (best-effort, no sibling TeyaPlugin)
+# Optional: discovery memory_path (best-effort, no sibling checkout)
 if [[ -x "${PLUGIN_ROOT}/scripts/discover-target-project.sh" ]]; then
   disc=$(bash "${PLUGIN_ROOT}/scripts/discover-target-project.sh" --workspace "." 2>/dev/null || true)
   mem_from_disc=$(printf '%s' "$disc" | sed -n 's/.*"memory_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
@@ -153,7 +153,7 @@ fi
 
 MSG_WARN="T-800 WARN: правка Cursor-артефакта (${base}) без T800_FACTORY_RUN_ID / factory в run-manifest. Используйте /t800-start или /t800-fix → Task(t-800-factory). Gate: t800_factory_bypass_gate.py. mode=${HOOK_MODE}"
 
-MSG_DENY="T-800 DENY: правка Cursor-артефакта (${base}) вне factory run. Используйте /t800-start или /t800-fix → Task(t-800-factory). Opt-out: T800_HOOK_MODE=warn|observe (или T800_TEYA_HOOK_MODE). Bypass: T800_FACTORY_RUN_ID / factory in_progress в run-manifest."
+MSG_DENY="T-800 DENY: правка Cursor-артефакта (${base}) вне factory run. Используйте /t800-start или /t800-fix → Task(t-800-factory). Opt-out: T800_HOOK_MODE=warn|observe. Bypass: T800_FACTORY_RUN_ID / factory in_progress в run-manifest."
 
 case "$HOOK_MODE" in
   observe)

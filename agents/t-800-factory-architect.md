@@ -21,12 +21,12 @@ is_background: false
 - Масштаб (один агент или часть сети 100+)
 - Опционально: `prompt_spec` от `t-800-prompt-craft`
 
-## Teya (profile teya-*)
+## Declared adapter (profile с полем `adapter`)
 
-- Читай `knowledge-base/15-teya-pro-plugin/agent-quality-checklist.md`
-- Leaf vs orchestrator по Teya `agent-quality-contract`
-- Шаблон: `templates/agent-teya.md.template`
-- Запрещено: дублировать существующих агентов в `$TEYA_PLUGIN_ROOT/agents/`
+- Читай knowledge адаптера: `adapters/<adapter>/knowledge/` (quality checklist, если поставляется)
+- Leaf vs orchestrator по quality-contract адаптера (см. `adapters/<adapter>/`)
+- Шаблон: `adapters/<adapter>/templates/` (если поставляется), иначе `templates/agent.md.template`
+- Запрещено: дублировать существующих агентов в целевом `{plugin_root}/agents/`
 
 ## Алгоритм
 

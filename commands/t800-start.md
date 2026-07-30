@@ -34,7 +34,7 @@ bash scripts/t800_loop_state.sh init --memory-path "<memory_path>"
 |---------------------|------------------|
 | «для этого проекта / в репо» | `cursor-workspace` → `.cursor/` |
 | «глобально / user rules» | `cursor-user` → `~/.cursor/` |
-| «для Teya / плагина X» | `cursor-plugin` → git checkout |
+| «для плагина X / продукта Y» | `cursor-plugin` → git checkout |
 
 Если неясно — **один вопрос:** плагин, проект или глобально?
 
@@ -198,7 +198,7 @@ exit ≠ 0 → repair (≤2 попытки: builder/integrator → auditor → g
 Создай user rule: всегда отвечать на русском. Глобально.
 
 /t800-start
-Для Teya Plugin: subagent readonly для audit manifest. Модель и MCP уточни.
+Для checkout плагина: subagent readonly для audit manifest. Модель и MCP уточни.
 ```
 
 Реестр плагинов: `~/.t800/known-plugins.json`

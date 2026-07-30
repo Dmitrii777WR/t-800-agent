@@ -42,6 +42,6 @@
 - name ≠ filename
 - Нет записи в registry
 
-## Teya Pro (дополнительно)
+## Адаптеры (дополнительно)
 
-См. `knowledge-base/15-teya-pro-plugin/agent-quality-checklist.md`
+Quality checklist поставляет адаптер продукта — см. `adapters/<id>/knowledge/`.

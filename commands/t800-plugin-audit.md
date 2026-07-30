@@ -73,7 +73,7 @@ bash scripts/t800_loop_state.sh touch --memory-path "<memory_path>" --stage "plu
 | Выход | `{memory}/audits/<run-id>/` | диалог keep/narrow/remove |
 | Цель | карта + orphans + scorecard | почистить bloat контекста |
 
-Не путать с `/teya-run-audit` (качество прогона Teya).
+Не путать с post-run аудитом прогона адаптера (качество оркестрации продукта).
 
 Контракт: `shared/plugin-audit-contract.md`.
 

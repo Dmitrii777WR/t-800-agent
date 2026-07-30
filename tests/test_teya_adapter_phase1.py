@@ -51,7 +51,7 @@ def run_py(script: str, args: list[str], env: dict | None = None) -> subprocess.
     if env:
         e.update(env)
     return subprocess.run(
-        [sys.executable, str(ROOT / "scripts" / script), *args],
+        [sys.executable, str(ROOT / "adapters" / "teya" / "scripts" / script), *args],
         cwd=str(ROOT),
         capture_output=True,
         text=True,

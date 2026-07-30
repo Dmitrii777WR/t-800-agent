@@ -2,25 +2,25 @@
 
 Память — **у каждого плагина/проекта своя**. T-800 отдел только **находит** её и **пишет** артефакты прогона, не подменяя нативную систему целевого плагина.
 
-## Эталон: Teya Pro (аудит)
+## Эталон: `{slug}-memory` (generic)
 
-Teya реализовала память в двух слоях:
+Каноничная память плагина живёт в двух слоях:
 
 | Слой | Папка | Где | Горизонт |
 |------|-------|-----|----------|
-| Клиентский проект | `teya-memory/` | workspace клиента | Весь цикл сайта/блога/фиксов |
-| Разработка плагина | `plugin-memory/` | TeyaPlugin git | Межсессионный HANDOFF, ROADMAP, PLUGIN_LOG |
-| Один прогон | `run-manifest.json` | `teya-memory/` или `.teya-plugin-run/` | Одна команда `/teya-*` |
+| Клиентский проект | `{slug}-memory/` (из профиля) | workspace клиента | Весь цикл проекта/фиксов |
+| Разработка плагина | `plugin-memory/` | checkout плагина | Межсессионный handoff, roadmap, лог |
+| Один прогон | `run-manifest.json` | memory профиля | Одна команда |
 
-Ключевые артефакты Teya (см. `TEYA_PLUGIN_ROOT/shared/memory-protocol.md`):
+Типовые артефакты памяти (нативные имена — у целевого плагина свои):
 
 - `run-manifest.json` — шаги Task, verdict
 - `fragments/<agent>.md` — один файл на агента за этап
 - `work-reports/` — развёрнутые отчёты
-- `01-handoff.md` — склейка Директором
-- `project-mode.json`, `site.inv` — режим и intake
+- handoff-файл склейки оркестратором
+- режим/intake проекта по конвенциям плагина
 
-**Вывод для T-800:** при работе **на Teya** не создавать параллельную `t-800-memory/` в клиенте — писать в **нативную** `teya-memory/` или `plugin-memory/`.
+**Вывод для T-800:** при работе на плагин с нативной памятью не создавать параллельную `t-800-memory/` в клиенте — писать в **нативную** память профиля (discovery `memory_path`). Эталонный аудит нативной памяти поставляет адаптер (см. `adapters/<id>/knowledge/`).
 
 ## Что пишет конвейер T-800 в memory_path
 
@@ -41,7 +41,7 @@ Teya реализовала память в двух слоях:
 
 Шаблон STATE: `templates/STATE.md.template`. Скрипт: `scripts/t800_loop_state.sh`. Контракт: `shared/loop-engineering-contract.md` (+ `shared/lesson-schema-contract.md`).
 
-Префикс `t-800-` в fragments — **маркер отдела**, не целевого плагина. Целевой плагин (Teya) сохраняет свои имена (`teya-*`, `aura-*`).
+Префикс `t-800-` в fragments — **маркер отдела**, не целевого плагина. Целевой плагин сохраняет свои нативные имена агентов и артефактов.
 
 ## Структура memory (минимум для нового плагина)
 
@@ -67,15 +67,13 @@ Teya реализовала память в двух слоях:
 1. `{memory}/STATE.md` — blockers, lessons, last gates (обязательно)
 2. `{memory}/run-manifest.json` — что уже делали
 3. `{memory}/factory-briefs/*.yaml` — активные брифы
-4. Для Teya client: также `project-mode.json`, `TEYA_TASKS.md`
-5. Для TeyaPlugin dev: `plugin-memory/HANDOFF.md`, хвост `PLUGIN_LOG.md`
+4. Нативные артефакты целевого плагина по профилю адаптера (mode/intake файлы, handoff/лог разработки — см. `adapters/<id>/`)
 
 ## profile → memory (канон)
 
 | profile | memory_dir | plugin_root |
 |---------|------------|-------------|
-| `teya-client` | `teya-memory/` | `$TEYA_PLUGIN_ROOT` |
-| `teya-plugin-dev` | `plugin-memory/` (+ run in `.teya-plugin-run/`) | workspace |
+| declared adapter profile | `memory_dir` из `profiles/<id>.md` | из поля `plugin_root` профиля (env / workspace self) |
 | `generic-plugin` | marker или `{slug}-memory/` | marker или workspace |
 | `self-t800` | `t-800-memory/` | `t-800-agent/` |
 
@@ -117,17 +115,13 @@ bash scripts/init-project-memory.sh --workspace "<ROOT>" --slug "<slug>"
 Правила dual-write по профилю (куда писать, запрет duplicate roots, запрет client secrets в GitHub KB):  
 **`shared/project-memory-dual-write-contract.md`**.
 
-Закон **teya-client native-first** сохраняется: cloud-hub данные клиента — в `teya-memory/cloud-hub/`, **без** параллельной `t-800-memory/` в клиентском workspace.
+Закон **client native-first** сохраняется: cloud-hub данные клиента — в `<memory_dir>/cloud-hub/` профиля, **без** параллельной `t-800-memory/` в клиентском workspace.
 
 Операционный закон Hub+Client: `shared/cloud-hub-setup-contract.md`. Команда: `/t800-cloud-hub`.
 
-## Связанные контракты Teya (живое чтение)
+## Контракты адаптера (живое чтение)
 
-При `profile` teya-* читать из `$TEYA_PLUGIN_ROOT/shared/`:
+При declared adapter profile читать живые контракты из plugin_root целевого плагина
+(указатели — `adapters/<id>/adapter.manifest.json` → `live_contract_pointers`).
 
-- `memory-protocol.md`
-- `plugin-memory-contract.md`
-- `agent-work-report-contract.md`
-- `client-project-plugin-canonical-path-contract.md`
-
-Карточки KB: `knowledge-base/15-teya-pro-plugin/`, аудит: `knowledge-base/16-universal-project-memory/teya-memory-audit.md`
+Knowledge адаптера: `adapters/<id>/knowledge/` (канонические пути, quality checklist, аудит памяти).

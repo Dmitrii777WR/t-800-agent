@@ -2,6 +2,8 @@
 title: "Карта базы знаний T-800"
 audience: beginner
 last_synced: 2026-07-02
+provenance: manual
+author: t-800-factory
 ---
 
 # База знаний T-800 Agent
@@ -148,11 +150,8 @@ last_synced: 2026-07-02
 ### 14 — Мозги T-800
 - [Карта библиотекарей](14-t-800-brains/INDEX.md)
 
-### 15 — Teya Pro (для конвейера)
-- [Карта раздела](15-teya-pro-plugin/INDEX.md)
-- [Канонические пути](15-teya-pro-plugin/canonical-paths.md)
-- [Чеклист качества агента](15-teya-pro-plugin/agent-quality-checklist.md)
-- [Release handoff](15-teya-pro-plugin/plugin-release-handoff.md)
+### Продуктовые знания — адаптеры
+Знания продукта не входят в ядро KB: адаптер teya поставляет свой brain/knowledge — см. `adapters/teya/knowledge/`.
 
 ## Официальные источники
 

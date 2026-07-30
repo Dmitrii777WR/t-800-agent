@@ -9,8 +9,8 @@ brief:
     workspace_root: "..."
     plugin_root: "..."
     memory_path: "..."
-    profile: teya-client | teya-plugin-dev | generic-plugin | self-t800
-    release_handoff: null | "/teya-release-sync"
+    profile: <id из profiles/*.md> | generic-plugin | self-t800
+    release_handoff: null | "<release_handoff из профиля>"
     knowledge_vault_path: null
   artifact_type: subagent | skill | command | rule | hook | bundle
   agent:

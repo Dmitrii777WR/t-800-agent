@@ -8,9 +8,9 @@
 |---------|--------|------|------------|
 | **`/t800-plugin-audit`** | Один плагин (`--plugin-root`) | Инвентарь, граф команд↔агенты, orphans, alwaysApply scorecard | `{target memory_path}/audits/<run-id>/` |
 | **`/t800-audit`** | Вся система Cursor (global + local workspace) | Диалог keep/narrow/remove по bloat rules/skills | fragment system-auditor; без карты чужого плагина в KB |
-| **`/teya-run-audit`** | Прогон Teya (`run-manifest`) | Post-run 4/4 качество оркестрации | `teya-memory/` клиента |
+| **post-run audit адаптера** | Прогон продукта (`run-manifest`) | Post-run качество оркестрации | memory профиля клиента |
 
-Не путать: plugin-audit ≠ cursor-bloat audit ≠ Teya post-run audit.
+Не путать: plugin-audit ≠ cursor-bloat audit ≠ adapter post-run audit.
 
 ## Write paths (MEMORY LAW)
 
@@ -32,7 +32,7 @@ Fix-pack разрешён в `{memory_path}/fix-packs/` (не в KB). Дальш
 ### Запреты записи
 
 - **Не** класть карту чужого плагина в `t-800-agent/knowledge-base/`
-- **Не** писать runtime-отчёт в `t-800-memory/audits/`, если целевой проект другой (Teya → `plugin-memory/` / `teya-memory/`)
+- **Не** писать runtime-отчёт в `t-800-memory/audits/`, если целевой проект другой (declared adapter → memory профиля из discovery)
 - **Не** silent prune / удаление agents/skills/commands целевого плагина
 - Скрипт пишет **только** в `--out`
 

@@ -541,7 +541,7 @@ def test_hook_readiness_script() -> None:
     mem = ROOT.parent / "t-800-memory"
     cmd = [
         sys.executable,
-        str(ROOT / "scripts" / "t800_teya_hook_enforce_ready.py"),
+        str(ROOT / "adapters" / "teya" / "scripts" / "t800_teya_hook_enforce_ready.py"),
         "--memory-path",
         str(mem if mem.is_dir() else ROOT),
     ]
@@ -597,7 +597,7 @@ def main() -> int:
         cp = subprocess.run(
             [
                 sys.executable,
-                str(ROOT / "scripts" / "t800_teya_hook_enforce_ready.py"),
+                str(ROOT / "adapters" / "teya" / "scripts" / "t800_teya_hook_enforce_ready.py"),
                 "--teya-plugin-root",
                 str(teya),
                 "--memory-path",

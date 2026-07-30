@@ -23,7 +23,7 @@ bash scripts/audit-cursor-setup.sh --workspace "."
 
 1. **Глобально** (`~/.cursor/`): rules, skills, commands, subagents, plugins
 2. **Локально** (проект `.cursor/`): то же для текущего workspace
-3. **Память проекта** — `teya-memory`, `plugin-memory`, и т.д.
+3. **Память проекта** — `{slug}-memory`, `plugin-memory`, и т.д.
 4. **Возможности T-800** — команды и цепочка
 5. **Следующий шаг** — `/t800-bootstrap` или `/t800-start`
 6. **Глобальное правило** — предложение установить (только при bootstrap)

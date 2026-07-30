@@ -9,7 +9,7 @@ Loop / STATE / machine gates: `shared/loop-engineering-contract.md`.
 |-------|-----|-------------|---------------|
 | **System / Mentor** | — | onboard, system-auditor, **plugin-auditor**, operator, intake-clarifier, maintainer, **cursor-kb-curator**† | Директор по команде (`/t800-*`) |
 | **Research** | `t-800-research-lead` | strategist, github, repo-miner, community, clawhub, vendor-docs, docs, news, synthesizer, prompt-craft* | Директор → **lead сам** fan-out |
-| **Brains** | `t-800-brain-lead` | agents, context, cloud, dev, admin, security, tools, teya | Директор → **lead сам** выбирает 1–2 domain |
+| **Brains** | `t-800-brain-lead` | agents, context, cloud, dev, admin, security, tools (+ adapter brains из `adapters/`) | Директор → **lead сам** выбирает 1–2 domain |
 | **Factory** | `t-800-factory` | architect, hooks, scripts, mcp-wiring, builder, integrator, prompt-auditor, auditor | Директор → **lead сам** пайплайн |
 | **Cloud Hub** (system-adjacent) | `t-800-cloud-hub-lead` | analyst, prompt, pack, smoke | Директор → `/t800-cloud-hub`; lead сам selective fan-out |
 | **Loop** (system-adjacent) | — | **`t-800-loop-conductor`**‡ | Директор → `/t800-loop` (semi-manual; не research/brain leaf) |
@@ -40,7 +40,7 @@ Loop / STATE / machine gates: `shared/loop-engineering-contract.md`.
        └─ АВТО: strategist → specialists → synthesizer
 [2b] prompt-craft?              ← если agent|skill|command
 [3]  brain-lead                 ← всегда перед factory
-       └─ АВТО: 1–2 domain brains (+ teya если profile)
+       └─ АВТО: 1–2 domain brains (+ adapter brain если declared profile)
 [4]  factory
        └─ АВТО: architect → companions? → builder → integrator
                 → prompt-auditor? → auditor
@@ -137,9 +137,9 @@ progress:
 | CLI / SDK | brain-dev |
 | security / readonly / permissions | brain-security |
 | terminal/browser tools в промпте | brain-tools |
-| profile `teya-plugin-dev` / `teya-client` / legacy `teya-pro` | brain-teya **обязательно** (`adapters/teya/profiles.py`) |
+| declared adapter profile (discovery `adapter` != null) | adapter brain **обязательно** (matcher `adapters/<id>/profiles.py`) |
 
-3. Максимум **2** domain за прогон (кроме teya + один Cursor domain)  
+3. Максимум **2** domain за прогон (кроме adapter brain + один Cursor domain)  
 4. Собрать `brief_for_factory` — не дублировать весь research, а **сверить** с KB и официальными URL  
 
 ### Factory-lead
@@ -206,7 +206,7 @@ progress:
 
 ## Версия
 
-- Обновлён: 2026-07-28 · T-800 **1.20.0** (`adapters/teya` Phase 1+2; `/t800-loop`, loop-conductor)  
+- Обновлён: 2026-07-28 · T-800 **1.20.0** (adapter framework `adapters/` Phase 1+2; `/t800-loop`, loop-conductor)  
 - Обновлён: 2026-07-09 · T-800 **1.13.0** (`/t800-fix`, `/t800-doctor`, run_gate)  
 - Loop: 2026-07-09 · T-800 **1.12.0** (STATE / machine gates)  
 - Введён отделы: 2026-07-09 · T-800 **1.11.0**  

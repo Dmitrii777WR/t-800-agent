@@ -1,3 +1,7 @@
+---
+provenance: manual
+author: t-800-factory
+---
 # Аудит команды T-800 — 2026-07-06
 
 ## v1.8.0 — gaps D1–D7 CLOSED (2026-07-09)
@@ -43,7 +47,7 @@ Roster: **21 → 27**. Context7 условно (не always-on).
 | Блок | Агенты | Статус |
 |------|--------|--------|
 | Scout | `t-800-scout` | ✅ cursor.com + manifest |
-| Brains | lead + 8 domain (+ teya) | ✅ локальная KB |
+| Brains | lead + 8 domain (+ adapter brains) | ✅ локальная KB |
 | Factory | lead + architect + builder + integrator + auditor | ✅ только plugin-bias |
 | Mentor | `t-800-operator` | ✅ |
 | Maintainer | `t-800-maintainer` | ✅ sync KB |

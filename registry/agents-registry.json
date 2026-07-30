@@ -187,8 +187,7 @@
         "t-800-brain-dev",
         "t-800-brain-admin",
         "t-800-brain-security",
-        "t-800-brain-tools",
-        "t-800-brain-teya"
+        "t-800-brain-tools"
       ],
       "calledBy": [
         "main-agent",
@@ -272,17 +271,6 @@
         "t-800-brain-lead"
       ],
       "description": "KB: terminal, browser, search"
-    },
-    {
-      "id": "t-800-brain-teya",
-      "file": "agents/t-800-brain-teya.md",
-      "category": "brains",
-      "readonly": true,
-      "calls": [],
-      "calledBy": [
-        "t-800-brain-lead"
-      ],
-      "description": "KB: Teya Pro plugin paths, contracts, release"
     },
     {
       "id": "t-800-factory",
@@ -548,5 +536,16 @@
       ],
       "description": "Cadence KB: UPDATE-QUEUE → maintainer; deepen 10-cloud-automation"
     }
-  ]
+  ],
+  "adapters": {
+    "teya": {
+      "manifest": "adapters/teya/adapter.manifest.json",
+      "brain": "adapters/teya/agents/t-800-brain-teya.md",
+      "profiles": [
+        "teya-plugin-dev",
+        "teya-client",
+        "teya-pro"
+      ]
+    }
+  }
 }

@@ -17,8 +17,8 @@
 |---------|------------------------|
 | `self-t800` | `t-800-memory/cloud-hub/` |
 | `generic-plugin` | `{slug}-memory/cloud-hub/` (или marker memory) |
-| `teya-client` | **`teya-memory/cloud-hub/` native-first**; **не** создавать параллельную `t-800-memory/` в клиенте для cloud-hub данных |
-| `teya-plugin-dev` | `plugin-memory/cloud-hub/` или run-scoped `.teya-plugin-run/cloud-hub/` |
+| declared adapter profile (клиент) | **`<memory_dir>/cloud-hub/` native-first**; **не** создавать параллельную `t-800-memory/` в клиенте для cloud-hub данных |
+| declared adapter profile (dev checkout) | `plugin-memory/cloud-hub/` или run-scoped подпапка прогона по конвенции плагина |
 
 Discovery: `scripts/discover-target-project.sh` → использовать его `memory_path`.
 

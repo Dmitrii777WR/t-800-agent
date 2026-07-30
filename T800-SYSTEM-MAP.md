@@ -51,7 +51,7 @@
 |-------|-----|------------------------------|
 | System / Mentor | — (Директор по slash) | onboard, operator, system-auditor, plugin-auditor, intake-clarifier, maintainer, cursor-kb-curator, **loop-conductor** (`/t800-loop`) |
 | Research | `t-800-research-lead` | strategist, github, repo-miner, community, clawhub, vendor-docs, docs, news, synthesizer; adjacent: prompt-craft |
-| Brains | `t-800-brain-lead` | agents, context, cloud, dev, admin, security, tools, teya |
+| Brains | `t-800-brain-lead` | agents, context, cloud, dev, admin, security, tools; adapter brains — из `adapters/` (см. registry `adapters`) |
 | Factory | `t-800-factory` | architect, artifact-hooks, artifact-scripts, mcp-wiring, builder, integrator, prompt-auditor, auditor |
 | Cloud Hub | `t-800-cloud-hub-lead` | analyst, prompt, pack, smoke |
 
@@ -122,7 +122,7 @@
 ## 3. Память и артефакты
 
 Контракт: `shared/project-memory-contract.md`.  
-**Закон:** канон памяти — у **целевого** проекта (`teya-memory/`, `plugin-memory/`, `{slug}-memory/`). Писать STATE чужого плагина в `t-800-memory/` как канон **запрещено** (кроме profile `self-t800`).
+**Закон:** канон памяти — у **целевого** проекта (`{slug}-memory/`, `plugin-memory/`; точный `memory_dir` — из `profiles/*.md`). Писать STATE чужого плагина в `t-800-memory/` как канон **запрещено** (кроме profile `self-t800`).
 
 ### 3.1 Таблица файлов состояния
 
@@ -657,7 +657,7 @@ bash scripts/verify-install.sh
 | `t-800-brain-admin` | brains | True | — | brain-lead |
 | `t-800-brain-security` | brains | True | — | brain-lead |
 | `t-800-brain-tools` | brains | True | — | brain-lead |
-| `t-800-brain-teya` | brains | True | — | brain-lead |
+| Adapter brains (`adapters/<id>/agents/`) | brains | True | — | brain-lead (по discovery adapter) |
 | `t-800-factory` | factory | False | scout, research-lead, brain-lead, architect…auditor | main-agent |
 | `t-800-factory-architect` | factory | True | artifact-hooks, artifact-scripts, mcp-wiring | factory |
 | `t-800-factory-builder` | factory | False | — | factory |

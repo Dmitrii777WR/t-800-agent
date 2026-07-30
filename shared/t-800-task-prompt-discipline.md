@@ -7,11 +7,11 @@
 ```text
 1. РОЛЬ          — «Ты — t-800-factory-architect. Следуй shared/t-800-factory-contract.md»
 2. РЕЖИМ         — architect | builder | integrator | auditor | scout | brain
-3. ВХОДЫ         — точные пути: factory-brief, scout_report, spec YAML, TEYA_PLUGIN_ROOT
+3. ВХОДЫ         — точные пути: factory-brief, scout_report, spec YAML, plugin_root из discovery
 4. ЗАДАЧА        — нумерованные шаги, не абзац
 5. ВЫХОДЫ        — файлы + fragment в {memory_path}/fragments/
 6. КРИТЕРИИ      — проверяемые условия PASS
-7. ЗАПРЕТЫ       — не skip auditor, не писать в ~/.cursor/plugins/local/teya
+7. ЗАПРЕТЫ       — не skip auditor, не писать в installed readonly fallback (~/.cursor/plugins/local/<id>)
 ```
 
 ## Fragment (обязателен)
@@ -32,8 +32,7 @@
 - Не бандлить architect+builder в один Task
 - После Task — проверить fragment и артефакты на диске
 
-## Связь с Teya
+## Связь с адаптером
 
-При profile `teya-client` или `teya-plugin-dev` в ВХОДЫ добавлять:
-- `$TEYA_PLUGIN_ROOT/shared/agent-quality-contract.md`
-- `$TEYA_PLUGIN_ROOT/shared/task-prompt-discipline.md`
+При declared adapter profile в ВХОДЫ добавлять живые контракты целевого плагина
+(указатели: `adapters/<id>/adapter.manifest.json` → `live_contract_pointers`).
