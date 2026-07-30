@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Тесты before-artifact-edit.sh default enforce + opt-out warn.
+"""Тесты before-artifact-edit.sh (preToolUse) default enforce + opt-out warn.
 
   python3 tests/test_hook_enforce_default.py
 
@@ -71,22 +71,35 @@ def main() -> int:
         # isolated plugin_root: no ../t-800-memory with factory completed
         (tmp / "scripts").mkdir(exist_ok=True)
 
-        artifact = {"filePath": "/tmp/proj/agents/x.md"}
+        artifact = {
+            "tool_name": "Write",
+            "tool_input": {"file_path": "/tmp/proj/agents/x.md"},
+            "cwd": "/tmp/proj",
+        }
 
-        # default unset → deny
+        # default unset → deny (preToolUse schema: user_message + agent_message)
         out = run_hook(hook, tmp, artifact)
         if out.get("permission") != "deny":
             print(f"FAIL: default должен deny, got {out}", file=sys.stderr)
             return 1
+        if not out.get("user_message") or not out.get("agent_message"):
+            print(f"FAIL: deny без user_message/agent_message: {out}", file=sys.stderr)
+            return 1
+        if "userMessage" in out or "continue" in out:
+            print(f"FAIL: legacy поля в deny payload: {out}", file=sys.stderr)
+            return 1
 
-        # warn opt-out → allow + userMessage
+        # warn opt-out → allow + user_message WARN
         out = run_hook(hook, tmp, artifact, {"T800_HOOK_MODE": "warn"})
         if out.get("permission") != "allow":
             print(f"FAIL: warn должен allow, got {out}", file=sys.stderr)
             return 1
-        msg = out.get("userMessage") or ""
+        msg = out.get("user_message") or ""
         if "WARN" not in msg:
-            print(f"FAIL: warn без userMessage WARN: {out}", file=sys.stderr)
+            print(f"FAIL: warn без user_message WARN: {out}", file=sys.stderr)
+            return 1
+        if "WARN" not in (out.get("agent_message") or ""):
+            print(f"FAIL: warn без agent_message WARN: {out}", file=sys.stderr)
             return 1
 
         # observe → allow
@@ -102,9 +115,38 @@ def main() -> int:
             return 1
 
         # non-artifact
-        out = run_hook(hook, tmp, {"filePath": "/tmp/proj/src/app.py"})
+        out = run_hook(
+            hook,
+            tmp,
+            {
+                "tool_name": "Write",
+                "tool_input": {"file_path": "/tmp/proj/src/app.py"},
+                "cwd": "/tmp/proj",
+            },
+        )
         if out.get("permission") != "allow":
             print(f"FAIL: non-artifact должен allow, got {out}", file=sys.stderr)
+            return 1
+
+        # preToolUse payload smoke: 5 вариантов пути → deny; пусто → allow (fail-open)
+        variants = [
+            {"tool_name": "Write", "tool_input": {"file_path": "/tmp/proj/agents/v1.md"}},
+            {"tool_name": "StrReplace", "tool_input": {"path": "/tmp/proj/agents/v2.md"}},
+            {
+                "tool_name": "EditNotebook",
+                "tool_input": {"target_notebook": "/tmp/proj/agents/v3.md"},
+            },
+            {"filePath": "/tmp/proj/agents/v4.md"},  # legacy top-level
+            {"path": "/tmp/proj/agents/v5.md"},  # legacy top-level
+        ]
+        for idx, payload in enumerate(variants, 1):
+            out = run_hook(hook, tmp, payload)
+            if out.get("permission") != "deny":
+                print(f"FAIL: вариант {idx} должен deny, got {out}", file=sys.stderr)
+                return 1
+        out = run_hook(hook, tmp, {})
+        if out.get("permission") != "allow":
+            print(f"FAIL: пустой payload должен allow (fail-open), got {out}", file=sys.stderr)
             return 1
 
         # also invoke canonical path once (user contract): stdin agents path
@@ -119,7 +161,13 @@ def main() -> int:
             base.pop(k, None)
         proc = subprocess.run(
             ["bash", str(HOOK_SRC)],
-            input=json.dumps({"filePath": "/tmp/proj/agents/foo.md"}),
+            input=json.dumps(
+                {
+                    "tool_name": "Write",
+                    "tool_input": {"file_path": "/tmp/proj/agents/foo.md"},
+                    "cwd": str(ROOT),
+                }
+            ),
             cwd=str(ROOT),
             capture_output=True,
             text=True,

@@ -38,7 +38,7 @@ def _eprint(msg: str) -> None:
 
 
 def _load_json(path: Path) -> Any:
-    return json.loads(path.read_text(encoding="utf-8"))
+    return json.loads(path.read_text(encoding="utf-8-sig"))
 
 
 def _resolve_manifest_path(plugin_root: Path, rel: str) -> Path:

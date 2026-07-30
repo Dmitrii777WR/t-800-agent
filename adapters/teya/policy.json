@@ -3,7 +3,7 @@
   "phase": 2,
   "hook_boundary": {
     "default_mode": "warn",
-    "t800_core_hook_note": "T-800 hooks/before-artifact-edit.sh default mode is enforce since 1.22.0 (opt-out via T800_HOOK_MODE / T800_TEYA_HOOK_MODE). This adapter does NOT auto-enable enforce; auto_enable_enforce remains false.",
+    "t800_core_hook_note": "T-800 preToolUse hook hooks/before-artifact-edit.sh (artifact-edit guard) default mode is enforce since 1.22.0 (opt-out via T800_HOOK_MODE / T800_TEYA_HOOK_MODE). This adapter does NOT auto-enable enforce; auto_enable_enforce remains false.",
     "modes": {
       "observe": "Log only; always allow artifact edits",
       "warn": "Allow + userMessage when no factory run (adapter default_mode; Teya boundary stays warn)",

@@ -16,6 +16,7 @@ import argparse
 import json
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -30,7 +31,7 @@ def fail(msg: str, summary: dict[str, Any], code: int = 1) -> int:
 
 def _load_json(path: Path) -> dict[str, Any] | None:
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = json.loads(path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError):
         return None
     return data if isinstance(data, dict) else None
@@ -62,6 +63,95 @@ def factory_step_completed(manifest: dict[str, Any] | None) -> bool:
     if isinstance(factory, dict) and _status_ok(factory.get("status")):
         return True
     return False
+
+
+def _parse_ts(value: Any) -> float | None:
+    """ISO 8601 → epoch. Суффикс 'Z' → +00:00; naive трактуется как local."""
+    if not isinstance(value, str) or not value.strip():
+        return None
+    text = value.strip()
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    try:
+        dt = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        return dt.astimezone().timestamp()
+    return dt.timestamp()
+
+
+def _norm_rel(path: str, plugin_root: Path) -> str:
+    raw = path.replace("\\", "/")
+    p = Path(raw)
+    if p.is_absolute():
+        try:
+            raw = str(p.resolve().relative_to(plugin_root.resolve())).replace("\\", "/")
+        except (ValueError, OSError):
+            pass
+    return raw.lstrip("./")
+
+
+def _step_files(step: dict[str, Any]) -> set[str]:
+    out: set[str] = set()
+    for key in ("files", "artifacts", "changed_files", "paths"):
+        val = step.get(key)
+        if isinstance(val, list):
+            for item in val:
+                if isinstance(item, str) and item.strip():
+                    out.add(item.replace("\\", "/").lstrip("./"))
+    return out
+
+
+def _completed_factory_steps(manifest: dict[str, Any]) -> list[dict[str, Any]]:
+    steps: list[dict[str, Any]] = []
+    for step in manifest.get("steps") or []:
+        if not isinstance(step, dict):
+            continue
+        agent = str(step.get("agent") or step.get("name") or "").lower()
+        if "factory" in agent and _status_ok(step.get("status")):
+            steps.append(step)
+    return steps
+
+
+def factory_binding(
+    manifest: dict[str, Any] | None,
+    artifacts: list[str],
+    plugin_root: Path,
+) -> tuple[str, dict[str, Any] | None, float | None]:
+    """Привязка factory-шага к изменённым артефактам.
+
+    Возвращает (binding, matched_step, max_artifact_mtime):
+      time  — finished_at||completed_at шага >= max(mtime артефактов)
+      files — артефакты ⊆ files/artifacts/changed_files/paths шага
+      none  — привязки нет → FAIL
+    """
+    max_mtime: float | None = None
+    for rel in artifacts:
+        p = Path(rel)
+        if not p.is_absolute():
+            p = plugin_root / rel
+        try:
+            mt = p.stat().st_mtime
+        except OSError:
+            continue
+        max_mtime = mt if max_mtime is None else max(max_mtime, mt)
+    if not manifest:
+        return "none", None, max_mtime
+    completed = _completed_factory_steps(manifest)
+    if max_mtime is not None:
+        for step in completed:
+            ts = _parse_ts(step.get("finished_at")) or _parse_ts(
+                step.get("completed_at")
+            )
+            if ts is not None and ts >= max_mtime:
+                return "time", step, max_mtime
+    norm = {_norm_rel(a, plugin_root) for a in artifacts}
+    for step in completed:
+        coverage = _step_files(step)
+        if coverage and norm and norm <= coverage:
+            return "files", step, max_mtime
+    return "none", None, max_mtime
 
 
 def is_cursor_artifact(rel_or_abs: str, plugin_root: Path) -> bool:
@@ -229,21 +319,35 @@ def main() -> int:
     manifest_path = memory_path / "run-manifest.json"
     manifest = _load_json(manifest_path) if manifest_path.is_file() else None
     completed = factory_step_completed(manifest)
+    binding, matched_step, max_mtime = factory_binding(manifest, artifacts, plugin_root)
     summary["factory_completed"] = completed
     summary["checks"]["manifest"] = (
         "ok" if completed else ("missing" if manifest is None else "factory_incomplete")
     )
+    summary["checks"]["binding"] = binding
+    summary["max_artifact_mtime"] = max_mtime
+    summary["matched_step"] = (
+        {
+            "agent": matched_step.get("agent") or matched_step.get("name"),
+            "finished_at": matched_step.get("finished_at")
+            or matched_step.get("completed_at"),
+        }
+        if matched_step is not None
+        else None
+    )
 
-    if completed:
+    if binding != "none":
         print(json.dumps(summary, ensure_ascii=False, indent=2))
-        print("PASS: t800_factory_bypass_gate (factory step completed)")
+        print(f"PASS: t800_factory_bypass_gate (binding={binding})")
         return 0
 
     listed = ", ".join(artifacts[:12])
     more = "" if len(artifacts) <= 12 else f" (+{len(artifacts) - 12})"
     return fail(
         "Обход factory: изменены Cursor-артефакты без завершённого шага "
-        f"t-800-factory в run-manifest.json. Файлы: {listed}{more}. "
+        "t-800-factory, привязанного к этим правкам (time-binding: finished_at/"
+        "completed_at >= mtime артефактов; или files-coverage шага). "
+        f"Файлы: {listed}{more}. "
         "Запустите /t800-start или /t800-fix → Task(t-800-factory). "
         "Не пишите agents/skills/commands/rules/hooks из main chat.",
         summary,

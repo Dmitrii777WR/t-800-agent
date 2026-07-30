@@ -19,4 +19,4 @@
 - **doctor** — здоровье/отчёт, обычно exit 0 даже при findings.
 - **run_gate** — hard PASS/FAIL перед «готово» CREATE/PATCH.
 
-Hooks `beforeFileEdit` в v1 — WARN, не sole gate.
+Hooks `preToolUse` (artifact-edit guard) в v1 — WARN, не sole gate.

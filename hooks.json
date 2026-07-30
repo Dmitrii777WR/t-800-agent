@@ -7,9 +7,10 @@
         "timeout": 120
       }
     ],
-    "beforeFileEdit": [
+    "preToolUse": [
       {
         "command": "bash hooks/before-artifact-edit.sh",
+        "matcher": "Write|StrReplace|EditNotebook",
         "timeout": 15
       }
     ]

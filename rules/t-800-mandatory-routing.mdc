@@ -20,7 +20,7 @@ alwaysApply: true
 
 > Rule = advisory для агента. Жёсткий FAIL — machine gates:  
 > `scripts/t800_factory_bypass_gate.py`, `scripts/t800_run_gate.py --strict-create`.  
-> Hook `beforeFileEdit` (`hooks/before-artifact-edit.sh`) в v1 даёт **WARN**, не hard-deny.
+> Hook `preToolUse` (`hooks/before-artifact-edit.sh`, artifact-edit guard) в v1 даёт **WARN**, не hard-deny.
 
 ## Когда ВСЕГДА через T-800
 

@@ -47,7 +47,7 @@ def load_manifest_files(manifest_path: Path) -> set[str]:
     if not manifest_path.is_file():
         return allowed
     try:
-        data = json.loads(manifest_path.read_text(encoding="utf-8"))
+        data = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError):
         return allowed
     if not isinstance(data, dict):
@@ -182,6 +182,64 @@ def git_changed_kb(plugin_root: Path, base: str) -> list[str]:
     return out
 
 
+def git_changed_kb_worktree(plugin_root: Path) -> list[str]:
+    """KB changes в working tree: unstaged + staged + untracked (без base ref)."""
+    lines: list[str] = []
+    cmds = [
+        [
+            "git",
+            "-C",
+            str(plugin_root),
+            "diff",
+            "--name-only",
+            "--diff-filter=ACMR",
+            "--",
+            "knowledge-base/",
+        ],
+        [
+            "git",
+            "-C",
+            str(plugin_root),
+            "diff",
+            "--name-only",
+            "--cached",
+            "--diff-filter=ACMR",
+            "--",
+            "knowledge-base/",
+        ],
+        [
+            "git",
+            "-C",
+            str(plugin_root),
+            "ls-files",
+            "--others",
+            "--exclude-standard",
+            "--",
+            "knowledge-base/",
+        ],
+    ]
+    for cmd in cmds:
+        try:
+            proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        except OSError:
+            continue
+        if proc.returncode != 0:
+            continue
+        lines.extend(ln.strip() for ln in (proc.stdout or "").splitlines() if ln.strip())
+    seen: set[str] = set()
+    out: list[str] = []
+    for ln in lines:
+        rel = normalize_kb_rel(ln)
+        if rel.endswith("/") or rel == "knowledge-base/manifest.json":
+            continue
+        if not rel.startswith("knowledge-base/"):
+            continue
+        if rel not in seen:
+            seen.add(rel)
+            out.append(rel)
+    return out
+
+
 def check_files(
     root: Path,
     changed: list[str],
@@ -231,7 +289,7 @@ def run_fixture(fixture_dir: Path) -> int:
         print(json.dumps(summary, ensure_ascii=False, indent=2))
         return 1
 
-    case = json.loads(case_path.read_text(encoding="utf-8"))
+    case = json.loads(case_path.read_text(encoding="utf-8-sig"))
     mode = case.get("mode", "files")
     expect_exit = int(case.get("expect_exit", 0))
     kb_root = fixture_dir
@@ -292,10 +350,34 @@ def run_git(plugin_root: Path, base: str) -> int:
     return 0
 
 
+def run_git_worktree(plugin_root: Path) -> int:
+    changed = git_changed_kb_worktree(plugin_root)
+    allowed = load_manifest_files(plugin_root / "knowledge-base" / "manifest.json")
+    violations = check_files(plugin_root, changed, allowed)
+    ok = len(violations) == 0
+    summary: dict[str, Any] = {
+        "ok": ok,
+        "mode": "worktree",
+        "plugin_root": str(plugin_root),
+        "changed": changed,
+        "violations": violations,
+    }
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
+    if not ok:
+        print(f"FAIL: {len(violations)} KB provenance violation(s)", file=sys.stderr)
+        return 1
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="KB provenance gate")
     parser.add_argument("--plugin-root", default=".", type=Path)
     parser.add_argument("--base", default="HEAD", help="git base ref (default HEAD)")
+    parser.add_argument(
+        "--worktree",
+        action="store_true",
+        help="offline-режим без base ref: unstaged + staged + untracked KB changes",
+    )
     parser.add_argument(
         "--fixture-dir",
         type=Path,
@@ -308,6 +390,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_fixture(args.fixture_dir.resolve())
 
     plugin_root = args.plugin_root.resolve()
+    if args.worktree:
+        return run_git_worktree(plugin_root)
     return run_git(plugin_root, args.base)
 
 

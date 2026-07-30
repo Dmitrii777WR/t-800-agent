@@ -36,7 +36,7 @@ def fail(msg: str, summary: dict[str, Any], code: int = 1) -> int:
 
 def _load_json(path: Path) -> dict[str, Any] | None:
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = json.loads(path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError):
         return None
     return data if isinstance(data, dict) else None
@@ -450,14 +450,32 @@ def main() -> int:
                 f"--require-kb-provenance: нет скрипта {kb_gate}",
                 summary,
             )
+        # base: origin/main, если доступен; иначе offline worktree fallback
+        base_ref: str | None = None
+        try:
+            probe = subprocess.run(
+                ["git", "-C", str(plugin_root), "rev-parse", "--verify", "origin/main"],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if probe.returncode == 0 and (probe.stdout or "").strip():
+                base_ref = "origin/main"
+        except OSError:
+            base_ref = None
+        kb_cmd = [
+            sys.executable,
+            str(kb_gate),
+            "--plugin-root",
+            str(plugin_root),
+        ]
+        if base_ref:
+            kb_cmd += ["--base", base_ref]
+        else:
+            kb_cmd += ["--worktree"]
         try:
             proc = subprocess.run(
-                [
-                    sys.executable,
-                    str(kb_gate),
-                    "--plugin-root",
-                    str(plugin_root),
-                ],
+                kb_cmd,
                 cwd=str(plugin_root),
                 capture_output=True,
                 text=True,
@@ -476,8 +494,26 @@ def main() -> int:
                 f"t800_kb_provenance_gate.py exit {proc.returncode}. {tail}",
                 summary,
             )
-        summary["checks"]["kb_provenance"] = "ok"
-        print("OK  t800_kb_provenance_gate exit 0")
+        if not base_ref:
+            wt_changed: list[Any] | None = None
+            try:
+                nested = json.loads(proc.stdout or "")
+                if isinstance(nested, dict) and isinstance(nested.get("changed"), list):
+                    wt_changed = nested["changed"]
+            except json.JSONDecodeError:
+                wt_changed = None
+            if wt_changed == []:
+                summary["checks"]["kb_provenance"] = "skipped_no_base_offline"
+                print(
+                    "OK  kb_provenance: skipped_no_base_offline "
+                    "(origin/main недоступен, KB-изменений в worktree нет)"
+                )
+            else:
+                summary["checks"]["kb_provenance"] = "ok_worktree"
+                print("OK  t800_kb_provenance_gate exit 0 (worktree fallback)")
+        else:
+            summary["checks"]["kb_provenance"] = "ok"
+            print("OK  t800_kb_provenance_gate exit 0")
 
     if require_frontmatter_yaml:
         if not args.plugin_root:

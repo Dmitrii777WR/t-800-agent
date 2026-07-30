@@ -176,6 +176,14 @@ bash scripts/t800_loop_state.sh touch --memory-path "<memory_path>" --stage "fac
 Обнови STATE: Completed, Lessons, Gates.  
 Repair budget: после 2 FAIL → escalate пользователю (`loop-engineering-contract`).
 
+Финальный machine gate прогона (обязателен перед «готово»):
+
+```bash
+python3 scripts/t800_run_gate.py --memory-path "<memory_path>" --plugin-root "<plugin_root>" --strict-create
+```
+
+exit ≠ 0 → repair (≤2 попытки: builder/integrator → auditor → gate снова), затем escalate.
+
 **Закрытие loop (рекомендуется):** после успешного прогона вызови **`/t800-loop`** — run report, lessons export, handoff в `loop-queue.md` (см. `shared/loop-engineering-contract.md` v2).
 
 ---

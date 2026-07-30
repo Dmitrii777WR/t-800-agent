@@ -154,6 +154,18 @@
       ],
       "notes": "Specialists auto inside lead (analyst/prompt/pack/smoke)"
     },
+    "t800-hub-setup": {
+      "lead": "t-800-cloud-hub-lead",
+      "mode": "OPS",
+      "pipeline": [
+        "discovery",
+        "cloud-hub-lead"
+      ],
+      "agents": [
+        "t-800-cloud-hub-lead"
+      ],
+      "notes": "Alias of /t800-cloud-hub"
+    },
     "t800-update": {
       "lead": null,
       "mode": "OPS",

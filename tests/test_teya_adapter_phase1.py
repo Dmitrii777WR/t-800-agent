@@ -420,6 +420,45 @@ def test_hook_no_teya_sibling_literal() -> None:
     record("hook_has_modes", "enforce" in hook and "warn" in hook and "observe" in hook)
 
 
+def test_hook_pretooluse_schema() -> None:
+    """Hook говорит схемой preToolUse: permission + user_message/agent_message, без legacy."""
+    with tempfile.TemporaryDirectory() as td:
+        iso = Path(td)
+        (iso / "hooks").mkdir()
+        (iso / "scripts").mkdir()
+        shutil.copy(ROOT / "hooks" / "before-artifact-edit.sh", iso / "hooks" / "before-artifact-edit.sh")
+        env = os.environ.copy()
+        for k in ("T800_HOOK_MODE", "T800_TEYA_HOOK_MODE", "T800_FACTORY_RUN_ID", "T800_MEMORY_PATH"):
+            env.pop(k, None)
+        env["T800_HOOK_MODE"] = "warn"
+        payload = {
+            "tool_name": "Write",
+            "tool_input": {"file_path": "/tmp/proj/agents/x.md"},
+            "cwd": "/tmp/proj",
+        }
+        cp = subprocess.run(
+            ["bash", str(iso / "hooks" / "before-artifact-edit.sh")],
+            input=json.dumps(payload),
+            cwd=str(iso),
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+        try:
+            out = json.loads((cp.stdout or "").strip())
+        except json.JSONDecodeError:
+            out = {"_parse_error": True, "stdout": cp.stdout}
+        record(
+            "hook_pretooluse_schema",
+            out.get("permission") == "allow"
+            and "user_message" in out
+            and "agent_message" in out
+            and "userMessage" not in out
+            and "continue" not in out,
+            json.dumps(out, ensure_ascii=False)[:160],
+        )
+
+
 def main() -> int:
     print("=== Teya Adapter Phase 1 fixtures ===")
     test_profile_matching()
@@ -434,6 +473,7 @@ def main() -> int:
     test_fail_canary_rollout_stub()
     test_discover_no_sibling_assignment()
     test_hook_no_teya_sibling_literal()
+    test_hook_pretooluse_schema()
 
     summary = {"pass": PASS, "fail": FAIL, "total": PASS + FAIL, "results": RESULTS}
     # Never commit personal absolute paths from local TEYA_PLUGIN_ROOT into fixtures

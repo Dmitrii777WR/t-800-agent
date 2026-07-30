@@ -93,7 +93,7 @@
 ### Защита factory (не обходить конвейер)
 Артефакты Cursor (`agents/`, skills, commands, rules, hooks) — только через `/t800-start` или `/t800-fix` → `Task(t-800-factory)`.  
 После Plan с factory-brief Implement не правит файлы в main chat (`shared/plan-to-factory-handoff-contract.md`).  
-Gates: `t800_factory_bypass_gate.py`, `t800_run_gate.py --strict-create`; hook `beforeFileEdit` — WARN.
+Gates: `t800_factory_bypass_gate.py`, `t800_run_gate.py --strict-create`; hook `preToolUse` (artifact-edit guard) — WARN.
 
 ### Cloud Hub (Cursor Automations)
 Отдел **Blank Plugin-Checkout Hub** + Client TZ-builder:

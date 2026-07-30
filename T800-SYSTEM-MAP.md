@@ -27,7 +27,7 @@
 | LOC (md/py/sh/ps1/json/mdc/yaml, без `.cursor/agents` mirror) | **~17429+** (карта; пересчитать при аудите) | wc |
 | Размер checkout | **~21M** (многое — `knowledge-base/raw/` HTML) | du |
 | Agents body size | ~2735+ строк суммарно по `agents/*.md` | wc |
-| Hooks | `sessionStart` (один; dispatcher внутри bootstrap), `beforeFileEdit` | `hooks.json` |
+| Hooks | `sessionStart` (один; dispatcher внутри bootstrap), `preToolUse` (artifact-edit guard) | `hooks.json` |
 | Tests | `tests/TEST-SCENARIOS.md` + fixtures loop/prompt-eval/ + `tests/test_*`.py + golden; нет полного CI suite | файл |
 | Teya integration | **Adapter only** `adapters/teya/` (Phase 1) — не orchestration kernel | adapters/teya |
 | Хостинг | локальный Cursor plugin: `~/.cursor/plugins/local/t-800-agent/` | install scripts |
@@ -201,7 +201,7 @@
 | `t800_plugin_audit.py` | inventory/graph/orphans/alwaysApply | Авто | exit 1/2 | — | `scripts/t800_plugin_audit.py` | **Да:** `inventory.json`, `scorecard.json` |
 | `factory-auditor` (агент) | prompt-auditor ok + scripts + registry + quality | Агент readonly + scripts | `status: blocked` → factory repair | ≤2 в factory lead | `agents/t-800-factory-auditor.md` | **Частично:** YAML в ответе/fragment (`status`, `machine_gates`, `ralph_wiggum_risk`); не единый schema-файл |
 | `prompt-auditor` | качество промпта agent/skill/command | Агент | blocked ship | через factory | `agents/t-800-prompt-auditor.md` | YAML в fragment/ответе |
-| `beforeFileEdit` hook | правка Cursor-артефактов | Hook | **default DENY (enforce)**; opt-out warn/observe via env | — | `hooks/before-artifact-edit.sh` | JSON stdout `{continue, permission, userMessage}` |
+| `preToolUse` hook (artifact-edit guard) | правка Cursor-артефактов | Hook | **default DENY (enforce)**; opt-out warn/observe via env | — | `hooks/before-artifact-edit.sh` | JSON stdout `{permission, user_message, agent_message}` |
 | Mandatory routing rule | запрет Write артефактов вне factory | Advisory rule | социальный / gate scripts если запущены | — | `rules/t-800-mandatory-routing.mdc` (+ global copy после bootstrap) | Нет (текст правила) |
 | Research coverage_matrix | полнота DEEP research | Агент synthesizer/lead | FAIL incomplete → не идти дальше (контракт) | человек/повтор research | `shared/deep-research-contract.md` | Обычно в fragment/research_brief YAML — **не** отдельный gate script |
 | alwaysApply hard (≥20) | bloat rules | `t800_plugin_audit.py --strict-alwaysapply large` | exit 2 | человек | plugin-audit-contract | scorecard JSON |
@@ -869,7 +869,7 @@ Lessons там же про verify/health paths и bootstrap consent — **пов
 3. Structured Lessons schema (`findings[].risk`, `evidence`, `suggested_files`).
 4. Команда `/t800-loop` или расширение `/t800-fix`: retrospective → draft pack → optional auto PATCH if risk=low.
 5. Golden smoke: workspace fixture + expected hash list.
-6. Hook `beforeFileEdit` default enforce (1.22.0); soft-bypass только in_progress (1.22.1); opt-out warn/observe.
+6. Hook `preToolUse` (artifact-edit guard) default enforce (1.22.0); soft-bypass только in_progress (1.22.1); opt-out warn/observe.
 7. Запрет новых research/brain агентов сохранить (усиливать scripts, не roster).
 
 ---

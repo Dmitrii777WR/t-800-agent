@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# beforeFileEdit (T-800) — policy modes: observe | warn | enforce
+# preToolUse (T-800) — policy modes: observe | warn | enforce
 # Default: enforce (deny artifact edits outside factory). Opt-out:
 #   T800_HOOK_MODE=warn|observe  or  T800_TEYA_HOOK_MODE=warn|observe
 # Sibling Teya checkout paths are NOT memory SoT.
@@ -15,26 +15,30 @@ case "$HOOK_MODE" in
   *) HOOK_MODE="enforce" ;;
 esac
 
+json_escape() {
+  local msg="${1:-}"
+  msg=${msg//\\/\\\\}
+  msg=${msg//\"/\\\"}
+  msg=${msg//$'\n'/\\n}
+  printf '%s' "$msg"
+}
+
 allow() {
-  printf '{"continue":true,"permission":"allow"}'
+  printf '{"permission":"allow"}'
   exit 0
 }
 
 warn_allow() {
-  local msg="${1:-}"
-  msg=${msg//\\/\\\\}
-  msg=${msg//\"/\\\"}
-  msg=${msg//$'\n'/\\n}
-  printf '{"continue":true,"permission":"allow","userMessage":"%s"}' "$msg"
+  local msg
+  msg=$(json_escape "${1:-}")
+  printf '{"permission":"allow","user_message":"%s","agent_message":"%s"}' "$msg" "$msg"
   exit 0
 }
 
 deny() {
-  local msg="${1:-}"
-  msg=${msg//\\/\\\\}
-  msg=${msg//\"/\\\"}
-  msg=${msg//$'\n'/\\n}
-  printf '{"continue":true,"permission":"deny","userMessage":"%s"}' "$msg"
+  local msg
+  msg=$(json_escape "${1:-}")
+  printf '{"permission":"deny","user_message":"%s","agent_message":"%s"}' "$msg" "$msg"
   exit 0
 }
 
@@ -43,15 +47,22 @@ if [[ -n "${T800_FACTORY_RUN_ID:-}" ]]; then
   allow
 fi
 
+# preToolUse вход: tool_input.file_path → tool_input.path →
+# tool_input.target_notebook → legacy top-level filePath → path; пусто = allow (fail-open)
 edited_path=""
-case "$payload" in
-  *"filePath"*)
-    edited_path=$(printf '%s' "$payload" | sed -n 's/.*"filePath"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
-    ;;
-  *"path"*)
-    edited_path=$(printf '%s' "$payload" | sed -n 's/.*"path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
-    ;;
-esac
+edited_path=$(printf '%s' "$payload" | sed -n 's/.*"tool_input"[[:space:]]*:[[:space:]]*{[^{}]*"file_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+if [[ -z "$edited_path" ]]; then
+  edited_path=$(printf '%s' "$payload" | sed -n 's/.*"tool_input"[[:space:]]*:[[:space:]]*{[^{}]*"path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+fi
+if [[ -z "$edited_path" ]]; then
+  edited_path=$(printf '%s' "$payload" | sed -n 's/.*"tool_input"[[:space:]]*:[[:space:]]*{[^{}]*"target_notebook"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+fi
+if [[ -z "$edited_path" ]]; then
+  edited_path=$(printf '%s' "$payload" | sed -n 's/.*"filePath"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+fi
+if [[ -z "$edited_path" ]]; then
+  edited_path=$(printf '%s' "$payload" | sed -n 's/.*"path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+fi
 
 if [[ -z "${edited_path}" ]]; then
   allow
