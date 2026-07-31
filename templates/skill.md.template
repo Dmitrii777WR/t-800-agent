@@ -2,7 +2,7 @@
 name: {{SKILL_NAME}}
 description: >
   {{SKILL_DESCRIPTION}}
-disable-model-invocation: true
+# disable-model-invocation: true — только для system-skills, вызываемых агентами/commands (примеры: t-800-knowledge-base, t-800-plugin-sync); по умолчанию НЕ ставить
 ---
 
 # {{SKILL_TITLE}}

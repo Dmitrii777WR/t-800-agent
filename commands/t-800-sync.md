@@ -1,10 +1,12 @@
 # Синхронизация базы знаний T-800
 
-Запусти синхронизацию официальной документации Cursor:
+Запусти ручной sync официальной документации Cursor:
 
-```powershell
-.\scripts\sync-docs.ps1
-```
+1. Открой `knowledge-base/manifest.json` — канон URL и SHA256.
+2. Fetch каждого официального URL → `knowledge-base/raw/`.
+3. Сверь SHA256 с `manifest.json` и зафиксируй статусы (`new` / `changed` / `unchanged`) в `knowledge-base/UPDATE-QUEUE.md`.
+
+Если работа большая — делегируй `Task(t-800-maintainer)`.
 
 Затем:
 
@@ -17,5 +19,3 @@
 7. Выполни `.\scripts\verify-install.ps1`
 
 Следуй rule `t-800-knowledge-refresh`.
-
-Если работа большая — делегируй `Task(t-800-maintainer)`.

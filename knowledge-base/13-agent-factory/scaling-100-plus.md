@@ -3,6 +3,8 @@ title: "Масштабирование 100+ субагентов"
 audience: advanced
 tier: 4
 last_synced: 2026-07-06
+provenance: manual
+author: t-800
 ---
 
 # Масштабирование плагина с 100+ субагентами
@@ -34,7 +36,6 @@ commands/
 scripts/
   validate-agents.ps1
   audit-agent-graph.ps1
-  register-agent.ps1
 ```
 
 > Cursor читает `agents/*.md` на верхнем уровне. Для подпапок — копировать плоским списком в install или держать плоскую структуру с префиксами: `content-seo.md`, `mkt-landing.md`.

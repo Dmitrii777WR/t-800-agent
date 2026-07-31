@@ -29,7 +29,7 @@ alwaysApply: true
 - Создать или изменить **command** (`.cursor/commands/`)
 - Создать или изменить **rule** (`.cursor/rules/*.mdc`)
 - Создать или изменить **hook** (`hooks.json`, `.cursor/hooks/`)
-- Скрипты установки/валидации плагина (`scripts/register-agent.ps1` и т.д.)
+- Скрипты установки/валидации плагина (`scripts/validate-agents.*`, `scripts/t800_run_gate.py` и т.д.)
 - Вопрос «как правильно в Cursor» при проектировании артефактов
 
 ## Обязательная цепочка (v1.13 — отделы + loop + fix)

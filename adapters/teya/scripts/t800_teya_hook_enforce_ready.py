@@ -20,6 +20,13 @@ def _run(cmd: list[str], cwd: Path | None = None) -> subprocess.CompletedProcess
     return subprocess.run(cmd, cwd=str(cwd or ROOT), capture_output=True, text=True)
 
 
+def _teya_script(teya: Path, name: str) -> Path | None:
+    for cand in (teya / "scripts" / name, teya / "scripts" / "legacy" / name):
+        if cand.is_file():
+            return cand
+    return None
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--teya-plugin-root", default="")
@@ -88,9 +95,8 @@ def main() -> int:
     # materializer dry-run (needs teya + sample handoff — soft)
     teya = Path(args.teya_plugin_root) if args.teya_plugin_root else None
     if teya and teya.is_dir():
-        mat = teya / "scripts" / "teya_t800_materialize_onboarding.py"
         # dry-run without handoff → expect usage error; treat script existence as readiness piece
-        checks["materializer_present"] = mat.is_file()
+        checks["materializer_present"] = _teya_script(teya, "teya_t800_materialize_onboarding.py") is not None
         if not checks["materializer_present"]:
             reasons_fail.append("materializer_missing")
         else:
@@ -103,13 +109,14 @@ def main() -> int:
 
     checks["stale_detection_present"] = (
         bool(teya)
-        and (teya / "scripts" / "teya_t800_provenance_stale_check.py").is_file()
+        and _teya_script(teya, "teya_t800_provenance_stale_check.py") is not None
     )
     if not checks["stale_detection_present"]:
         reasons_fail.append("stale_detection_missing")
 
     checks["provenance_bridge_present"] = (
-        bool(teya) and (teya / "scripts" / "teya_t800_handoff_verify.py").is_file()
+        bool(teya)
+        and _teya_script(teya, "teya_t800_handoff_verify.py") is not None
     )
     if not checks["provenance_bridge_present"]:
         reasons_fail.append("provenance_verifier_missing")
@@ -123,14 +130,16 @@ def main() -> int:
         "deny_reasons_if_enforce": reasons_fail,
         "note": "Enforce remains opt-in via T800_TEYA_HOOK_MODE=enforce only when ready",
     }
-    # persist readiness for policy consumers
-    policy_path = ROOT / "adapters" / "teya" / "policy.json"
+    # persist readiness for policy consumers (runtime state lives in memory, not git)
+    readiness_path = mem / "adapters" / "teya" / "hook-enforce-readiness.json"
     try:
-        policy = json.loads(policy_path.read_text(encoding="utf-8"))
-        policy["hook_enforce_ready"] = ready
-        policy["hook_enforce_ready_checked_at"] = __import__("datetime").datetime.utcnow().isoformat() + "Z"
-        policy["hook_enforce_ready_checks"] = checks
-        policy_path.write_text(json.dumps(policy, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        readiness_path.parent.mkdir(parents=True, exist_ok=True)
+        readiness = {
+            "hook_enforce_ready": ready,
+            "checked_at": __import__("datetime").datetime.utcnow().isoformat() + "Z",
+            "checks": checks,
+        }
+        readiness_path.write_text(json.dumps(readiness, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     except OSError:
         pass
 

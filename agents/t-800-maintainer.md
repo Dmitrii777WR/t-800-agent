@@ -15,16 +15,16 @@ is_background: false
 
 ## Обязанности
 
-1. Читать `knowledge-base/UPDATE-QUEUE.md`
-2. Сверять новые/изменённые URL с уже существующими карточками
-3. Создавать или обновлять beginner-friendly карточки в `knowledge-base/`
-4. Обновлять `knowledge-base/INDEX.md`, `glossarium.md`, `CHANGELOG.md`
-5. Запускать (macOS/Linux — `.sh`, Windows — `.ps1`):
-   - `scripts/sync-docs.ps1` (или sync-docs при наличии pwsh)
+1. При пустой/устаревшей очереди — ручной sync: fetch официальных URL из `knowledge-base/manifest.json` → `knowledge-base/raw/`, сверка SHA256, статусы (`new`/`changed`/`unchanged`) в `UPDATE-QUEUE.md`
+2. Читать `knowledge-base/UPDATE-QUEUE.md`
+3. Сверять новые/изменённые URL с уже существующими карточками
+4. Создавать или обновлять beginner-friendly карточки в `knowledge-base/`
+5. Обновлять `knowledge-base/INDEX.md`, `glossarium.md`, `CHANGELOG.md`
+6. Запускать (macOS/Linux — `.sh`, Windows — `.ps1`):
    - `scripts/audit-coverage.sh` / `audit-coverage.ps1`
    - `scripts/install-plugin.sh` / `install-plugin.ps1`
    - `scripts/verify-install.sh` / `verify-install.ps1`
-6. Следить, чтобы `t-800-operator` оставался **субагентом** в `agents/t-800-operator.md`, а не skill
+7. Следить, чтобы `t-800-operator` оставался **субагентом** в `agents/t-800-operator.md`, а не skill
 
 ## Правила качества карточек
 

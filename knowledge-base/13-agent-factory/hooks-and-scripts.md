@@ -62,11 +62,10 @@ author: t-800
 | `verify-install.ps1` | Проверка установки |
 | `validate-agents.ps1` | Frontmatter, name, description |
 | `audit-agent-graph.ps1` | Реестр vs файлы, связи |
-| `register-agent.ps1` | Добавить запись в registry |
 
 ## Как писать scripts плагина
 
-- **Парность платформ:** конвенция репо — пара `.sh` (macOS/Linux) + `.ps1` (Windows) для пользовательских операций. Текущее состояние `scripts/`: 19 файлов `.sh`, 11 файлов `.ps1`, 26 файлов `.py` — полного покрытия 1:1 пока нет.
+- **Парность платформ:** конвенция репо — пара `.sh` (macOS/Linux) + `.ps1` (Windows) для пользовательских операций. Текущее состояние `scripts/`: 19 файлов `.sh`, 9 файлов `.ps1`, 26 файлов `.py` — полного покрытия 1:1 пока нет.
 - **Stdlib-only:** bash + coreutils или `python3` стандартная библиотека. Внешние зависимости (`jq`, `pyyaml`, пакеты pip) не используем — у пользователя их может не быть.
 - **Stdin JSON-контракт:** hook-скрипт читает JSON события со stdin (одним документом) и пишет JSON-ответ в stdout. Вход всегда содержит `hook_event_name`, `cursor_version`, `workspace_roots`; дальше — поля конкретного события.
 - **Exit codes:** `0` — успех (Cursor читает JSON из stdout), `2` — блок действия (равносильно `permission: "deny"`), любой другой код — hook упал, действие пропускается (fail-open, если не выставлен `failClosed: true`).

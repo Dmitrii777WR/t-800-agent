@@ -4,7 +4,7 @@ description: >
   устарел manifest (>30 дней), есть UPDATE-QUEUE.md с pending, пользователь
   спрашивает про фичу которой нет в KB, или после changelog Cursor.
   В проекте Cursor Junior делегируй обслуживание Task(t-800-maintainer).
-globs: knowledge-base/**,profiles/**,wizards/**,scripts/sync-docs.ps1,scripts/audit-coverage.ps1,scripts/fix-kb-frontmatter.ps1
+globs: knowledge-base/**,profiles/**,wizards/**,scripts/audit-coverage.ps1
 alwaysApply: false
 ---
 
@@ -23,7 +23,7 @@ alwaysApply: false
 
 0. Делегировать работу через `Task(t-800-maintainer)`, если нужно не просто ответить пользователю, а обновить KB
 1. Прочитать `knowledge-base/manifest.json` и `UPDATE-QUEUE.md`
-2. Запустить: `.\scripts\sync-docs.ps1` (PowerShell из корня репозитория)
+2. Ручной sync: fetch URL из `manifest.json` → `raw/`, статусы в `UPDATE-QUEUE.md`
 3. Запустить: `.\scripts\audit-coverage.ps1`
 4. Открыть `UPDATE-QUEUE.md` — обработать pending
 5. Для каждого изменения:
@@ -42,7 +42,7 @@ T-800 Operator **не запускает sync сам** в readonly-режиме.
 - Проверяет дату `last_synced` карточки и `manifest.json`
 - Если данные старше 30 дней — предупреждает: «информация может быть устаревшей»
 - Если темы нет в KB — даёт официальную ссылку + совет обновить базу
-- Предлагает владельцу проекта: `/t-800-sync` или `.\scripts\sync-docs.ps1`
+- Предлагает владельцу проекта: `/t-800-sync` (ручной sync KB)
 
 ## Запреты
 
@@ -52,8 +52,6 @@ T-800 Operator **не запускает sync сам** в readonly-режиме.
 
 ## Команды
 
-- `.\scripts\sync-docs.ps1` — скачать и сравнить
 - `.\scripts\audit-coverage.ps1` — проверить покрытие manifest карточками
-- `.\scripts\fix-kb-frontmatter.ps1` — починить YAML frontmatter
 - `.\scripts\install-plugin.ps1` — обновить ~/.cursor/
 - `.\scripts\verify-install.ps1` — проверить установку

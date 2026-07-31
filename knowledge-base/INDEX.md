@@ -124,7 +124,7 @@ author: t-800-factory
 
 Если в Cursor появилось что-то новое:
 
-1. `.\scripts\sync-docs.ps1`
+1. Ручной sync: fetch официальных URL из `manifest.json` → `raw/` (или `Task(t-800-maintainer)`)
 2. `.\scripts\audit-coverage.ps1`
 3. `UPDATE-QUEUE.md` → упростить для новичков
 4. `CHANGELOG.md` → записать изменение

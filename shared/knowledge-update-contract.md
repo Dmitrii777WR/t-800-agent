@@ -15,7 +15,7 @@
 
 ```mermaid
 flowchart LR
-    sync[sync-docs.ps1] --> manifest[manifest.json]
+    sync[ручной sync: fetch URL] --> manifest[manifest.json]
     sync --> queue[UPDATE-QUEUE.md]
     queue --> human[Упрощение_для_новичков]
     human --> kb[knowledge-base/0X]
@@ -27,13 +27,13 @@ flowchart LR
 
 | Триггер | Действие |
 |---------|----------|
-| Раз в месяц (1-е число) | `.\scripts\sync-docs.ps1` |
+| Раз в месяц (1-е число) | ручной sync по `manifest.json` |
 | Вышел changelog Cursor | sync вручную |
 | Пользователь: «в Cursor появилось X» | sync + проверить UPDATE-QUEUE |
 | `manifest.json` старше 30 дней | sync при открытии проекта T-800 Agent |
 | Новый URL в drafts, нет в INDEX | добавить карточку или в очередь |
 
-## Что делает sync
+## Что делает sync (вручную или через maintainer)
 
 1. Скачивает страницы → `knowledge-base/raw/`
 2. Сравнивает SHA256 с `manifest.json`
@@ -57,7 +57,7 @@ flowchart LR
 
 1. Честно: «В моей базе этого ещё нет»
 2. Дать общий принцип, если возможно
-3. Предложить: «Запустите `.\scripts\sync-docs.ps1` и проверьте UPDATE-QUEUE»
+3. Предложить: «Обновите KB (ручной sync по manifest.json) и проверьте UPDATE-QUEUE»
 4. Ссылка на официальную docs как fallback
 
 ## Свежесть

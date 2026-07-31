@@ -55,15 +55,44 @@ def find_teya() -> Path | None:
     return None
 
 
+class _TeyaScriptMissing(Exception):
+    def __init__(self, script: str) -> None:
+        super().__init__(script)
+        self.script = script
+
+
+def _resolve_teya_script(teya: Path, script: str) -> Path | None:
+    for cand in (teya / "scripts" / script, teya / "scripts" / "legacy" / script):
+        if cand.is_file():
+            return cand
+    return None
+
+
+def _skip_missing_script(script: str) -> None:
+    reason = f"{script}: нет ни в scripts/, ни в scripts/legacy/ TeyaPlugin"
+    pytest_mod = sys.modules.get("pytest")
+    if pytest_mod is not None:
+        pytest_mod.skip(reason)
+    raise _TeyaScriptMissing(script)
+
+
 def run_teya(script: str, args: list[str], env: dict | None = None) -> subprocess.CompletedProcess:
     teya = find_teya()
     assert teya is not None
     e = os.environ.copy()
     e["TEYA_T800_ROOT"] = str(ROOT)
+    # Legacy-переезд Teya: скрипты в scripts/legacy/ считают TEYA_ROOT=parents[1]=scripts/
+    # и ломают свой import teya_t800_paths — PYTHONPATH страхует импорт в обеих раскладках.
+    e["PYTHONPATH"] = os.pathsep.join(
+        p for p in (str(teya / "scripts"), e.get("PYTHONPATH", "")) if p
+    )
     if env:
         e.update(env)
+    path = _resolve_teya_script(teya, script)
+    if path is None:
+        _skip_missing_script(script)
     return subprocess.run(
-        [sys.executable, str(teya / "scripts" / script), *args],
+        [sys.executable, str(path), *args],
         capture_output=True,
         text=True,
         env=e,
@@ -579,16 +608,22 @@ def main() -> int:
         print(json.dumps({"pass": 0, "fail": 0, "total": 0, "skipped": True}, ensure_ascii=False))
         return 0
 
-    test_t800_cannot_set_verified()
-    test_t800_cannot_write_rollout_artifact()
-    test_verifier_and_provenance()
-    test_forged_hash()
-    test_materializer()
-    test_stale_detection()
-    test_release_evidence_boundary()
-    test_security_paths_and_duplicate()
-    test_factory_pass_not_runtime_green()
-    test_hook_readiness_script()
+    for test_fn in (
+        test_t800_cannot_set_verified,
+        test_t800_cannot_write_rollout_artifact,
+        test_verifier_and_provenance,
+        test_forged_hash,
+        test_materializer,
+        test_stale_detection,
+        test_release_evidence_boundary,
+        test_security_paths_and_duplicate,
+        test_factory_pass_not_runtime_green,
+        test_hook_readiness_script,
+    ):
+        try:
+            test_fn()
+        except _TeyaScriptMissing as exc:
+            print(f"[SKIP] {exc.script} отсутствует в scripts/ и scripts/legacy/")
 
     # Run readiness after fixtures exist
     teya = find_teya()

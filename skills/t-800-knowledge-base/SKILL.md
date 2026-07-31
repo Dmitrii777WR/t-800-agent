@@ -13,7 +13,7 @@ disable-model-invocation: true
 Используй этот skill только когда:
 - запускается `/t-800-sync`
 - rule `t-800-knowledge-refresh` активен
-- нужно обновить `knowledge-base/` после `sync-docs.ps1`
+- нужно обновить `knowledge-base/` после ручного sync (fetch официальных URL из manifest.json)
 
 Контракт: `shared/knowledge-update-contract.md`
 
@@ -22,5 +22,4 @@ disable-model-invocation: true
 - `knowledge-base/INDEX.md` — карта
 - `knowledge-base/UPDATE-QUEUE.md` — очередь после sync
 - `knowledge-base/manifest.json` — хеши страниц
-- `scripts/sync-docs.ps1` — синхронизация
 - `scripts/install-plugin.sh` — деплой в `~/.cursor/plugins/local/t-800-agent/` (без зеркал в user-home)

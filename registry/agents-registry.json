@@ -1,8 +1,9 @@
 {
   "$schema": "./agents-registry.schema.json",
   "version": 2,
-  "updated": "2026-07-17",
+  "updated": "2026-07-31",
   "plugin": "t-800-agent",
+  "notes": "description = short catalog text; routing-текст живёт в frontmatter агента (agents/*.md)",
   "categories": {
     "scout": "Разведывательный модуль (Recon)",
     "research": "Автономная DEEP-разведка: strategist → specialists → synthesizer",
@@ -408,7 +409,7 @@
     {
       "id": "t-800-system-auditor",
       "file": "agents/t-800-system-auditor.md",
-      "category": "mentor",
+      "category": "system",
       "readonly": true,
       "calls": [],
       "calledBy": [

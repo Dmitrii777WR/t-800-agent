@@ -15,8 +15,8 @@
 | Display name | T-800 Agent | там же |
 | GitHub | `https://github.com/Khar-AG/t-800-agent` | `shared/release-channel.json` |
 | Branch релиза | `main` | `shared/release-channel.json` |
-| Agents (Task-субагенты) | **43** файла `agents/t-800-*.md` = **43** в `registry/agents-registry.json` (вкл. `t-800-loop-conductor`) | ls + registry |
-| Commands | **17** (`commands/*.md`, вкл. `/t800-loop`) | ls |
+| Agents (Task-субагенты) | **42** файла `agents/t-800-*.md` = **42** в `registry/agents-registry.json` (вкл. `t-800-loop-conductor`) | ls + registry |
+| Commands | **18** (`commands/*.md`, вкл. `/t800-loop`) | ls |
 | Skills | **6** (`t-800-knowledge-base` + factory-scaffold / fix-pack / plugin-sync / run-gates / command-chains) | find |
 | Rules (plugin) | **5** `rules/*.mdc` | ls |
 | Shared contracts | **30+** (`shared/*.md` + `release-channel.json` + `command-chains.json`; вкл. `lesson-schema-contract`) | ls |
@@ -41,7 +41,7 @@
 | Оркестрация | Cursor Agent + `Task(subagent_type=…)` (лиды отделов) |
 | Machine gates | Bash + Python3 (`t800_run_gate.py`, `t800_doctor.py`, `t800_plugin_audit.py`, `t800_factory_bypass_gate.py`, `t800_prompt_eval_gate.py`, skill/schema/chains gates, `t800_plugin_sync.py`) |
 | Registry | JSON `registry/agents-registry.json` |
-| KB sync | PowerShell `scripts/sync-docs.ps1` (Windows-канон в контракте; macOS — ручной/частичный) |
+| KB sync | Ручной sync официальных docs → `raw/` + UPDATE-QUEUE (по `manifest.json`) |
 | Память прогона | Markdown + JSON в `{memory_path}/` целевого проекта |
 | Язык UX | русский (контракты/промпты), идентификаторы — English kebab-case |
 
@@ -347,7 +347,7 @@
 | Teya `teya_docs_build.py` | T-800 |
 |---------------------------|-------|
 | Есть отдельный docs builder | **НЕТ** аналога |
-| Sync официальных docs | `scripts/sync-docs.ps1` → raw + UPDATE-QUEUE |
+| Sync официальных docs | ручной fetch → raw + UPDATE-QUEUE |
 | Install обновляет runtime | `install-plugin.sh` копирует plugin tree |
 
 ### 7.3 Тесты / smoke перед релизом
@@ -425,7 +425,7 @@
 | 2 | `agents/<name>.md` (+ часто `.cursor/agents/` mirror) |
 | 3 | опц. `commands/<slash>.md` |
 | 4 | опц. `rules/*-routing.mdc` |
-| 5 | `registry/agents-registry.json` (integrator / `register-agent.ps1`) |
+| 5 | `registry/agents-registry.json` (integrator) |
 | 6 | `docs/T-800-AGENTS.md` запись |
 | 7 | validate-agents + audit-agent-graph |
 | 8 | factory-auditor `status: ok` |
@@ -629,9 +629,9 @@ bash scripts/verify-install.sh
 
 ---
 
-## Приложение E — Полный roster registry (43)
+## Приложение E — Полный roster registry (42)
 
-Источник: сверять `registry/agents-registry.json` с текущей версией (**1.22.1**); roster count **43**. `calls`/`calledBy` усечены если длинные.  
+Источник: сверять `registry/agents-registry.json` с текущей версией (**1.22.1**); roster count **42**. `calls`/`calledBy` усечены если длинные.  
 Добавлено с 1.16.1: `t-800-loop-conductor` (readonly, `/t800-loop`).
 
 | id | category | readonly | calls | calledBy |
@@ -776,11 +776,9 @@ Install **не** ставит его молча (Lesson в STATE + CHANGELOG 1.1
 | `install-global-routing-rule.sh` | consent mandatory rule |
 | `t800-auto-version-check.sh` | sessionStart version |
 | `t800-update-from-github.sh` | zip/install from GitHub |
-| `sync-docs.ps1` | Cursor docs → raw/UPDATE-QUEUE |
-| `register-agent.ps1` | registry upsert |
 | `first-run-status.sh` | bootstrap status |
-| `fix-kb-frontmatter.ps1` | KB frontmatter repair |
-| `test-dialogues.ps1` | dialogue tests (Windows) |
+| `discover-target-project.ps1` | discovery plugin_root/memory (Windows parity) |
+| `t800_command_chains_gate.ps1` | pwsh-обёртка chains gate |
 
 ---
 
@@ -879,7 +877,6 @@ Lessons там же про verify/health paths и bootstrap consent — **пов
 | Файл | Роль |
 |------|------|
 | [`t-800-agent/T800-SYSTEM-MAP.md`](T800-SYSTEM-MAP.md) | **Канон** (корень git-репо плагина) |
-| [`../T800-SYSTEM-MAP.md`](../T800-SYSTEM-MAP.md) | Указатель из workspace parent |
 
 При расхождении с кодом верить: `.cursor-plugin/plugin.json`, `registry/agents-registry.json`, `knowledge-base/CHANGELOG.md`, скриптам в `scripts/`.
 

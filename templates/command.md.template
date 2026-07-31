@@ -1,5 +1,7 @@
 # {{COMMAND_TITLE}}
 
+> Minimal stub. Реальные команды — оркестрации конвейера, см. `commands/t800-start.md`, `commands/t800-fix.md`.
+
 **Обязательно** вызови субагента через `Task({{AGENT_NAME}})`.
 
 Передай контекст:

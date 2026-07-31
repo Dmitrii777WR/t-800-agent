@@ -1,34 +1,28 @@
-# Бриф конвейера — шаблон
+# Бриф конвейера — flat YAML; сохранять в {memory_path}/factory-briefs/<slug>.yaml
+slug: <slug-прогона>
+version: "..."
+date: "YYYY-MM-DD"
+no_new_research_brain: true
+optional_new_agents: []
+plugin_root: "<plugin_root из discovery>"
+memory_path: "<memory_path из discovery>"
 
-Заполняется после discovery (`scripts/discover-target-project.sh`).
+goal: >
+  ...
 
-```yaml
-brief:
-  goal: "Создать/изменить субагента ..."
-  target_context:
-    workspace_root: "..."
-    plugin_root: "..."
-    memory_path: "..."
-    profile: <id из profiles/*.md> | generic-plugin | self-t800
-    release_handoff: null | "<release_handoff из профиля>"
-    knowledge_vault_path: null
-  artifact_type: subagent | skill | command | rule | hook | bundle
-  agent:
-    proposed_name: my-agent-name
-    readonly: true
-    category: scout | brains | factory | content | reviewer
-    role_one_liner: "..."
-    calls: []
-    called_by: ["t-800-factory"]
-  companions:
-    command: false
-    rule: false
-    skill: false
-  constraints: []
-  scout_report: {}
-  brain_brief: {}
-```
+must_create:
+  - ...
 
-Сохранять в: `{memory_path}/factory-briefs/<slug>.yaml`
+must_update:
+  - ...
 
-Контракты: `shared/project-discovery-contract.md`, `shared/target-plugin-profiles.md`
+contracts_sketch:
+
+  <contract-key>:
+    ...
+
+constraints:
+  - ...
+
+smoke_after_install:
+  - ...

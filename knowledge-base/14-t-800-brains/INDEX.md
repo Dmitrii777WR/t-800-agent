@@ -34,4 +34,4 @@ t-800-scout → t-800-brain-lead → domain brain(s) → t-800-factory
 
 ## Синхронизация KB
 
-`Task(t-800-maintainer)` + `scripts/sync-docs.ps1` — обновление карточек из официальных URL.
+`Task(t-800-maintainer)` — обновление карточек из официальных URL (ручной sync).

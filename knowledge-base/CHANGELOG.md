@@ -8,6 +8,14 @@ author: t-800
 
 Формат: дата — что изменилось — источник.
 
+## 2026-07-31 — Волна 4: hygiene release (без bump версии)
+
+- INSTALL.md по факту: версия — указатель на `.cursor-plugin/plugin.json`, 42 субагента · 18 команд, секция тестов (`requirements-dev.txt` + pytest), Windows-notes (hooks bash-only, ps1-пары)
+- Единый источник версии: docs без хардкода версий (НАЧАЛО-РАБОТЫ, ПОЛНАЯ-ИНСТРУКЦИЯ, T-800-AGENTS, СЦЕНАРИЙ-СТАРТА, README badges 42/18)
+- Runtime timestamps вне git: `adapters/teya/policy.json` очищен от `hook_enforce_ready*` (persist → `{memory}/adapters/teya/hook-enforce-readiness.json`), COVERAGE-REPORT без строки `**Generated:**`, audit-coverage.sh/.ps1 без datetime
+- Кросс-платформа: +`discover-target-project.ps1` (pwsh parity .sh), +`t800_command_chains_gate.ps1`; −4 legacy ps1 (sync-docs, register-agent, fix-kb-frontmatter, test-dialogues); hooks `hooks/*.sh` — bash-only (Git Bash/WSL)
+- Templates/registry: skill.md.template — `disable-model-invocation` по умолчанию выкл., factory-brief.template — flat YAML, command.md.template — stub-указатель; registry notes про description, `t-800-system-auditor` → category `system`; phase2-тесты legacy-tolerant (`scripts/legacy/` fallback); `requirements-dev.txt`
+
 ## 2026-07-31 — Волна 3: база знаний (без bump версии)
 
 - Новый раздел `18-plugin-development/` (5 файлов): plugin.json-манифест, плагин с нуля (scaffold→install→packaging), git-гигиена публичных репо, Cursor Router + INDEX

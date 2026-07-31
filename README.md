@@ -13,8 +13,8 @@
 <p align="center">
   <a href="https://github.com/Khar-AG/t-800-agent/releases"><img alt="version" src="https://img.shields.io/github/v/release/Khar-AG/t-800-agent?include_prereleases&label=version&color=red"/></a>
   <a href="https://github.com/Khar-AG/t-800-agent"><img alt="stars" src="https://img.shields.io/github/stars/Khar-AG/t-800-agent?style=social"/></a>
-  <img alt="agents" src="https://img.shields.io/badge/субагентов-43-blue"/>
-  <img alt="commands" src="https://img.shields.io/badge/команд-17-lightgrey"/>
+  <img alt="agents" src="https://img.shields.io/badge/субагентов-42-blue"/>
+  <img alt="commands" src="https://img.shields.io/badge/команд-18-lightgrey"/>
   <img alt="license" src="https://img.shields.io/badge/license-MIT-green"/>
 </p>
 
@@ -447,7 +447,7 @@ Surface: этот проект. Имя: docs-summarizer.
 
 ## Как устроен конвейер
 
-43 субагента · 17 команд. T-800 — generic factory; Teya — через `adapters/teya/`:
+42 субагента · 18 команд. T-800 — generic factory; Teya — через `adapters/teya/`:
 
 | Отдел | Лид | Роль |
 |-------|-----|------|
