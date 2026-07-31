@@ -8,6 +8,18 @@ author: t-800
 
 Формат: дата — что изменилось — источник.
 
+## 2026-07-31 — Релиз 1.23.0: глобальный аудит и закалка плагина
+
+Итог глобального аудита (4 волны исправлений, 0 CRITICAL на выходе):
+
+- **Публичность**: история git переписана (filter-repo) — удалены личный путь и email владельца из всех коммитов; единый автор `t-800-agent@users.noreply.github.com`; финальный скан секретов/личных данных по tracked-файлам — чисто
+- **Целостность машинерии**: мёртвый хук `beforeFileEdit` заменён на реальный `preToolUse` (matcher Write|StrReplace|EditNotebook) — правки артефактов вне factory теперь реально блокируются; снят UTF-8 BOM в `knowledge-base/manifest.json` (чинит fail-closed kb-provenance); `t800_factory_bypass_gate.py` привязан к diff (время + покрытие файлов), +тест
+- **Универсальность**: ядро product-agnostic — Teya вынесена в `adapters/teya/` (brain-агент, KB-15, 4 скрипта, шаблон, контракт; 16 git mv с сохранением истории) и declarative `profiles/teya-*.md`; rg-гейт ядра — 5 pointer-файлов
+- **База знаний**: новый раздел `18-plugin-development/` (plugin.json-манифест, плагин с нуля/packaging, git-гигиена публичных репо, Cursor Router); 49 raw-снапшотов первоисточников (fetch 2026-07-30); hooks.md переработан (21 событие, preToolUse-эталон, release playbook); `manifest.json`: `last_full_sync`, sha256 страниц
+- **Гигиена**: кросс-платформа (+2 ps1: discover-target-project, command-chains gate), `requirements-dev.txt`, pytest 27/27 (phase2 legacy-tolerant), registry F4 (system-auditor → system), INSTALL по факту без хардкода версий, −4 legacy ps1, runtime timestamps вне git
+
+Гейты релиза: `run_gate --strict-create` PASS · `plugin_audit` PASS (42 агента, orphans=0) · schema PASS · kb provenance PASS · pytest 27/27 · sh -n 21 · py_compile 46 · frontmatter 74.
+
 ## 2026-07-31 — Волна 4: hygiene release (без bump версии)
 
 - INSTALL.md по факту: версия — указатель на `.cursor-plugin/plugin.json`, 42 субагента · 18 команд, секция тестов (`requirements-dev.txt` + pytest), Windows-notes (hooks bash-only, ps1-пары)

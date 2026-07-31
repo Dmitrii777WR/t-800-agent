@@ -1,8 +1,8 @@
 # T800-SYSTEM-MAP.md
 
 Карта системы для внешнего архитектора (проектирование / усиление **loop engineering**).  
-Сгенерировано: 2026-07-29 (обновлено под **1.22.1**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
-Версия плагина на момент карты: **1.22.1**.  
+Сгенерировано: 2026-07-29 (обновлено под **1.23.0**). Источник истины: checkout `t-800-agent` (git `Khar-AG/t-800-agent`), память `../t-800-memory/`.  
+Версия плагина на момент карты: **1.23.0**.  
 Правило документа: факты (файл / кто пишет / кто читает / авто|руками). Без маркетинга.
 
 ---
@@ -11,7 +11,7 @@
 
 | Метрика | Значение | Источник |
 |---------|----------|----------|
-| Версия | `1.22.1` | `.cursor-plugin/plugin.json` |
+| Версия | `1.23.0` | `.cursor-plugin/plugin.json` |
 | Display name | T-800 Agent | там же |
 | GitHub | `https://github.com/Khar-AG/t-800-agent` | `shared/release-channel.json` |
 | Branch релиза | `main` | `shared/release-channel.json` |
@@ -631,7 +631,7 @@ bash scripts/verify-install.sh
 
 ## Приложение E — Полный roster registry (42)
 
-Источник: сверять `registry/agents-registry.json` с текущей версией (**1.22.1**); roster count **42**. `calls`/`calledBy` усечены если длинные.  
+Источник: сверять `registry/agents-registry.json` с текущей версией (**1.23.0**); roster count **42**. `calls`/`calledBy` усечены если длинные.  
 Добавлено с 1.16.1: `t-800-loop-conductor` (readonly, `/t800-loop`).
 
 | id | category | readonly | calls | calledBy |
